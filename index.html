@@ -114,11 +114,30 @@
     .foot-links{display:flex;gap:16px;flex-wrap:wrap}
     .foot-links a:hover{color:var(--cyan)}
 
+    .featured{background:radial-gradient(ellipse at 85% 0,#10b98126,transparent 55%),var(--bg);border-bottom:1px solid var(--line)}
+    .featured .eyebrow{color:#5eead4}
+    .f-banner{border-radius:24px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 70px #0009;margin-bottom:34px}
+    .f-banner img{width:100%}
+    .f-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+    .f-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0 26px}
+    .f-item{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:14px;color:var(--muted)}
+    .f-item b{display:block;color:#fff;font-size:15px;margin-bottom:2px}
+    .f-price{background:linear-gradient(160deg,#10241d,#0b1118);border:1px solid #10b98155;border-radius:20px;padding:22px}
+    .f-price .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+    .f-price .row:last-of-type{border-bottom:0}
+    .f-price .row b{font-size:19px}
+    .f-price s{color:#6d7a8e;font-size:13px;margin-right:6px}
+    .gallery{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin}
+    .gallery img{flex:0 0 auto;width:min(300px,72vw);border-radius:18px;border:1px solid var(--line);scroll-snap-align:start;cursor:zoom-in}
+    .g-hint{font-size:13px;color:var(--muted);margin:0 0 12px}
+    .lightbox{position:fixed;inset:0;z-index:60;background:#000e;display:none;align-items:center;justify-content:center;padding:20px}
+    .lightbox.open{display:flex}
+    .lightbox img{max-height:92vh;max-width:96vw;border-radius:16px}
     .wa-float{position:fixed;right:18px;bottom:18px;z-index:40;width:58px;height:58px;border-radius:50%;background:var(--green);display:grid;place-items:center;box-shadow:0 10px 30px #0008}
     .wa-float svg{width:30px;height:30px;fill:#fff}
 
-    @media(max-width:900px){nav{display:none}.hero-grid,.story-grid{grid-template-columns:1fr}.hero-grid{padding:56px 0 64px;gap:34px}.hero-logo{max-width:380px;margin:auto}.apps,.steps{grid-template-columns:1fr}}
-    @media(max-width:480px){.nav{min-height:64px}.brand{font-size:13px}.brand img{width:38px;height:38px}.nav>.btn{padding:9px 13px;font-size:12px}section{padding:58px 0}.app{padding:20px}.app-actions .btn{min-width:100%}}
+    @media(max-width:900px){.f-grid>div:last-child{order:-1}nav{display:none}.hero-grid,.story-grid,.f-grid{grid-template-columns:1fr}.hero-grid{padding:56px 0 64px;gap:34px}.hero-logo{max-width:380px;margin:auto}.apps,.steps{grid-template-columns:1fr}}
+    @media(max-width:480px){.f-list{grid-template-columns:1fr}.nav{min-height:64px}.brand{font-size:13px}.brand img{width:38px;height:38px}.nav>.btn{padding:9px 13px;font-size:12px}section{padding:58px 0}.app{padding:20px}.app-actions .btn{min-width:100%}}
   </style>
 </head>
 <body>
@@ -126,7 +145,7 @@
   <div class="wrap nav">
     <a class="brand" href="#inicio"><img src="assets/dl-company.png" alt="Logo DL COMPANY"><span>DL COMPANY<small>-TECHNOLOGY-</small></span></a>
     <nav aria-label="Navegación principal">
-      <a href="#apps">Aplicaciones</a><a href="#como-comprar">Cómo comprar</a><a href="#planes">Planes</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a>
+      <a href="#dl-finanzas">DL Finanzas</a><a href="#apps">Aplicaciones</a><a href="#como-comprar">Cómo comprar</a><a href="#planes">Planes</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a>
     </nav>
     <a class="btn btn-primary" href="#apps">Ver apps</a>
   </div>
@@ -141,7 +160,7 @@
         <p class="lead">En DL COMPANY -TECHNOLOGY- creamos aplicaciones para controlar inventario, ventas, pedidos de restaurante y finanzas del hogar. Funcionan en el celular y en el computador, sin instalar nada raro.</p>
         <div class="actions">
           <a class="btn btn-primary" href="#apps">Explorar aplicaciones ↓</a>
-          <a class="btn btn-ghost" href="#como-comprar">¿Cómo comprar?</a>
+          <a class="btn btn-ghost" href="#dl-finanzas">Nuevo: DL FINANZAS</a>
         </div>
         <div class="stats">
           <div><b>4</b><span>apps disponibles</span></div>
@@ -153,10 +172,80 @@
     </div>
   </section>
 
+  <section class="featured" id="dl-finanzas">
+    <div class="wrap">
+      <div class="intro"><div class="eyebrow">⭐ App destacada · Ya disponible</div><h2>DL FINANZAS: controla tu dinero sin complicarte.</h2><p class="muted">La app para organizar los ingresos, gastos y presupuesto de tu hogar. Funciona en el celular y en el computador, se instala como una app y guarda tus datos en la nube.</p></div>
+      <div class="f-banner"><img src="assets/finanzas/portada.jpg" alt="DL FINANZAS en el celular: balance del mes y gastos por categoría"></div>
+
+      <p class="g-hint">Desliza para ver la app por dentro →</p>
+      <div class="gallery" id="gallery">
+        <img src="assets/finanzas/f1-balance.jpg" alt="Balance del mes y tasa de ahorro" loading="lazy">
+        <img src="assets/finanzas/f2-categorias.jpg" alt="Gastos por categoría" loading="lazy">
+        <img src="assets/finanzas/f3-semaforo.jpg" alt="Semáforo de presupuesto" loading="lazy">
+        <img src="assets/finanzas/f4-tendencia.jpg" alt="Tendencia de 6 meses" loading="lazy">
+        <img src="assets/finanzas/f5-movimientos.jpg" alt="Lista de movimientos" loading="lazy">
+        <img src="assets/finanzas/f6-temas.jpg" alt="Tema claro y oscuro" loading="lazy">
+        <img src="assets/finanzas/f7-planes.jpg" alt="Planes de DL FINANZAS" loading="lazy">
+      </div>
+
+      <div class="f-grid" style="margin-top:40px">
+        <div>
+          <div class="eyebrow">Todo lo que incluye</div>
+          <div class="f-list">
+            <div class="f-item"><b>📊 Balance del mes</b>Ingresos, gastos fijos y variables, y tu tasa de ahorro.</div>
+            <div class="f-item"><b>🍩 Gastos por categoría</b>Gráfica clara para ver en qué se va la plata.</div>
+            <div class="f-item"><b>🚦 Semáforo de presupuesto</b>Topes por categoría que avisan cuándo frenar.</div>
+            <div class="f-item"><b>📈 Tendencia de 6 meses</b>Compara ingresos y egresos mes a mes.</div>
+            <div class="f-item"><b>🔁 Copiar fijos al mes nuevo</b>Arriendo, servicios y salario en un toque.</div>
+            <div class="f-item"><b>🔎 Búsqueda y filtros</b>Encuentra cualquier movimiento al instante.</div>
+            <div class="f-item"><b>☁️ Nube y sincronización</b>Tus datos seguros y en todos tus equipos.</div>
+            <div class="f-item"><b>📤 Excel y respaldos</b>Exporta y restaura tu información.</div>
+            <div class="f-item"><b>🌗 Tema claro y oscuro</b>Úsala cómoda de día o de noche.</div>
+            <div class="f-item"><b>🎙️ Guía con voz</b>Te enseña a usar la app desde el primer día.</div>
+            <div class="f-item"><b>📲 Se instala en el celular</b>Android y iPhone, y funciona sin conexión.</div>
+            <div class="f-item"><b>💬 Soporte por WhatsApp</b>Directo desde la app.</div>
+          </div>
+        </div>
+        <div>
+          <div class="eyebrow">Precios de lanzamiento</div>
+          <div class="f-price" style="margin-top:22px">
+            <span class="badge">🚀 50% DE DESCUENTO</span>
+            <div class="row" style="margin-top:12px"><span>Gratis<br><small class="muted">15 movimientos al mes · datos en tu celular</small></span><b>$0</b></div>
+            <div class="row"><span>Pro<br><small class="muted">50 movimientos al mes · nube · Excel y respaldos</small></span><span><s>$20.000</s><b>$10.000</b></span></div>
+            <div class="row"><span>Premium 👑<br><small class="muted">Ilimitado · toda la app · soporte prioritario</small></span><span><s>$40.000</s><b>$20.000</b></span></div>
+            <p class="note" style="margin:10px 0 18px">Precios en COP por mes. Pago anual: 14 meses por el precio de 12. Sin renovación automática.</p>
+            <div class="app-actions">
+              <a class="btn btn-primary" href="https://dimelolenin7-ui.github.io/DL-FINANZAS/" target="_blank" rel="noopener">Probar gratis</a>
+              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%2C%20quiero%20comprar%20un%20plan%20de%20DL%20FINANZAS" target="_blank" rel="noopener">Comprar por WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="catalog" id="apps">
     <div class="wrap">
       <div class="intro"><div class="eyebrow">Nuestras aplicaciones</div><h2>Elige la app que tu negocio necesita.</h2><p class="muted">Todas se pueden probar gratis. Cuando quieras más funciones, activas tu plan por WhatsApp y nosotros lo dejamos listo.</p></div>
       <div class="apps">
+
+        <article class="app" style="--accent:#25c58a">
+          <div class="app-head"><img src="assets/finanzas.svg" alt="Logo DL FINANZAS"><div><h3>DL FINANZAS</h3><p class="for">Finanzas del hogar · personas y familias</p></div></div>
+          <p class="desc">Controla tus ingresos, gastos y presupuesto mensual, y descubre en qué se te va la plata.</p>
+          <ul>
+            <li>Balance mensual y tasa de ahorro</li>
+            <li>Gastos por categoría con semáforo de topes</li>
+            <li>Tendencia de 6 meses y comparación con el mes anterior</li>
+            <li>Exportar a Excel y copias de seguridad</li>
+            <li>Nube, guía con voz y tema claro/oscuro</li>
+          </ul>
+          <div class="price-line"><small>Desde</small><b>$10.000</b><s>$20.000</s><span class="badge">50% LANZAMIENTO</span></div>
+          <div class="app-actions">
+            <a class="btn btn-primary" href="https://dimelolenin7-ui.github.io/DL-FINANZAS/" target="_blank" rel="noopener">Probar gratis</a>
+            <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%2C%20quiero%20comprar%20un%20plan%20de%20DL%20FINANZAS" target="_blank" rel="noopener">Comprar</a>
+          </div>
+        </article>
+
 
         <article class="app" style="--accent:#2f8cff">
           <div class="app-head"><img src="assets/stock-pro.png" alt="Logo DL STOCK PRO"><div><h3>DL STOCK PRO</h3><p class="for">Inventario inteligente · tiendas, minimercados, bodegas</p></div></div>
@@ -209,22 +298,6 @@
           </div>
         </article>
 
-        <article class="app" style="--accent:#25c58a">
-          <div class="app-head"><img src="assets/finanzas.svg" alt="Logo DL FINANZAS"><div><h3>DL FINANZAS</h3><p class="for">Finanzas del hogar · personas y familias</p></div></div>
-          <p class="desc">Controla tus ingresos, gastos y presupuesto mensual, y descubre en qué se te va la plata.</p>
-          <ul>
-            <li>Balance mensual y tasa de ahorro</li>
-            <li>Gastos por categoría con semáforo de topes</li>
-            <li>Tendencia de 6 meses y comparación con el mes anterior</li>
-            <li>Exportar a Excel y copias de seguridad</li>
-            <li>Tema claro y oscuro</li>
-          </ul>
-          <div class="price-line"><small>Desde</small><b>$10.000</b><s>$20.000</s><span class="badge">50% LANZAMIENTO</span></div>
-          <div class="app-actions">
-            <a class="btn btn-primary" href="https://dimelolenin7-ui.github.io/DL-FINANZAS/" target="_blank" rel="noopener">Probar gratis</a>
-            <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%2C%20quiero%20comprar%20un%20plan%20de%20DL%20FINANZAS" target="_blank" rel="noopener">Comprar</a>
-          </div>
-        </article>
 
       </div>
       <div class="soon">
@@ -249,13 +322,23 @@
     <div class="wrap">
       <div class="intro"><div class="eyebrow">Planes y precios</div><h2>Paga solo por lo que necesitas.</h2><p class="muted">Precios mensuales en pesos colombianos.</p></div>
       <div class="tabs" role="tablist">
-        <button class="tab" role="tab" aria-selected="true" data-set="stock">DL STOCK PRO</button>
+        <button class="tab" role="tab" aria-selected="true" data-set="finanzas">DL FINANZAS</button>
+        <button class="tab" role="tab" aria-selected="false" data-set="stock">DL STOCK PRO</button>
+        
         <button class="tab" role="tab" aria-selected="false" data-set="cuadra">DL CUADRA PRO</button>
-        <button class="tab" role="tab" aria-selected="false" data-set="finanzas">DL FINANZAS</button>
+        
         <button class="tab" role="tab" aria-selected="false" data-set="comanda">DL COMANDA PRO</button>
       </div>
 
-      <div class="plan-set active" id="set-stock">
+      <div class="plan-set active" id="set-finanzas">
+        <div class="plan-grid">
+          <article class="plan"><div class="plan-label">GRATIS</div><div class="price">$0</div><div class="per">para empezar</div><ul><li>15 movimientos al mes</li><li>Resumen, gráficas y topes</li><li>Datos en tu dispositivo</li></ul><a class="btn btn-ghost" href="https://dimelolenin7-ui.github.io/DL-FINANZAS/" target="_blank" rel="noopener">Probar gratis</a></article>
+          <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price">$10.000</div><div class="per">COP / mes · <s>$20.000</s></div><ul><li>Hasta 50 movimientos al mes</li><li>Nube y sincronización</li><li>Exportar a Excel y respaldos</li><li>Anual: $120.000 (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%2C%20quiero%20el%20plan%20PRO%20de%20DL%20FINANZAS" target="_blank" rel="noopener">Quiero PRO</a></article>
+          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price">$20.000</div><div class="per">COP / mes · <s>$40.000</s></div><ul><li>Movimientos ilimitados, toda la app</li><li>Tendencia de 6 meses</li><li>Copiar fijos al mes nuevo</li><li>Soporte prioritario por WhatsApp</li><li>Anual: $240.000 (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%2C%20quiero%20el%20plan%20PREMIUM%20de%20DL%20FINANZAS" target="_blank" rel="noopener">Quiero PREMIUM</a></article>
+        </div>
+      </div>
+
+      <div class="plan-set" id="set-stock">
         <div class="plan-grid">
           <article class="plan"><div class="plan-label">GRATIS</div><div class="price">$0</div><div class="per">para empezar</div><ul><li>Funciones básicas de inventario</li><li>Datos guardados en tu dispositivo</li><li>Ideal para conocer la app</li></ul><a class="btn btn-ghost" href="https://dimelolenin7-ui.github.io/control-inventario./" target="_blank" rel="noopener">Probar gratis</a></article>
           <article class="plan"><div class="plan-label">PRO · LOCAL</div><div class="price">$19.900</div><div class="per">COP / mes</div><ul><li>Productos ilimitados</li><li>Todas las funciones de inventario</li><li>Datos en tu dispositivo con copias de seguridad</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%2C%20quiero%20el%20plan%20PRO%20de%20DL%20STOCK%20PRO" target="_blank" rel="noopener">Quiero PRO</a></article>
@@ -269,14 +352,6 @@
           <article class="plan"><div class="plan-label">PRO</div><div class="price">$19.900</div><div class="per">COP / mes</div><ul><li>Productos ilimitados</li><li>Ventas, inventario y cierre del día</li><li>Datos en la nube</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%2C%20quiero%20el%20plan%20PRO%20de%20DL%20CUADRA%20PRO" target="_blank" rel="noopener">Quiero PRO</a></article>
           <article class="plan featured"><div class="plan-label">PREMIUM</div><div class="price">$39.900</div><div class="per">COP / mes</div><ul><li>La app al 100%</li><li>Soporte directo</li><li>Sugerencias de mejora para tu negocio</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%2C%20quiero%20el%20plan%20PREMIUM%20de%20DL%20CUADRA%20PRO" target="_blank" rel="noopener">Quiero PREMIUM</a></article>
           <article class="plan"><div class="plan-label">EMPRESARIAL</div><div class="price">$79.900</div><div class="per">COP / mes</div><ul><li>Todo lo de Premium</li><li>Varias sedes o negocios</li><li>Cajeros con usuario y PIN</li><li>El dueño ve todo desde su celular</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%2C%20quiero%20el%20plan%20EMPRESARIAL%20de%20DL%20CUADRA%20PRO" target="_blank" rel="noopener">Quiero EMPRESARIAL</a></article>
-        </div>
-      </div>
-
-      <div class="plan-set" id="set-finanzas">
-        <div class="plan-grid">
-          <article class="plan"><div class="plan-label">GRATIS</div><div class="price">$0</div><div class="per">para empezar</div><ul><li>15 movimientos al mes</li><li>Datos en tu dispositivo</li></ul><a class="btn btn-ghost" href="https://dimelolenin7-ui.github.io/DL-FINANZAS/" target="_blank" rel="noopener">Probar gratis</a></article>
-          <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price">$10.000</div><div class="per">COP / mes · <s>$20.000</s></div><ul><li>Hasta 50 movimientos al mes</li><li>Tus datos en la nube</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%2C%20quiero%20el%20plan%20PRO%20de%20DL%20FINANZAS" target="_blank" rel="noopener">Quiero PRO</a></article>
-          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price">$20.000</div><div class="per">COP / mes · <s>$40.000</s></div><ul><li>Toda la app sin límites</li><li>Datos en la nube</li><li>Soporte directo</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%2C%20quiero%20el%20plan%20PREMIUM%20de%20DL%20FINANZAS" target="_blank" rel="noopener">Quiero PREMIUM</a></article>
         </div>
       </div>
 
@@ -315,7 +390,11 @@
 
 <a class="wa-float" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.2 1.2z"/></svg></a>
 
+<div class="lightbox" id="lightbox"><img alt=""></div>
 <script>
+  var lb=document.getElementById('lightbox');
+  document.querySelectorAll('#gallery img,.f-banner img').forEach(function(im){im.addEventListener('click',function(){lb.querySelector('img').src=im.src;lb.classList.add('open')})});
+  lb.addEventListener('click',function(){lb.classList.remove('open')});
   document.querySelectorAll('.tab').forEach(function(tab){
     tab.addEventListener('click',function(){
       document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-selected','false')});
