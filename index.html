@@ -130,6 +130,11 @@
     .gallery{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin}
     .gallery img{flex:0 0 auto;width:min(300px,72vw);border-radius:18px;border:1px solid var(--line);scroll-snap-align:start;cursor:zoom-in}
     .g-hint{font-size:13px;color:var(--muted);margin:0 0 12px}
+    .f-video{display:grid;grid-template-columns:1fr minmax(260px,340px);gap:36px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:28px;margin-bottom:34px}
+    .f-video h3{font-size:28px;margin:8px 0 10px}
+    .f-video p{margin:0 0 20px}
+    .f-video video{width:100%;aspect-ratio:9/16;border-radius:18px;background:#000;border:1px solid var(--line)}
+    @media(max-width:760px){.f-video{grid-template-columns:1fr;padding:20px}.f-video video{max-width:340px;margin:auto}}
     .lightbox{position:fixed;inset:0;z-index:60;background:#000f;display:none;overflow:hidden;touch-action:pan-y}
     .lightbox.open{display:block}
     .lb-track{display:flex;height:100%;transition:transform .3s ease;will-change:transform}
@@ -189,6 +194,10 @@
       <div class="intro"><div class="eyebrow">⭐ App destacada · Ya disponible</div><h2>DL FINANZAS: controla tu dinero sin complicarte.</h2><p class="muted">La app para organizar los ingresos, gastos y presupuesto de tu hogar. Funciona en el celular y en el computador, se instala como una app y guarda tus datos en la nube.</p></div>
       <div class="f-banner"><img src="assets/finanzas/portada.jpg" alt="DL FINANZAS en el celular: balance del mes y gastos por categoría"></div>
 
+      <div class="f-video">
+        <div><div class="eyebrow">🎬 Mira la app en acción</div><h3>Así funciona DL FINANZAS</h3><p class="muted">Un recorrido completo por la guía de la app: desde crear tu cuenta hasta ver tu balance, tus gastos por categoría, el semáforo de presupuesto y los planes.</p><a class="btn btn-primary" href="https://dimelolenin7-ui.github.io/DL-FINANZAS/" target="_blank" rel="noopener">Probar gratis</a></div>
+        <video src="assets/finanzas/guia.mp4" poster="assets/finanzas/guia-poster.jpg" controls playsinline preload="none"></video>
+      </div>
       <p class="g-hint">Desliza para ver la app por dentro →</p>
       <div class="gallery" id="gallery">
         <img src="assets/finanzas/f1-balance.jpg" alt="Balance del mes y tasa de ahorro" loading="lazy">
