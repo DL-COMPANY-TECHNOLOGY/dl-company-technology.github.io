@@ -432,7 +432,8 @@
         </div>
       </div>
 
-      <p class="note">* Precios fijos en pesos colombianos (COP) o en dólares (USD) para pagos desde fuera de Colombia. El pago se coordina por WhatsApp y el plan se activa manualmente después de confirmarlo. Precios sujetos a cambios.</p>
+      <p class="note fx-note" style="display:none"></p>
+      <p class="note">* El precio en pesos colombianos (COP) es fijo. El precio en dólares (USD) se calcula cada día con el dólar del día, redondeado a número entero. El pago se coordina por WhatsApp y el plan se activa manualmente después de confirmarlo. Precios sujetos a cambios.</p>
     </div>
   </section>
 
@@ -484,12 +485,27 @@
     track.addEventListener('touchend',function(){if(x0===null)return;var w=lb.clientWidth;if(horiz&&dx<-w*0.18)go(i+1);else if(horiz&&dx>w*0.18)go(i-1);else go(i);x0=null});
   })();
   (function(){
-    var USD={10000:3,20000:5,30000:8,40000:10,50000:12,60000:16,80000:20,100000:24,120000:30,160000:40,240000:60,480000:120};
+    var FX={rate:3350,fecha:null,live:false};
+    function fxLoad(onChange){
+      var c=null;try{c=JSON.parse(localStorage.getItem('dl_fx_cop')||'null')}catch(e){}
+      if(c&&c.rate){FX.rate=c.rate;FX.fecha=c.fecha;FX.live=true}
+      if(c&&Date.now()-c.ts<12*3600*1000)return;
+      fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){
+        var v=d&&d.result==='success'&&d.rates&&Number(d.rates.COP);
+        if(!v||v<1000||v>10000)return;
+        FX.rate=v;FX.fecha=(d.time_last_update_utc||'').slice(5,16);FX.live=true;
+        try{localStorage.setItem('dl_fx_cop',JSON.stringify({rate:v,fecha:FX.fecha,ts:Date.now()}))}catch(e){}
+        if(onChange)onChange();
+      }).catch(function(){});
+    }
+    function usdOf(cop){cop=Number(cop)||0;return cop?Math.max(1,Math.round(cop/FX.rate)):0}
     function fmtCop(n){return '$'+Number(n).toLocaleString('es-CO')}
-    function fmtUsd(el){var n=Number(el.dataset.cop);if(!n)return 'US$ 0';return 'US$ '+(USD[n]!==undefined?USD[n]:Math.round(n/4000))}
+    function fmtUsd(el){return 'US$ '+usdOf(el.dataset.cop)}
     function setCur(c){
       document.querySelectorAll('[data-cop]').forEach(function(el){el.textContent=c==='USD'?fmtUsd(el):fmtCop(el.dataset.cop)});
       document.querySelectorAll('.cur').forEach(function(el){el.textContent=c});
+      document.querySelectorAll('.fx-note').forEach(function(el){el.innerHTML='💱 Dólar del día: 1 USD = $'+Math.round(FX.rate).toLocaleString('es-CO')+' COP'+(FX.fecha?' ('+FX.fecha+')':'')+' · Tasa: <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">ExchangeRate-API</a>';el.style.display=c==='USD'?'':'none'});
+      window.__cur=c;
       document.querySelectorAll('.cur-btn').forEach(function(b){b.classList.toggle('on',b.dataset.cur===c)});
       try{localStorage.setItem('dl_site_cur',c)}catch(e){}
     }
@@ -497,6 +513,7 @@
     var saved=null;try{saved=localStorage.getItem('dl_site_cur')}catch(e){}
     if(!saved){var l=(navigator.language||'').toLowerCase();saved=(l==='es-co'||l.indexOf('-co')>0)?'COP':(Intl.DateTimeFormat().resolvedOptions().timeZone==='America/Bogota'?'COP':'USD')}
     setCur(saved);
+    fxLoad(function(){setCur(window.__cur||saved)});
   })();
   document.querySelectorAll('.tab').forEach(function(tab){
     tab.addEventListener('click',function(){
