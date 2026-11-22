@@ -86,6 +86,9 @@
 
     .plans{background:var(--bg2)}
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+    .curs{display:inline-flex;gap:4px;margin-top:12px;padding:4px;border-radius:30px;border:1px solid #3a4a63}
+    .cur-btn{padding:8px 16px;border-radius:30px;border:0;background:transparent;color:var(--silver);font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit}
+    .cur-btn.on{background:#25c58a;color:#05070c}
     .tab{padding:10px 18px;border-radius:30px;border:1px solid #3a4a63;background:transparent;color:var(--silver);font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}
     .tab[aria-selected="true"]{background:var(--white);color:#05070c;border-color:var(--white)}
     .plan-set{display:none}
@@ -231,10 +234,10 @@
           <div class="eyebrow">Precios de lanzamiento</div>
           <div class="f-price" style="margin-top:22px">
             <span class="badge">🚀 50% DE DESCUENTO</span>
-            <div class="row" style="margin-top:12px"><span>Gratis<br><small class="muted">15 movimientos al mes · datos en tu celular</small></span><b>$0</b></div>
-            <div class="row"><span>Pro<br><small class="muted">50 movimientos al mes · nube · Excel y respaldos</small></span><span><s>$20.000</s><b>$10.000</b></span></div>
-            <div class="row"><span>Premium 👑<br><small class="muted">Ilimitado · toda la app · soporte prioritario</small></span><span><s>$40.000</s><b>$20.000</b></span></div>
-            <p class="note" style="margin:10px 0 18px">Precios en COP por mes. Pago anual: 14 meses por el precio de 12. Sin renovación automática.</p>
+            <div class="row" style="margin-top:12px"><span>Gratis<br><small class="muted">15 movimientos al mes · datos en tu celular</small></span><b data-cop="0">$0</b></div>
+            <div class="row"><span>Pro<br><small class="muted">50 movimientos al mes · nube · Excel y respaldos</small></span><span><s data-cop="20000">$20.000</s><b data-cop="10000">$10.000</b></span></div>
+            <div class="row"><span>Premium 👑<br><small class="muted">Ilimitado · toda la app · soporte prioritario</small></span><span><s data-cop="40000">$40.000</s><b data-cop="20000">$20.000</b></span></div>
+            <p class="note" style="margin:10px 0 18px">Precios en <span class="cur">COP</span> por mes. Pago anual: 14 meses por el precio de 12. Sin renovación automática.</p>
             <div class="app-actions">
               <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-finanzas/" target="_blank" rel="noopener">Probar gratis</a>
               <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Comprar por WhatsApp</a>
@@ -247,7 +250,7 @@
 
   <section class="catalog" id="apps">
     <div class="wrap">
-      <div class="intro"><div class="eyebrow">Nuestras aplicaciones</div><h2>Elige la app que tu negocio necesita.</h2><p class="muted">Todas se pueden probar gratis. Cuando quieras más funciones, activas tu plan por WhatsApp y nosotros lo dejamos listo.</p></div>
+      <div class="intro"><div class="eyebrow">Nuestras aplicaciones</div><h2>Elige la app que tu negocio necesita.</h2><p class="muted">Todas se pueden probar gratis. Cuando quieras más funciones, activas tu plan por WhatsApp y nosotros lo dejamos listo.</p><div class="curs" role="group" aria-label="Moneda"><button type="button" class="cur-btn on" data-cur="COP">🇨🇴 COP</button><button type="button" class="cur-btn" data-cur="USD">🇺🇸 USD</button></div></div>
       <div class="apps">
 
         <article class="app" style="--accent:#25c58a">
@@ -260,7 +263,7 @@
             <li>Exportar a Excel y copias de seguridad</li>
             <li>Nube, guía con voz y tema claro/oscuro</li>
           </ul>
-          <div class="price-line"><small>Desde</small><b>$10.000</b><s>$20.000</s><span class="badge">50% LANZAMIENTO</span></div>
+          <div class="price-line"><small>Desde</small><b data-cop="10000">$10.000</b><s data-cop="20000">$20.000</s><span class="badge">50% LANZAMIENTO</span></div>
           <div class="app-actions">
             <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-finanzas/" target="_blank" rel="noopener">Probar gratis</a>
             <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Comprar</a>
@@ -278,7 +281,7 @@
             <li>Pedido sugerido por WhatsApp o Excel</li>
             <li>Conteo físico y etiquetas de precio</li>
           </ul>
-          <div class="price-line"><small>Desde</small><b>$20.000</b><s>$40.000</s><span class="badge">50% LANZAMIENTO</span></div>
+          <div class="price-line"><small>Desde</small><b data-cop="20000" data-usd="4.99">$20.000</b><s data-cop="40000" data-usd="9.99">$40.000</s><span class="badge">50% LANZAMIENTO</span></div>
           <div class="app-actions">
             <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-stock-pro/" target="_blank" rel="noopener">Probar gratis</a>
             <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Comprar</a>
@@ -295,7 +298,7 @@
             <li>Cajeros con PIN y varias sedes (plan empresarial)</li>
             <li>Datos en la nube, sincronizados en tiempo real</li>
           </ul>
-          <div class="price-line"><small>Desde</small><b>$20.000</b><s>$40.000</s><span class="badge">50% LANZAMIENTO</span></div>
+          <div class="price-line"><small>Desde</small><b data-cop="20000">$20.000</b><s data-cop="40000">$40.000</s><span class="badge">50% LANZAMIENTO</span></div>
           <div class="app-actions">
             <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-cuadra-pro/" target="_blank" rel="noopener">Probar gratis</a>
             <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Comprar</a>
@@ -312,7 +315,7 @@
             <li>Cuentas, cobro y ventas del día</li>
             <li>Roles: dueño, mesero y cocina/caja con PIN</li>
           </ul>
-          <div class="price-line"><small>Desde</small><b>$30.000</b><s>$60.000</s><span class="badge">50% LANZAMIENTO</span></div>
+          <div class="price-line"><small>Desde</small><b data-cop="30000">$30.000</b><s data-cop="60000">$60.000</s><span class="badge">50% LANZAMIENTO</span></div>
           <div class="app-actions">
             <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-comanda-pro/" target="_blank" rel="noopener">Probar gratis</a>
             <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20informaci%C3%B3n%20de%20DL%20COMANDA%20PRO%20para%20mi%20restaurante." target="_blank" rel="noopener">Cotizar</a>
@@ -385,7 +388,7 @@
 
   <section class="plans" id="planes">
     <div class="wrap">
-      <div class="intro"><div class="eyebrow">Planes y precios</div><h2>Paga solo por lo que necesitas.</h2><p class="muted">Precios mensuales en pesos colombianos.</p></div>
+      <div class="intro"><div class="eyebrow">Planes y precios</div><h2>Paga solo por lo que necesitas.</h2><p class="muted">Precios mensuales. Elige tu moneda:</p><div class="curs" role="group" aria-label="Moneda"><button type="button" class="cur-btn on" data-cur="COP">🇨🇴 COP</button><button type="button" class="cur-btn" data-cur="USD">🇺🇸 USD</button></div></div>
       <div class="tabs" role="tablist">
         <button class="tab" role="tab" aria-selected="true" data-set="finanzas">DL FINANZAS</button>
         <button class="tab" role="tab" aria-selected="false" data-set="stock">DL STOCK PRO</button>
@@ -397,39 +400,39 @@
 
       <div class="plan-set active" id="set-finanzas">
         <div class="plan-grid">
-          <article class="plan"><div class="plan-label">GRATIS</div><div class="price">$0</div><div class="per">para empezar</div><ul><li>15 movimientos al mes</li><li>Resumen, gráficas y topes</li><li>Datos en tu dispositivo</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-finanzas/" target="_blank" rel="noopener">Probar gratis</a></article>
-          <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price">$10.000</div><div class="per">COP / mes · <s>$20.000</s></div><ul><li>Hasta 50 movimientos al mes</li><li>Nube y sincronización</li><li>Exportar a Excel y respaldos</li><li>Anual: $120.000 (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Quiero PRO</a></article>
-          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price">$20.000</div><div class="per">COP / mes · <s>$40.000</s></div><ul><li>Movimientos ilimitados, toda la app</li><li>Tendencia de 6 meses</li><li>Copiar fijos al mes nuevo</li><li>Soporte prioritario por WhatsApp</li><li>Anual: $240.000 (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
+          <article class="plan"><div class="plan-label">GRATIS</div><div class="price" data-cop="0">$0</div><div class="per">para empezar</div><ul><li>15 movimientos al mes</li><li>Resumen, gráficas y topes</li><li>Datos en tu dispositivo</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-finanzas/" target="_blank" rel="noopener">Probar gratis</a></article>
+          <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price" data-cop="10000">$10.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="20000">$20.000</s></div><ul><li>Hasta 50 movimientos al mes</li><li>Nube y sincronización</li><li>Exportar a Excel y respaldos</li><li>Anual: <span data-cop="120000">$120.000</span> (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Quiero PRO</a></article>
+          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price" data-cop="20000">$20.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="40000">$40.000</s></div><ul><li>Movimientos ilimitados, toda la app</li><li>Tendencia de 6 meses</li><li>Copiar fijos al mes nuevo</li><li>Soporte prioritario por WhatsApp</li><li>Anual: <span data-cop="240000">$240.000</span> (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
         </div>
       </div>
 
       <div class="plan-set" id="set-stock">
         <div class="plan-grid">
-          <article class="plan"><div class="plan-label">GRATIS</div><div class="price">$0</div><div class="per">para empezar</div><ul><li>Hasta 100 productos</li><li>Escáner, alertas de vencimiento y conteo</li><li>Datos guardados en tu celular</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-stock-pro/" target="_blank" rel="noopener">Probar gratis</a></article>
-          <article class="plan"><div class="plan-label">PRO · LOCAL <span class="badge">-50%</span></div><div class="price">$20.000</div><div class="per">COP / mes · <s>$40.000</s></div><ul><li>Productos ilimitados</li><li>Excel, importar y etiquetas de precio</li><li>Pedido al proveedor por WhatsApp</li><li>Soporte por WhatsApp</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
-          <article class="plan featured"><div class="plan-label">PREMIUM · NUBE <span class="badge">-50%</span></div><div class="price">$40.000</div><div class="per">COP / mes · <s>$80.000</s></div><ul><li>Todo lo de PRO</li><li>Datos en la nube y sincronización</li><li>Úsala en varios celulares y el computador</li><li>Soporte prioritario</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
-          <article class="plan"><div class="plan-label">EMPRESARIAL <span class="badge">-50%</span></div><div class="price">$80.000</div><div class="per">COP / mes · <s>$160.000</s></div><ul><li>Todo lo de PREMIUM</li><li>Hasta 5 cajeros con usuario y contraseña</li><li>Cada cajero maneja su lineal</li><li>Diferencias de conteo al dueño</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20EMPRESARIAL%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero EMPRESA</a></article>
+          <article class="plan"><div class="plan-label">GRATIS</div><div class="price" data-cop="0">$0</div><div class="per">para empezar</div><ul><li>Hasta 100 productos</li><li>Escáner, alertas de vencimiento y conteo</li><li>Datos guardados en tu celular</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-stock-pro/" target="_blank" rel="noopener">Probar gratis</a></article>
+          <article class="plan"><div class="plan-label">PRO · LOCAL <span class="badge">-50%</span></div><div class="price" data-cop="20000" data-usd="4.99">$20.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="40000" data-usd="9.99">$40.000</s></div><ul><li>Productos ilimitados</li><li>Excel, importar y etiquetas de precio</li><li>Pedido al proveedor por WhatsApp</li><li>Soporte por WhatsApp</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
+          <article class="plan featured"><div class="plan-label">PREMIUM · NUBE <span class="badge">-50%</span></div><div class="price" data-cop="40000" data-usd="9.99">$40.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="80000" data-usd="19.99">$80.000</s></div><ul><li>Todo lo de PRO</li><li>Datos en la nube y sincronización</li><li>Úsala en varios celulares y el computador</li><li>Soporte prioritario</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
+          <article class="plan"><div class="plan-label">EMPRESARIAL <span class="badge">-50%</span></div><div class="price" data-cop="80000" data-usd="19.99">$80.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="160000" data-usd="39.99">$160.000</s></div><ul><li>Todo lo de PREMIUM</li><li>Hasta 5 cajeros con usuario y contraseña</li><li>Cada cajero maneja su lineal</li><li>Diferencias de conteo al dueño</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20EMPRESARIAL%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero EMPRESA</a></article>
         </div>
       </div>
 
       <div class="plan-set" id="set-cuadra">
         <div class="plan-grid">
-          <article class="plan"><div class="plan-label">GRATIS</div><div class="price">$0</div><div class="per">para probar</div><ul><li>Hasta 15 productos</li><li>3 días de historial</li><li>Fiado hasta 3 clientes</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-cuadra-pro/" target="_blank" rel="noopener">Probar gratis</a></article>
-          <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price">$20.000</div><div class="per">COP / mes · <s>$40.000</s></div><ul><li>Hasta 150 productos y 3 cajeros con PIN</li><li>Escáner de código de barras</li><li>Ganancia del día y ventas sin internet</li><li>90 días de historial</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
-          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price">$40.000</div><div class="per">COP / mes · <s>$80.000</s></div><ul><li>Productos y cajeros ilimitados</li><li>Historial completo</li><li>Fiado con clientes ilimitados</li><li>Soporte prioritario por WhatsApp</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
-          <article class="plan"><div class="plan-label">EMPRESARIAL <span class="badge">-50%</span></div><div class="price">$80.000</div><div class="per">COP / mes · <s>$160.000</s></div><ul><li>Todo lo de Premium</li><li>Varias sedes (ilimitadas)</li><li>Inventario, ventas y cajeros por sede</li><li>Reportes de todas las sedes juntas</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20EMPRESARIAL%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero EMPRESA</a></article>
+          <article class="plan"><div class="plan-label">GRATIS</div><div class="price" data-cop="0">$0</div><div class="per">para probar</div><ul><li>Hasta 15 productos</li><li>3 días de historial</li><li>Fiado hasta 3 clientes</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-cuadra-pro/" target="_blank" rel="noopener">Probar gratis</a></article>
+          <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price" data-cop="20000">$20.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="40000">$40.000</s></div><ul><li>Hasta 150 productos y 3 cajeros con PIN</li><li>Escáner de código de barras</li><li>Ganancia del día y ventas sin internet</li><li>90 días de historial</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
+          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price" data-cop="40000">$40.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="80000">$80.000</s></div><ul><li>Productos y cajeros ilimitados</li><li>Historial completo</li><li>Fiado con clientes ilimitados</li><li>Soporte prioritario por WhatsApp</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
+          <article class="plan"><div class="plan-label">EMPRESARIAL <span class="badge">-50%</span></div><div class="price" data-cop="80000">$80.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="160000">$160.000</s></div><ul><li>Todo lo de Premium</li><li>Varias sedes (ilimitadas)</li><li>Inventario, ventas y cajeros por sede</li><li>Reportes de todas las sedes juntas</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20EMPRESARIAL%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero EMPRESA</a></article>
         </div>
       </div>
 
       <div class="plan-set" id="set-comanda">
         <div class="plan-grid">
-          <article class="plan"><div class="plan-label">GRATIS</div><div class="price">$0</div><div class="per">para probar</div><ul><li>Hasta 5 mesas y 20 productos</li><li>2 usuarios</li><li>15 pedidos al día</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-comanda-pro/" target="_blank" rel="noopener">Probar gratis</a></article>
-          <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price">$30.000</div><div class="per">COP / mes · <s>$60.000</s></div><ul><li>Hasta 8 mesas, 80 productos y 4 usuarios</li><li>50 pedidos al día</li><li>Avisos, imprimir, dividir cuentas y caja</li><li>Exportar a Excel</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20COMANDA%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
-          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price">$50.000</div><div class="per">COP / mes · <s>$100.000</s></div><ul><li>Mesas, productos y usuarios ilimitados</li><li>Pedidos ilimitados e historial completo</li><li>Estaciones de cocina y control de stock</li><li>Soporte prioritario</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20COMANDA%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
+          <article class="plan"><div class="plan-label">GRATIS</div><div class="price" data-cop="0">$0</div><div class="per">para probar</div><ul><li>Hasta 5 mesas y 20 productos</li><li>2 usuarios</li><li>15 pedidos al día</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-comanda-pro/" target="_blank" rel="noopener">Probar gratis</a></article>
+          <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price" data-cop="30000">$30.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="60000">$60.000</s></div><ul><li>Hasta 8 mesas, 80 productos y 4 usuarios</li><li>50 pedidos al día</li><li>Avisos, imprimir, dividir cuentas y caja</li><li>Exportar a Excel</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20COMANDA%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
+          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price" data-cop="50000">$50.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="100000">$100.000</s></div><ul><li>Mesas, productos y usuarios ilimitados</li><li>Pedidos ilimitados e historial completo</li><li>Estaciones de cocina y control de stock</li><li>Soporte prioritario</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20COMANDA%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
         </div>
       </div>
 
-      <p class="note">* El pago se coordina por WhatsApp y el plan se activa manualmente después de confirmarlo. Precios sujetos a cambios.</p>
+      <p class="note">* Los valores en dólares marcados con ≈ son aproximados (1 USD ≈ 3.300 COP) y pueden variar según la tasa de cambio. El pago se coordina por WhatsApp y el plan se activa manualmente después de confirmarlo. Precios sujetos a cambios.</p>
     </div>
   </section>
 
@@ -479,6 +482,21 @@
     track.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;horiz=null},{passive:true});
     track.addEventListener('touchmove',function(e){if(x0===null)return;var mx=e.touches[0].clientX-x0,my=e.touches[0].clientY-y0;if(horiz===null&&(Math.abs(mx)>8||Math.abs(my)>8))horiz=Math.abs(mx)>Math.abs(my);if(!horiz)return;dx=mx;if((i===0&&dx>0)||(i===imgs.length-1&&dx<0))dx/=3;track.classList.add('drag');track.style.transform='translateX(calc('+(-i*100)+'% + '+dx+'px))'},{passive:true});
     track.addEventListener('touchend',function(){if(x0===null)return;var w=lb.clientWidth;if(horiz&&dx<-w*0.18)go(i+1);else if(horiz&&dx>w*0.18)go(i-1);else go(i);x0=null});
+  })();
+  (function(){
+    var RATE=3300;
+    function fmtCop(n){return '$'+Number(n).toLocaleString('es-CO')}
+    function fmtUsd(el){var n=Number(el.dataset.cop);if(!n)return 'US$ 0';if(el.dataset.usd)return 'US$ '+el.dataset.usd;return '≈ US$ '+(n/RATE).toFixed(2)}
+    function setCur(c){
+      document.querySelectorAll('[data-cop]').forEach(function(el){el.textContent=c==='USD'?fmtUsd(el):fmtCop(el.dataset.cop)});
+      document.querySelectorAll('.cur').forEach(function(el){el.textContent=c});
+      document.querySelectorAll('.cur-btn').forEach(function(b){b.classList.toggle('on',b.dataset.cur===c)});
+      try{localStorage.setItem('dl_site_cur',c)}catch(e){}
+    }
+    document.querySelectorAll('.cur-btn').forEach(function(b){b.addEventListener('click',function(){setCur(b.dataset.cur)})});
+    var saved=null;try{saved=localStorage.getItem('dl_site_cur')}catch(e){}
+    if(!saved){var l=(navigator.language||'').toLowerCase();saved=(l==='es-co'||l.indexOf('-co')>0)?'COP':(Intl.DateTimeFormat().resolvedOptions().timeZone==='America/Bogota'?'COP':'USD')}
+    setCur(saved);
   })();
   document.querySelectorAll('.tab').forEach(function(tab){
     tab.addEventListener('click',function(){
