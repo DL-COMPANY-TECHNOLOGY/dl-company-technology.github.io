@@ -153,6 +153,9 @@
     .lb-dots i{width:7px;height:7px;border-radius:50%;background:#ffffff40}
     .lb-dots i.on{background:#10b981;width:20px;border-radius:4px}
     @media(max-width:600px){.lb-prev,.lb-next{display:none}}
+    .featured.stock{background:radial-gradient(ellipse at 85% 0,#3b82f626,transparent 55%),var(--bg)}
+    .featured.stock .eyebrow{color:#7dd3fc}
+    .featured.stock .f-price{background:linear-gradient(160deg,#0d1b30,#0b1118);border-color:#3b82f655}
     .wa-float{position:fixed;right:18px;bottom:18px;z-index:40;width:58px;height:58px;border-radius:50%;background:var(--green);display:grid;place-items:center;box-shadow:0 10px 30px #0008}
     .wa-float svg{width:30px;height:30px;fill:#fff}
 
@@ -165,7 +168,7 @@
   <div class="wrap nav">
     <a class="brand" href="#inicio"><img src="assets/dl-company.png" alt="Logo DL COMPANY"><span>DL COMPANY<small>-TECHNOLOGY-</small></span></a>
     <nav aria-label="Navegación principal">
-      <a href="#dl-finanzas">DL Finanzas</a><a href="#apps">Aplicaciones</a><a href="#proyectos">Proyectos</a><a href="#como-comprar">Cómo comprar</a><a href="#planes">Planes</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a>
+      <a href="#dl-finanzas">DL Finanzas</a><a href="#dl-stock-pro">DL Stock Pro</a><a href="#apps">Aplicaciones</a><a href="#proyectos">Proyectos</a><a href="#como-comprar">Cómo comprar</a><a href="#planes">Planes</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a>
     </nav>
     <a class="btn btn-primary" href="#apps">Ver apps</a>
   </div>
@@ -202,7 +205,7 @@
         <video src="assets/finanzas/guia.mp4" poster="assets/finanzas/guia-poster.jpg" controls playsinline preload="none"></video>
       </div>
       <p class="g-hint">Desliza para ver la app por dentro →</p>
-      <div class="gallery" id="gallery">
+      <div class="gallery">
         <img src="assets/finanzas/f1-balance.jpg" alt="Balance del mes y tasa de ahorro" loading="lazy">
         <img src="assets/finanzas/f2-categorias.jpg" alt="Gastos por categoría" loading="lazy">
         <img src="assets/finanzas/f3-semaforo.jpg" alt="Semáforo de presupuesto" loading="lazy">
@@ -241,6 +244,60 @@
             <div class="app-actions">
               <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-finanzas/" target="_blank" rel="noopener">Probar gratis</a>
               <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Comprar por WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured stock" id="dl-stock-pro">
+    <div class="wrap">
+      <div class="intro"><div class="eyebrow">📦 App destacada · Ya disponible</div><h2>DL STOCK PRO: controla tu inventario desde el celular.</h2><p class="muted">La app de inventario para tiendas, minimercados, bodegas y distribuidoras. Escanea códigos de barras, recibe alertas de vencimiento y stock bajo, y arma el pedido al proveedor en un toque.</p></div>
+      <div class="f-banner"><img src="assets/stock/portada.jpg" alt="DL STOCK PRO en el celular: resumen del inventario y alertas"></div>
+
+      <p class="g-hint">Desliza para ver la app por dentro →</p>
+      <div class="gallery">
+        <img src="assets/stock/f1-resumen.jpg" alt="Resumen del inventario" loading="lazy">
+        <img src="assets/stock/f2-productos.jpg" alt="Control de stock en unidades, sixpacks y cajas" loading="lazy">
+        <img src="assets/stock/f3-registro.jpg" alt="Registro con escáner o foto de etiqueta" loading="lazy">
+        <img src="assets/stock/f4-alertas.jpg" alt="Alertas de vencimiento" loading="lazy">
+        <img src="assets/stock/f5-pedido.jpg" alt="Pedido sugerido al proveedor" loading="lazy">
+        <img src="assets/stock/f6-etiquetas.jpg" alt="Etiquetas de precio" loading="lazy">
+        <img src="assets/stock/f7-temas.jpg" alt="Tema claro y oscuro" loading="lazy">
+        <img src="assets/stock/f8-planes.jpg" alt="Planes de DL STOCK PRO" loading="lazy">
+      </div>
+
+      <div class="f-grid" style="margin-top:40px">
+        <div>
+          <div class="eyebrow">Todo lo que incluye</div>
+          <div class="f-list">
+            <div class="f-item"><b>📷 Escáner de códigos</b>Registra productos con la cámara, con linterna y zoom.</div>
+            <div class="f-item"><b>🏷️ Foto de etiqueta</b>La app lee el código, el nombre y los precios.</div>
+            <div class="f-item"><b>📦 Unidades, sixpacks y cajas</b>Conversión automática entre presentaciones.</div>
+            <div class="f-item"><b>➕ Entradas y salidas rápidas</b>Botones + y − con opción de deshacer.</div>
+            <div class="f-item"><b>⏰ Alertas de vencimiento</b>Semáforo OK, próximo, crítico y vencido.</div>
+            <div class="f-item"><b>📉 Stock mínimo</b>Avisos de producto bajo y agotado.</div>
+            <div class="f-item"><b>🛒 Pedido sugerido</b>Listo para enviar al proveedor por WhatsApp o Excel.</div>
+            <div class="f-item"><b>📋 Conteo físico</b>Sobrantes, faltantes y diferencia en dinero.</div>
+            <div class="f-item"><b>🏷️ Etiquetas de precio</b>Con promoción y código de barras, para imprimir.</div>
+            <div class="f-item"><b>📤 Excel e importar</b>Sube tu inventario desde Excel y expórtalo cuando quieras.</div>
+            <div class="f-item"><b>☁️ Nube y cajeros</b>Sincroniza varios equipos y trabaja con hasta 5 cajeros.</div>
+            <div class="f-item"><b>🌗 Tema claro y oscuro</b>Funciona sin internet y se instala en el celular.</div>
+          </div>
+        </div>
+        <div>
+          <div class="eyebrow">Precios de lanzamiento</div>
+          <div class="f-price" style="margin-top:22px">
+            <span class="badge">🚀 50% DE DESCUENTO</span>
+            <div class="row" style="margin-top:12px"><span>Gratis<br><small class="muted">Hasta 100 productos · escáner y alertas</small></span><b data-cop="0">$0</b></div>
+            <div class="row"><span>Pro<br><small class="muted">Ilimitado · Excel, etiquetas y pedido</small></span><span><s data-cop="40000">$40.000</s><b data-cop="20000">$20.000</b></span></div>
+            <div class="row"><span>Premium 👑<br><small class="muted">Todo lo de Pro · nube y sincronización</small></span><span><s data-cop="80000">$80.000</s><b data-cop="40000">$40.000</b></span></div>
+            <div class="row"><span>Empresarial<br><small class="muted">Todo lo de Premium · hasta 5 cajeros</small></span><span><s data-cop="160000">$160.000</s><b data-cop="80000">$80.000</b></span></div>
+            <p class="note" style="margin:10px 0 18px">Precios en <span class="cur">COP</span> por mes. Pago anual: 14 meses por el precio de 12. Sin renovación automática.</p>
+            <div class="app-actions">
+              <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-stock-pro/" target="_blank" rel="noopener">Probar gratis</a>
+              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Comprar por WhatsApp</a>
             </div>
           </div>
         </div>
@@ -466,12 +523,18 @@
 <script>
   (function(){
     var lb=document.getElementById('lightbox'),track=document.getElementById('lb-track'),num=document.getElementById('lb-num'),dots=document.getElementById('lb-dots');
-    var imgs=Array.prototype.slice.call(document.querySelectorAll('.f-banner img,#gallery img')),i=0,x0=null,y0=0,dx=0,horiz=null;
-    imgs.forEach(function(im,k){
-      track.insertAdjacentHTML('beforeend','<div class="lb-slide"><img src="'+im.getAttribute('src')+'" alt="'+(im.alt||'')+'"></div>');
-      dots.insertAdjacentHTML('beforeend','<i></i>');
-      im.addEventListener('click',function(){open(k)});
+    var imgs=[],i=0,x0=null,y0=0,dx=0,horiz=null;
+    document.querySelectorAll('.featured').forEach(function(sec){
+      var group=Array.prototype.slice.call(sec.querySelectorAll('.f-banner img,.gallery img'));
+      group.forEach(function(im,k){im.addEventListener('click',function(){load(group);open(k)})});
     });
+    function load(group){
+      imgs=group;track.innerHTML='';dots.innerHTML='';
+      group.forEach(function(im){
+        track.insertAdjacentHTML('beforeend','<div class="lb-slide"><img src="'+im.getAttribute('src')+'" alt="'+(im.alt||'')+'"></div>');
+        dots.insertAdjacentHTML('beforeend','<i></i>');
+      });
+    }
     function go(k,anim){i=Math.max(0,Math.min(imgs.length-1,k));track.classList.toggle('drag',anim===false);track.style.transform='translateX('+(-i*100)+'%)';num.textContent=(i+1)+' / '+imgs.length;Array.prototype.forEach.call(dots.children,function(d,j){d.className=j===i?'on':''})}
     function open(k){lb.classList.add('open');lb.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';go(k,false)}
     function close(){lb.classList.remove('open');lb.setAttribute('aria-hidden','true');document.body.style.overflow=''}
