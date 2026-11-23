@@ -140,6 +140,7 @@
   var norm = function (t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim(); };
 
   var guardado = null, draft = null, sucio = false, tab = 'respuestas', pendientes = [], usuario = null;
+  var filtroApp = '', filtroTexto = '';
 
   /* ---------------- avisos ---------------- */
   var tAviso;
@@ -245,13 +246,25 @@
   function vistaRespuestas() {
     var h = '<h2>💬 Respuestas</h2><p class="ayuda">Cuando el cliente escribe algo con alguna de las <b>palabras clave</b>, el asistente responde con ese texto. ' +
       'Los títulos también salen como botones en el menú de soporte (en este orden).</p>' +
-      '<button class="btn oro" data-a="nueva" style="width:100%;margin-bottom:12px">＋ Nueva respuesta</button><div class="lista">';
+      '<button class="btn oro" data-a="nueva" style="width:100%;margin-bottom:12px">＋ Nueva respuesta</button>' +
+      '<input type="text" id="fBuscar" placeholder="🔎 Buscar respuesta…" value="' + esc(filtroTexto) + '" style="margin-bottom:9px">' +
+      '<div class="chips" style="margin-bottom:12px">' +
+      [['', 'Todas']].concat(Object.keys(draft.apps).map(function (k) { return [k, draft.apps[k].icono + ' ' + draft.apps[k].nombre]; }))
+        .map(function (x) { return '<button type="button" class="chip' + (filtroApp === x[0] ? ' on' : '') + '" data-filtro="' + x[0] + '">' + esc(x[1]) + '</button>'; }).join('') +
+      '</div><div class="lista">';
+    var nf = 0, q = norm(filtroTexto);
     draft.problemas.forEach(function (p, i) {
+      var apps = p.apps || ['*'];
+      if (filtroApp && apps.indexOf('*') === -1 && apps.indexOf(filtroApp) === -1) return;
+      if (q && norm(p.titulo + ' ' + (p.claves || []).join(' ') + ' ' + p.respuesta).indexOf(q) === -1) return;
+      nf++;
       h += '<div class="item" data-a="editar" data-i="' + i + '"><div class="txt"><b>' + esc(p.titulo || '(sin título)') + '</b>' +
         '<small>' + esc(String(p.respuesta || '').replace(/\*/g, '').slice(0, 90)) + '…</small>' +
         (p.apps || ['*']).map(function (k) { return '<span class="etq">' + esc(nombreApp(k)) + '</span>'; }).join('') +
+        '<span class="etq oro">' + (p.tipo === 'guia' ? '📘 Cómo se hace' : '🛠️ Problema') + '</span>' +
         '<span class="etq oro">' + (p.claves || []).length + ' palabras clave</span></div><span class="flecha">›</span></div>';
     });
+    if (!nf) h += '<div class="vacio">No hay respuestas con ese filtro.</div>';
     return h + '</div>';
   }
 
@@ -265,14 +278,21 @@
       '<button type="button" class="chip' + (todas ? ' on' : '') + '" data-k="*">Todas</button>' +
       apps.map(function (k) { return '<button type="button" class="chip' + (!todas && p.apps.indexOf(k) !== -1 ? ' on' : '') + '" data-k="' + k + '">' + esc(draft.apps[k].icono + ' ' + draft.apps[k].nombre) + '</button>'; }).join('') +
       '</div></div>' +
+      '<div class="campo"><label>Tipo</label><div class="chips" id="eTipo">' +
+      '<button type="button" class="chip' + (p.tipo !== 'guia' ? ' on' : '') + '" data-t="problema">🛠️ Problema (algo falla)</button>' +
+      '<button type="button" class="chip' + (p.tipo === 'guia' ? ' on' : '') + '" data-t="guia">📘 Cómo se hace (aprender a usar)</button></div></div>' +
       campo('Palabras clave (separadas por coma). Escribe cómo lo diría el cliente.',
         '<textarea id="eClaves" style="min-height:80px" placeholder="no imprime, impresora, factura no sale">' + esc((p.claves || []).join(', ')) + '</textarea>') +
       campo('Respuesta', '<textarea id="eResp" style="min-height:170px">' + esc(p.respuesta) + '</textarea>') +
       '<p class="ayuda">Usa <code>*texto*</code> para <b>negrita</b> y <code>{app}</code> para el nombre de la app. También: <code>{planes}</code> (lista de planes), ' +
-      '<code>{consejo_ingreso}</code> y <code>{consejo_datos}</code> (consejos de cada app).</p>' +
+      '<code>{planes_detalle}</code> (planes con lo que incluyen), <code>{consejo_ingreso}</code> y <code>{consejo_datos}</code> (consejos de cada app).</p>' +
       campo('Segunda solución (si el cliente dice que no funcionó) — opcional', '<textarea id="eAlt" style="min-height:90px">' + esc(p.alt || '') + '</textarea>') +
-      interruptor('ePreg', 'Preguntar "¿Pudiste solucionarlo?"', 'Si dice que no, da la segunda solución y luego pasa a WhatsApp.', p.preguntar !== false) +
+      interruptor('ePreg', 'Preguntar "¿Pudiste solucionarlo?"', 'Si dice que no, da la segunda solución y luego le ofrece más opciones (el asesor es el último recurso).', p.preguntar !== false) +
       interruptor('ePlanes', 'Mostrar botones para comprar planes', 'Útil para respuestas sobre límites o funciones Premium.', !!p.mostrarPlanes) +
+      interruptor('eWa', 'Mostrar botón "Continuar en WhatsApp"', 'Solo cuando de verdad hace falta una persona (pagos, eliminar cuenta, reembolsos).', !!p.whatsapp) +
+      campo('Texto extra solo para una app — opcional', '<div class="fila"><select id="ePorAppK" style="flex:none;background:#0b1324;border:1px solid var(--borde);border-radius:12px;padding:10px">' +
+        apps.map(function (k) { return '<option value="' + k + '">' + esc(draft.apps[k].nombre) + '</option>'; }).join('') + '</select></div>' +
+        '<textarea id="ePorApp" style="min-height:70px;margin-top:7px" placeholder="Se agrega al final de la respuesta cuando el cliente viene de esa app"></textarea>') +
       '<div class="acciones"><button class="btn oro" data-a="guardarResp" style="flex:1">Listo</button>' +
       (nueva ? '' : '<button class="btn peq" data-a="subir">↑ Subir</button><button class="btn peq" data-a="bajar">↓ Bajar</button><button class="btn rojo peq" data-a="borrarResp">🗑 Eliminar</button>') +
       '</div>';
@@ -283,6 +303,15 @@
           c.classList.toggle('on'); hoja.querySelector('#eApps [data-k="*"]').classList.remove('on');
           if (!hoja.querySelector('#eApps .chip.on')) hoja.querySelector('#eApps [data-k="*"]').classList.add('on');
         };
+      });
+      var porApp = copiar(p.porApp || {});
+      var selPA = hoja.querySelector('#ePorAppK'), txtPA = hoja.querySelector('#ePorApp');
+      var primera = Object.keys(porApp)[0]; if (primera) selPA.value = primera;
+      txtPA.value = porApp[selPA.value] || '';
+      selPA.onchange = function () { txtPA.value = porApp[selPA.value] || ''; };
+      txtPA.oninput = function () { if (txtPA.value.trim()) porApp[selPA.value] = txtPA.value; else delete porApp[selPA.value]; };
+      hoja.querySelectorAll('#eTipo .chip').forEach(function (c) {
+        c.onclick = function () { hoja.querySelectorAll('#eTipo .chip').forEach(function (x) { x.classList.toggle('on', x === c); }); };
       });
       hoja.querySelector('[data-a="guardarResp"]').onclick = function () {
         var sel = Array.prototype.map.call(hoja.querySelectorAll('#eApps .chip.on'), function (c) { return c.dataset.k; });
@@ -295,6 +324,9 @@
           alt: hoja.querySelector('#eAlt').value.trim() || undefined,
           preguntar: hoja.querySelector('#ePreg').classList.contains('on'),
           mostrarPlanes: hoja.querySelector('#ePlanes').classList.contains('on'),
+          whatsapp: hoja.querySelector('#eWa').classList.contains('on'),
+          tipo: hoja.querySelector('#eTipo .chip.on').dataset.t === 'guia' ? 'guia' : undefined,
+          porApp: Object.keys(porApp).length ? porApp : undefined,
         });
         if (!item.titulo || !item.respuesta || !item.claves.length) { aviso('Completa el título, las palabras clave y la respuesta.', true); return; }
         if (!item.id) item.id = 'r' + Date.now().toString(36);
@@ -369,9 +401,11 @@
     var g = draft.general;
     return '<h2>⚙️ Ajustes</h2><p class="ayuda">Configuración general del asistente.</p>' +
       interruptor('gActivo', 'Asistente activo', 'Si lo apagas, los botones de las apps van directo a WhatsApp como antes.', g.activo !== false, 'activo') +
+      interruptor('gBotonWa', 'Botón verde de WhatsApp arriba en el chat', 'Apagado: el cliente solo pasa a WhatsApp cuando el asistente no pudo resolver (último recurso).', !!g.botonWhatsApp, 'botonWa') +
       '<div class="bloque">' +
       campo('Nombre de la empresa <code>{empresa}</code>', '<input type="text" data-g="empresa" value="' + esc(g.empresa) + '">') +
       campo('WhatsApp donde llegan los casos (con indicativo, sin +)', '<input type="tel" data-g="whatsapp" value="' + esc(g.whatsapp) + '" inputmode="numeric">') +
+      campo('¿Cuántas veces intenta entender antes de ofrecer un asesor?', '<input type="number" min="2" max="10" data-g="intentosAsesor" data-num="1" value="' + esc(g.intentosAsesor || 3) + '" inputmode="numeric">') +
       campo('Mensaje al pasar a un asesor', '<textarea data-g="mensajeAsesor">' + esc(g.mensajeAsesor) + '</textarea>') +
       campo('Mensaje de despedida', '<textarea data-g="mensajeDespedida">' + esc(g.mensajeDespedida) + '</textarea>') +
       '</div>' +
@@ -402,6 +436,12 @@
 
   /* ---------------- eventos de cada vista ---------------- */
   function enlazar(v) {
+    var fb = v.querySelector('#fBuscar');
+    if (fb) fb.addEventListener('input', function () {
+      filtroTexto = fb.value; var pos = fb.selectionStart; pintar();
+      var n = $('#fBuscar'); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {}
+    });
+    v.querySelectorAll('[data-filtro]').forEach(function (c) { c.onclick = function () { filtroApp = c.dataset.filtro; pintar(); }; });
     v.querySelectorAll('[data-a]').forEach(function (b) {
       b.addEventListener('click', function (e) {
         var a = b.dataset.a, i = Number(b.dataset.i);
@@ -427,6 +467,7 @@
       s.onclick = function () {
         s.classList.toggle('on'); var on = s.classList.contains('on'), t = s.dataset.sw;
         if (t === 'activo') draft.general.activo = on;
+        else if (t === 'botonWa') draft.general.botonWhatsApp = on;
         else {
           var k = s.closest('details').dataset.k;
           if (t === 'menu') { draft.orden_apps = draft.orden_apps.filter(function (x) { return x !== k; }); if (on) draft.orden_apps.push(k); }
@@ -455,7 +496,9 @@
     });
     // ajustes generales
     v.querySelectorAll('[data-g]').forEach(function (inp) {
-      inp.addEventListener('input', function () { draft.general[inp.dataset.g] = inp.value; marcar(); });
+      inp.addEventListener('input', function () {
+        draft.general[inp.dataset.g] = inp.dataset.num ? Math.min(10, Math.max(2, Math.round(Number(inp.value) || 3))) : inp.value; marcar();
+      });
     });
   }
   function pintarAbierta(k) { pintar(); var d = $('details.app[data-k="' + k + '"]'); if (d) d.open = true; }

@@ -128,7 +128,7 @@
     },
     {
       id: 'crear_cuenta', titulo: '🆕 No sé cómo crear mi cuenta', apps: ['*'],
-      claves: ['crear mi cuenta', 'crear una cuenta', 'crear cuenta', 'registrarme', 'registrarse', 'como me registro', 'abrir cuenta'],
+      claves: ['crear mi cuenta', 'crear una cuenta', 'crear cuenta', 'registrarme', 'registrarse', 'abrir cuenta', 'registrarme en la app'],
       respuesta: 'Crear tu cuenta es gratis 🙌:\n\n1. Abre {app} y en la pantalla de ingreso toca *Crear cuenta*.\n' +
         '2. Escribe tu correo y una contraseña (mínimo 6 caracteres).\n3. Acepta los términos y listo: ya puedes usar el plan Gratis.',
       porApp: { cuadra: 'Si prefieres, usa *Déjanos tus datos* (tu nombre, negocio, celular y correo) y nosotros te creamos la cuenta.' },
@@ -144,7 +144,7 @@
     {
       id: 'datos', titulo: '🗂️ No aparecen mis datos o no se sincronizan', apps: ['*'],
       claves: ['no aparecen', 'no aparece', 'no me aparece', 'se borraron', 'se borro', 'perdi', 'desaparecio', 'desaparecieron', 'no se guardo',
-        'no guarda', 'no sincroniza', 'no se sincroniza', 'otro celular', 'el computador', 'no se actualiza', 'mis datos'],
+        'no guarda', 'no sincroniza', 'no se sincroniza', 'no se actualiza', 'mis datos', 'perdi la informacion'],
       respuesta: 'Revisemos tus datos 🗂️:\n\n1. Ingresa con la *misma cuenta* (correo) con la que guardaste la información.\n2. Ten internet al guardar.\n' +
         '3. Cierra y abre la app para que se actualice.{consejo_datos}',
     },
@@ -185,10 +185,327 @@
       respuesta: 'Para ver los cursos 🎬:\n\n1. Revisa tu conexión a internet (los videos necesitan buena señal).\n2. Cierra y abre la app.\n' +
         '3. Si un curso tiene 🔒, es de un plan superior: los marcados *NUEVO* son exclusivos de *Premium*.',
     },
+
+    // ================= GENERALES =================
+    {
+      id: 'ver_guia', tipo: 'guia', titulo: '🧭 Ver la guía de la app paso a paso', apps: ['*'],
+      claves: ['guia', 'tutorial', 'como se usa la app', 'como funciona la app', 'ensename a usar', 'no se usar', 'no entiendo la app', 'como empiezo', 'primeros pasos', 'paso a paso'],
+      respuesta: '{app} trae una *guía paso a paso* que te muestra para qué sirve cada botón 🧭. Así la vuelves a ver:',
+      porApp: {
+        stock: 'Toca *Más → 🧭 Guía*.',
+        cuadra: 'Toca el menú de los *3 puntos ⋮ → Guía*.',
+        comanda: 'Toca el botón *?* (arriba en la app o en la pantalla de ingreso).',
+        finanzas: 'Abre el menú *☰ → Ver guía de la app*.',
+        arte: 'Toca *❓ Ayuda*.',
+      },
+      preguntar: false,
+    },
+    {
+      id: 'planes_diferencia', tipo: 'guia', titulo: '🤔 ¿Qué plan me conviene?', apps: ['*'],
+      claves: ['que plan', 'cual plan', 'diferencia entre planes', 'diferencia de planes', 'que incluye', 'me conviene', 'me recomiendas', 'que trae el plan'],
+      respuesta: 'Estos son los planes de {app} 👑:\n\n{planes_detalle}\n\n💡 Si estás empezando, usa el *Gratis*. Cuando necesites más, subes de plan *sin perder tus datos*.',
+      mostrarPlanes: true, preguntar: false,
+    },
+    {
+      id: 'renovar', titulo: '🔄 ¿Mi plan se renueva solo? / Cancelar plan', apps: ['*'],
+      claves: ['cancelar plan', 'cancelar', 'cancelar suscripcion', 'se renueva', 'renovacion', 'cobro automatico', 'debito automatico', 'vencio mi plan', 'se vencio', 'cuando vence', 'renovar'],
+      respuesta: 'Tranquilo: *no hay cobros automáticos* 🙌. Pagas el plan por el tiempo que elijas y, cuando se vence, pagas de nuevo solo si quieres seguir. No tienes que cancelar nada.\n\nPara renovarlo, es igual que comprarlo:\n\n{planes}',
+      mostrarPlanes: true, preguntar: false,
+    },
+    {
+      id: 'reembolso', titulo: '💸 Reembolsos o cobro duplicado', apps: ['*'],
+      claves: ['reembolso', 'devolucion', 'devolver mi dinero', 'devuelvan', 'me arrepenti', 'cobro doble', 'me cobraron dos veces', 'cobro duplicado', 'cobraron de mas'],
+      respuesta: 'Las condiciones completas están en la *Política de reembolsos* de la app. Si te hicimos un *cobro duplicado o por un valor incorrecto*, toca *Continuar en WhatsApp* y envíanos el comprobante: lo revisamos y te lo solucionamos.',
+      porApp: { arte: 'En *EL ARTE EN TUS MANOS*: si pagaste pero *aún no has canjeado tu código*, puedes pedir el reembolso dentro de los *5 días* siguientes a la compra. Si el código ya se canjeó, no aplica reembolso. Respondemos en máximo 15 días hábiles.' },
+      whatsapp: true, preguntar: false,
+    },
+    {
+      id: 'computador', tipo: 'guia', titulo: '💻 Usarla en el computador o en otro celular', apps: ['*'],
+      claves: ['computador', 'computadora', 'pc', 'portatil', 'laptop', 'otro celular', 'varios celulares', 'tablet', 'dos celulares', 'en el navegador'],
+      respuesta: '{app} funciona en cualquier navegador 💻: abre el mismo enlace en el computador o en el otro celular e ingresa con *la misma cuenta*.{consejo_datos}',
+      porApp: {
+        cuadra: 'Tus cajeros entran desde su propio celular con *🏢 Acceso empresa* (nombre de la empresa, NIT, usuario y PIN).',
+        comanda: 'Cada mesero, cocina y caja entra desde su propio celular en *🍽️ Personal*.',
+      },
+    },
+    {
+      id: 'sin_internet', tipo: 'guia', titulo: '📶 ¿Funciona sin internet?', apps: ['*'],
+      claves: ['sin internet', 'sin senal', 'se cayo el internet', 'se fue el internet', 'offline', 'sin datos', 'no tengo internet'],
+      respuesta: 'Te cuento cómo funciona {app} sin internet 📶:',
+      porApp: {
+        cuadra: '*Sí:* si se cae el internet sigue vendiendo. Las ventas se guardan en el celular y se envían solas cuando vuelve la conexión (desde el plan *Pro*).',
+        stock: 'En los planes *Gratis* y *Pro* el inventario se guarda en tu celular, así que funciona sin internet. En *Premium* necesitas internet para sincronizar entre celulares.',
+        comanda: 'Necesita internet: los pedidos viajan *en vivo* entre meseros, cocina y caja.',
+        finanzas: 'En el plan *Gratis* tus datos están en el celular. Con nube (*Pro* o *Premium*) necesitas internet para sincronizar.',
+        arte: 'Los videos de los cursos necesitan internet.',
+      },
+      preguntar: false,
+    },
+    {
+      id: 'tema', tipo: 'guia', titulo: '🌗 Cambiar a modo claro u oscuro', apps: ['*'],
+      claves: ['modo oscuro', 'modo claro', 'modo dia', 'modo noche', 'tema', 'cambiar colores', 'se ve muy oscuro', 'se ve muy claro'],
+      respuesta: 'Busca el botón de *tema* 🌗 (sol / luna, o *Tema*) arriba en la app o en el menú, y cambia entre el *modo oscuro* y el *modo día*.',
+      preguntar: false,
+    },
+    {
+      id: 'eliminar_cuenta', titulo: '🗑️ Eliminar mi cuenta', apps: ['*'],
+      claves: ['eliminar mi cuenta', 'borrar mi cuenta', 'eliminar la cuenta', 'borrar la cuenta', 'darme de baja', 'cerrar mi cuenta'],
+      respuesta: 'Eliminar la cuenta *borra todos tus datos y no se puede deshacer* ⚠️. Por seguridad lo hacemos nosotros: toca *Continuar en WhatsApp* y escríbenos el correo de la cuenta.',
+      porApp: { finanzas: 'En *DL FINANZAS* lo puedes hacer tú: menú *☰ → Eliminar mi cuenta*.' },
+      whatsapp: true, preguntar: false,
+    },
+    {
+      id: 'moneda', tipo: 'guia', titulo: '💱 Cambiar la moneda', apps: ['finanzas', 'stock'],
+      claves: ['moneda', 'dolares', 'dolar', 'usd', 'euros', 'pesos', 'cop'],
+      respuesta: 'Toca el botón de *moneda* (💱 o 🇨🇴 COP) y elige la que necesitas. Los valores se muestran en esa moneda.',
+      preguntar: false,
+    },
+
+    // ================= DL STOCK PRO =================
+    {
+      id: 'stock_agregar', tipo: 'guia', titulo: '➕ Agregar mis productos', apps: ['stock'],
+      claves: ['agregar producto', 'agregar productos', 'crear producto', 'registrar producto', 'nuevo producto', 'subir productos', 'como agrego', 'foto de la etiqueta'],
+      respuesta: 'Hay *4 formas* de agregar productos ➕:\n\n1. *Foto de la etiqueta:* la app lee el código, el nombre y los precios.\n2. *Foto de la galería.*\n3. *Escanear el código* de barras.\n4. *Registro manual.*\n\n💡 Si tienes muchos, súbelos de una vez desde *Excel* (*Importar productos*).',
+    },
+    {
+      id: 'stock_sumar', tipo: 'guia', titulo: '🔢 Sumar o restar unidades', apps: ['stock'],
+      claves: ['sumar', 'restar', 'entrada', 'salida', 'descontar', 'llego mercancia', 'unidades', 'por cajas', 'sixpack', 'actualizar cantidad', 'cambiar cantidad'],
+      respuesta: 'En tu lista de productos usa *+ y −* para sumar o restar unidades con un toque (si te equivocas, toca *Deshacer*) 🔢.\n\nToca el producto para ajustar por *cajas o sixpack (R1)*, registrar una *Entrada* o *Salida*, o editarlo.',
+    },
+    {
+      id: 'stock_pedido', tipo: 'guia', titulo: '🚚 Hacer el pedido al proveedor', apps: ['stock', 'cuadra'],
+      claves: ['pedido', 'proveedor', 'proveedores', 'pedir mercancia', 'surtir', 'lo que se acaba'],
+      respuesta: 'Arma el *pedido para tu proveedor* con lo que se está acabando 🚚: la app te lo sugiere, ajustas cantidades y lo envías por *WhatsApp*.',
+      porApp: {
+        stock: 'Toca *Pedido*. Guarda a tus proveedores en *🚚 Mis proveedores* para enviárselo directo.',
+        cuadra: 'En *🛒 Pedido al proveedor* eliges si es en canastas, pacas o botellas y para cuándo lo necesitas.',
+      },
+    },
+    {
+      id: 'stock_conteo', tipo: 'guia', titulo: '📋 Hacer el conteo físico', apps: ['stock'],
+      claves: ['conteo', 'contar', 'inventario fisico', 'faltantes', 'sobrantes', 'cuadrar inventario', 'revisar bodega'],
+      respuesta: 'Toca *Conteo → Empezar conteo* 📋 y registra lo que hay físicamente en tu bodega. Al terminar, la app te muestra *sobrantes, faltantes* y la diferencia en dinero; si está bien, toca *Aplicar ajustes al inventario*.\n\nSi te interrumpen, luego tocas *Continuar conteo*.',
+    },
+    {
+      id: 'stock_etiquetas', tipo: 'guia', titulo: '🏷️ Imprimir etiquetas de precio', apps: ['stock'],
+      claves: ['etiqueta', 'etiquetas', 'imprimir precios', 'imprimir precio', 'precio en la estanteria', 'habladores'],
+      respuesta: 'Toca *Etiquetas → Ver e imprimir etiquetas* 🏷️. Se abre una vista lista para imprimir, con precio, promoción y código de barras.\n\nEn el celular elige *Guardar como PDF* o tu impresora.',
+    },
+    {
+      id: 'stock_excel', tipo: 'guia', titulo: '📊 Importar o descargar en Excel', apps: ['stock'],
+      claves: ['excel', 'importar', 'exportar', 'descargar inventario', 'plantilla', 'historial', 'subir excel'],
+      respuesta: '📊 *Subir productos:* toca *Importar → Importar productos*. Si no sabes el formato, toca *Descargar plantilla de ejemplo*, llénala y súbela.\n\n*Descargar:* toca *Excel → Descargar Excel* para tu inventario o *Exportar historial* para los movimientos.\n\n(Disponible desde el plan *Pro*.)',
+    },
+    {
+      id: 'stock_copia', tipo: 'guia', titulo: '💾 Copia de seguridad / cambiar de celular', apps: ['stock', 'finanzas'],
+      claves: ['copia de seguridad', 'respaldo', 'backup', 'cambiar de celular', 'celular nuevo', 'restaurar', 'pasar mis datos', 'perder mis datos'],
+      respuesta: 'Para no perder nada al cambiar de celular 💾:',
+      porApp: {
+        stock: 'Toca *Copia → Descargar copia (.json)* y guárdala. En el celular nuevo abre la app y restaura esa copia (desde el plan *Pro*).\n\n💡 En *Premium* tu inventario está en la nube: solo ingresa con tu cuenta en el celular nuevo.',
+        finanzas: 'Abre el menú *☰ → Descargar respaldo* y guárdalo.\n\n💡 Con *Pro* o *Premium* tus datos están en la nube: solo ingresa con tu cuenta en el celular nuevo.',
+      },
+    },
+    {
+      id: 'stock_vencimiento', tipo: 'guia', titulo: '⏰ Alertas de vencimiento', apps: ['stock'],
+      claves: ['vencimiento', 'vence', 'vencidos', 'vencido', 'fecha de vencimiento', 'por vencer', 'caducidad'],
+      respuesta: 'En *Alertas* ves lo que se vence ⏰:\n\n• *PRÓXIMO:* faltan 30 días o menos.\n• *CRÍTICO:* faltan 15 días o menos.\n• *VENCIDO.*\n\nPara que aparezca, ponle la *fecha de vencimiento* al producto (tócalo → editar).',
+    },
+    {
+      id: 'stock_cajeros', tipo: 'guia', titulo: '👥 Crear cajeros (plan Empresarial)', apps: ['stock'],
+      claves: ['cajero', 'cajeros', 'empleado', 'empleados', 'equipo', 'trabajador', 'usuario para', 'lineal'],
+      respuesta: 'Con el plan *Empresarial* creas *hasta 5 cajeros* 👥:\n\n1. Toca *👥 Equipo → ＋ Agregar cajero*.\n2. Escribe su usuario y contraseña, y asígnale *su lineal* (sus categorías).\n3. Ellos entran en la pantalla de ingreso con *👥 Entrar como cajero*: código de empresa, usuario y contraseña.\n\nLo que hagan se ve *en tiempo real* en tu celular.',
+    },
+    {
+      id: 'stock_categorias', tipo: 'guia', titulo: '🗂️ Categorías y zonas de bodega', apps: ['stock'],
+      claves: ['categoria', 'categorias', 'zona', 'zonas', 'pasillo', 'estante', 'bloque', 'ubicacion'],
+      respuesta: 'Toca *Categorías* 🗂️ para crear las categorías de tu negocio y las *zonas de bodega* (pasillo, bloque, estante). Así filtras y encuentras todo más rápido; el buscador también busca por ubicación.',
+    },
+
+    // ================= DL CUADRA PRO =================
+    {
+      id: 'cuadra_vender', tipo: 'guia', titulo: '🛒 Vender y cobrar', apps: ['cuadra'],
+      claves: ['vender', 'venta', 'cobrar', 'carrito', 'como vendo', 'registrar venta', 'efectivo', 'pago con qr'],
+      respuesta: 'Vender es muy fácil 🛒:\n\n1. En *Vender*, toca los productos: cada toque suma 1 unidad al carrito (también puedes buscar o escanear).\n2. Abajo aparece el total: toca *Cobrar*.\n3. Elige *efectivo*, *QR* o *📒 Fiado*.\n\nEl inventario se descuenta solo.',
+    },
+    {
+      id: 'cuadra_productos', tipo: 'guia', titulo: '➕ Agregar productos y mercancía', apps: ['cuadra'],
+      claves: ['agregar producto', 'agregar productos', 'nuevo producto', 'crear producto', 'llego mercancia', 'entrada de mercancia', 'stock minimo', 'cambiar precio', 'editar producto'],
+      respuesta: '➕ *Producto nuevo:* en *Inventario* toca *+ Producto* y escribe el nombre, el precio de venta, la categoría y cuántas unidades tienes.\n\n*Llegó mercancía o cambió el precio:* toca el producto para registrar la entrada, corregir el conteo o editar el precio y el *stock mínimo* (cuándo avisarte que se está acabando).',
+    },
+    {
+      id: 'cuadra_cerrar', tipo: 'guia', titulo: '🔒 Cerrar la caja del día', apps: ['cuadra'],
+      claves: ['cerrar caja', 'cierro caja', 'cierre del dia', 'cierre de caja', 'terminar turno', 'termino turno', 'cerrar el dia', 'cuadrar caja'],
+      respuesta: 'Al final del día toca *Cierre del día* 🔒: ves lo vendido en efectivo, QR, los gastos y lo que debe haber en caja.\n\nToca *Cerrar caja*, escribe cuánto efectivo contaste y la app te dice *si cuadra*. El dueño recibe el aviso al instante y, si quieres, lo compartes por WhatsApp.',
+    },
+    {
+      id: 'cuadra_cajeros', tipo: 'guia', titulo: '👥 Crear cajeros y su PIN', apps: ['cuadra'],
+      claves: ['cajero', 'cajeros', 'pin del cajero', 'empleado', 'empleados', 'crear usuario', 'trabajador', 'acceso empresa'],
+      respuesta: '👥 Desde el plan *Pro*:\n\n1. Entra a *Admin → + Cajero* y escribe su nombre.\n2. La app le genera un *PIN de 4 números*: compártelo con él.\n3. Él entra en *🏢 Acceso empresa* con el nombre de la empresa, el NIT, su usuario y su PIN.\n\nTus cajeros *nunca ven tu ganancia ni tus costos*.',
+    },
+    {
+      id: 'cuadra_sedes', tipo: 'guia', titulo: '🏢 Manejar varias sedes', apps: ['cuadra'],
+      claves: ['sede', 'sedes', 'otro local', 'sucursal', 'varios locales', 'dos locales'],
+      respuesta: 'Con el plan *Empresarial* 🏢 entras a *Admin → + Sede* y agregas cada local. Cada sede tiene *su propio inventario y sus cajeros*; los productos y precios se comparten.\n\nPara ver las ventas, el inventario y el cierre de cada una, cambia de sede desde el menú *⋮*.',
+    },
+    {
+      id: 'cuadra_fiado', tipo: 'guia', titulo: '📒 Fiado y abonos', apps: ['cuadra'],
+      claves: ['fiado', 'fiar', 'me debe', 'me deben', 'abono', 'abonos', 'credito', 'deuda', 'cobrar al cliente'],
+      respuesta: '📒 Al cobrar, elige *📒 Fiado* y el cliente.\n\nEn *Fiado* (menú *⋮*) ves quién te debe, registras *abonos* y le cobras por *WhatsApp*. Con el plan *Pro* le puedes fiar hasta a 10 clientes, con cupo máximo para cada uno.',
+    },
+    {
+      id: 'cuadra_ganancia', tipo: 'guia', titulo: '💰 Ver mi ganancia', apps: ['cuadra'],
+      claves: ['ganancia', 'utilidad', 'cuanto gane', 'precio de compra', 'costo', 'costos', 'margen'],
+      respuesta: 'La app calcula tu ganancia con el *precio de compra* 💰:\n\n1. Toca cada producto → *Editar* → pon el *precio de compra*.\n2. En el *Cierre del día* y en los reportes verás cuánto ganaste.\n\nSolo tú la ves: tus cajeros nunca la ven.',
+    },
+    {
+      id: 'cuadra_reportes', tipo: 'guia', titulo: '📊 Reportes y Excel', apps: ['cuadra'],
+      claves: ['reporte', 'reportes', 'excel', 'mas vendido', 'mas vendidos', 'ventas del mes', 'ventas de la semana', 'ventas por cajero', 'estadisticas'],
+      respuesta: 'En *📊 Reportes* (menú *⋮*) ves cómo te fue en la semana o el mes: los productos *más vendidos* y las ventas *por día, por cajero y por categoría*. Desde ahí lo descargas en *Excel*.',
+    },
+    {
+      id: 'cuadra_conteo', tipo: 'guia', titulo: '🔢 Conteo de apertura y cierre', apps: ['cuadra'],
+      claves: ['conteo', 'contar', 'apertura', 'contar productos', 'inventario fisico'],
+      respuesta: '🔢 Al *empezar el turno* se cuenta lo que hay (apertura) y al *cerrar la caja* se vuelve a contar (cierre). Si falta algo, por ejemplo un producto entregado sin cobrar, lo sabes de una vez. El dueño recibe el resultado.',
+    },
+    {
+      id: 'cuadra_avisos', tipo: 'guia', titulo: '🔔 Recibir los avisos de cierre en el celular', apps: ['cuadra', 'comanda'],
+      claves: ['avisos', 'notificaciones', 'notificacion', 'no me llegan los avisos', 'alerta', 'celular bloqueado'],
+      respuesta: 'Para que los avisos te lleguen aunque la app esté cerrada 🔔:',
+      porApp: {
+        cuadra: 'Abre *🔔 Tus cierres* y toca *activar los avisos*. Cuando un cajero cierra la caja te llega la notificación.',
+        comanda: 'Abre *Tu cuenta y ajustes* y toca *Activar avisos*; ahí también puedes *probar el sonido*.',
+      },
+    },
+
+    // ================= DL COMANDA PRO =================
+    {
+      id: 'comanda_pedido', tipo: 'guia', titulo: '📝 Tomar un pedido', apps: ['comanda'],
+      claves: ['tomar pedido', 'tomo pedido', 'tomar orden', 'tomo orden', 'hacer pedido', 'hago pedido', 'mesa libre', 'notas', 'sin cebolla', 'agregar otro pedido', 'enviar a cocina'],
+      respuesta: '📝 Toca una *mesa libre*, elige los productos (cada toque suma 1), agrega notas como *sin cebolla* y toca *Revisar y enviar*. La cocina lo recibe al instante con sonido.\n\nPara agregar algo a una mesa ocupada, tócala y agrega otro pedido.',
+    },
+    {
+      id: 'comanda_colores', tipo: 'guia', titulo: '🎨 Qué significan los colores de las mesas', apps: ['comanda'],
+      claves: ['colores', 'color', 'mesa roja', 'mesa naranja', 'mesa azul', 'mesa morada', 'mesa dorada', 'mesa gris'],
+      respuesta: '🎨 Los colores de las mesas:\n\n⚪ *Gris:* libre\n🟠 *Naranja:* en cocina\n🟡 *Dorado:* listo para recoger\n🔵 *Azul:* cuenta abierta\n🟣 *Morado:* pidió la cuenta\n🔴 *Rojo:* lleva más de 15 minutos sin cobrar',
+      preguntar: false,
+    },
+    {
+      id: 'comanda_cuenta', tipo: 'guia', titulo: '🧾 Pedir la cuenta, cobrar y dividir', apps: ['comanda'],
+      claves: ['cuenta', 'pedir la cuenta', 'cobrar', 'dividir', 'dividir la cuenta', 'propina', 'vueltas', 'descuento', 'pagar la mesa'],
+      respuesta: '🧾 *Mesero:* toca la mesa → *pedir la cuenta*. La app le recuerda preguntar si desea la *propina voluntaria del 10%*, y la respuesta le llega a la caja.\n\n*Caja:* toca la cuenta, elige *efectivo, tarjeta o transferencia*. La app calcula las vueltas, la propina y el descuento, y puedes *dividir la cuenta* entre varias personas.',
+    },
+    {
+      id: 'comanda_qr', tipo: 'guia', titulo: '📱 Cobrar con QR (Nequi, Bancolombia…)', apps: ['comanda'],
+      claves: ['qr', 'nequi', 'daviplata', 'bancolombia', 'bre b', 'llave', 'codigo qr', 'cobrar con qr', 'cobrar con nequi', 'pagar con nequi', 'pagar con qr', 'transferencia'],
+      respuesta: '📱 En *Administración → QR de pago* sube el QR de Nequi, Bancolombia, Daviplata o tu llave Bre-B.\n\nCuando el cliente quiera pagar así, el mesero toca la mesa → *📱 Pagar con QR* y se muestra en grande con el valor a pagar.',
+    },
+    {
+      id: 'comanda_personal', tipo: 'guia', titulo: '👥 Crear meseros, cocina y caja', apps: ['comanda'],
+      claves: ['mesero', 'meseros', 'personal', 'empleado', 'empleados', 'usuario', 'cocinero', 'crear usuario', 'pin'],
+      respuesta: '👥 En *Administración → Personal → + Usuario* creas a tus meseros, cocina, bar y caja. Puedes darle a cada uno *una o varias funciones* (por ejemplo Bar + Caja).\n\nLa app les da un *PIN*: entran en *🍽️ Personal* con el nombre del restaurante, el NIT, su usuario y su PIN. No necesitan correo.',
+    },
+    {
+      id: 'comanda_menu', tipo: 'guia', titulo: '🍔 Productos del menú y mesas', apps: ['comanda'],
+      claves: ['producto', 'productos', 'menu', 'carta', 'plato', 'agregar mesa', 'crear mesa', 'renombrar mesa', 'agotado', 'ocultar'],
+      respuesta: '🍔 En *Administración*:\n\n• *+ Producto:* agrega tus platos y bebidas con precio y categoría. Puedes *ocultar* los que se agotan para que el mesero no los pida.\n• *+ Mesa:* crea, renombra u ordena tus mesas (ej. Mesa 1, Barra, Terraza 2).',
+    },
+    {
+      id: 'comanda_estaciones', tipo: 'guia', titulo: '🍳🍹 Separar cocina y bar', apps: ['comanda'],
+      claves: ['bar', 'estaciones', 'bebidas', 'separar', 'cocina y bar', 'bartender'],
+      respuesta: '🍳🍹 En *Administración* activa las *estaciones cocina y bar*: las bebidas van al bar y los platos a la cocina, cada uno con su aviso.\n\nEn cada celular eliges si es de *cocina* o de *bar* para ver solo lo tuyo. (Plan *Premium*.)',
+    },
+    {
+      id: 'comanda_caja', tipo: 'guia', titulo: '💵 Abrir y cerrar la caja', apps: ['comanda'],
+      claves: ['abrir caja', 'abro caja', 'cerrar caja', 'cierro caja', 'base', 'cierre de caja', 'entradas y salidas'],
+      respuesta: '💵 *Al empezar:* abre la caja contando los billetes y monedas de la *base*.\n\nDurante el día registra entradas y salidas. *Al final:* cierra la caja y la app te dice si *cuadra, falta o sobra*. Tarjeta y transferencia van aparte. Cada cierre queda guardado.',
+    },
+    {
+      id: 'comanda_ventas', tipo: 'guia', titulo: '📊 Ventas, Excel y resumen por WhatsApp', apps: ['comanda'],
+      claves: ['ventas', 'excel', 'reporte', 'reportes', 'cuanto vendi', 'por mesero', 'lo mas pedido', 'resumen del dia'],
+      respuesta: '📊 En *Ventas* mira cualquier día con las flechas o el calendario: total, propinas, pedidos, *ventas por mesero* y *lo más pedido*.\n\nToca *⬇️ Descargar Excel* o *📲 Resumen por WhatsApp* para enviárselo a tu socio o contador.',
+    },
+    {
+      id: 'comanda_imprimir', tipo: 'guia', titulo: '🖨️ Imprimir o enviar el recibo', apps: ['comanda'],
+      claves: ['imprimir', 'impresora', 'recibo', 'factura', 'papel', 'tirilla', 'comprobante'],
+      respuesta: '🖨️ En *Cobrado hoy* toca un cobro para *imprimir* el recibo o *enviarlo por WhatsApp*.\n\nEl tamaño del papel de tu impresora lo eliges en *Tu cuenta y ajustes*.',
+    },
+
+    // ================= DL FINANZAS =================
+    {
+      id: 'fin_registrar', tipo: 'guia', titulo: '💵 Registrar ingresos y gastos', apps: ['finanzas'],
+      claves: ['registrar gasto', 'registrar ingreso', 'anotar gasto', 'anotar', 'agregar gasto', 'nuevo gasto', 'ingreso', 'ingresos', 'gasto', 'gastos', 'movimiento', 'nuevo movimiento'],
+      respuesta: '💵 Toca *💵 Ingreso* cuando recibas dinero, *🏠 Gasto fijo* para lo que pagas cada mes (arriendo, servicios) o *🛒 Gasto variable* para el resto (mercado, gustos, transporte).\n\nTambién puedes usar *➕ Nuevo movimiento*: escribes el valor, el concepto y la categoría.',
+    },
+    {
+      id: 'fin_quincenal', tipo: 'guia', titulo: '📅 Pagos o sueldos quincenales', apps: ['finanzas'],
+      claves: ['quincena', 'quincenal', 'cada quince dias', 'cada 15 dias', 'dos veces al mes'],
+      respuesta: '📅 Al registrar el movimiento elige *Quincenal* y se cuenta *dos veces en el mes*. Para lo que es una sola vez, elige *Mensual* o *Pago único*.',
+    },
+    {
+      id: 'fin_topes', tipo: 'guia', titulo: '🚦 Topes de presupuesto (semáforo)', apps: ['finanzas'],
+      claves: ['tope', 'topes', 'presupuesto', 'semaforo', 'limite de gasto', 'controlar gastos', 'gastar menos'],
+      respuesta: '🚦 Toca *Ajustar topes* y ponle un *tope mensual* a cada categoría.\n\n🟢 *Verde:* vas bien\n🟡 *Amarillo:* te estás acercando\n🔴 *Rojo:* ya te pasaste',
+    },
+    {
+      id: 'fin_editar', tipo: 'guia', titulo: '✏️ Editar o borrar un movimiento', apps: ['finanzas'],
+      claves: ['editar', 'borrar movimiento', 'eliminar movimiento', 'equivoque', 'equivoque gasto', 'equivoque movimiento', 'corregir gasto', 'corregir', 'cambiar un gasto', 'modificar'],
+      respuesta: '✏️ En *Movimientos*, busca el registro y *tócalo*: ahí lo puedes *editar* o *eliminar*.',
+    },
+    {
+      id: 'fin_meses', tipo: 'guia', titulo: '📆 Ver otros meses y copiar gastos fijos', apps: ['finanzas'],
+      claves: ['otro mes', 'mes anterior', 'mes pasado', 'mes siguiente', 'copiar al mes', 'repetir gastos', 'gastos fijos'],
+      respuesta: '📆 Todo se calcula *por mes*: usa las *flechas* para ver meses anteriores o planear el siguiente.\n\nPara no volver a escribir tus gastos fijos, usa *Copiar al mes*.',
+    },
+    {
+      id: 'fin_excel', tipo: 'guia', titulo: '📊 Exportar a Excel', apps: ['finanzas'],
+      claves: ['excel', 'exportar', 'descargar mis datos', 'reporte'],
+      respuesta: '📊 Abre el menú *☰ → Exportar a Excel* (desde el plan *Pro*). Ahí mismo puedes *Descargar respaldo*.',
+    },
+    {
+      id: 'fin_nombre', tipo: 'guia', titulo: '👤 Cambiar mi nombre', apps: ['finanzas'],
+      claves: ['cambiar mi nombre', 'mi nombre', 'como me llama', 'nombre'],
+      respuesta: '👤 Abre el menú *☰ → Cambiar mi nombre*. Así te saludo cada vez que entras.',
+      preguntar: false,
+    },
+
+    // ================= EL ARTE EN TUS MANOS =================
+    {
+      id: 'arte_buscar', tipo: 'guia', titulo: '🔎 Encontrar un curso o tutorial', apps: ['arte'],
+      claves: ['buscar', 'encontrar', 'donde esta', 'curso de', 'tutorial de', 'categoria', 'categorias'],
+      respuesta: '🔎 Usa el *buscador* con el nombre del amigurumi, la técnica o la categoría.\n\nTambién puedes filtrar por temas (*🌸 Flores, 🐾 Animalitos, 👑 Princesas, 🍓 Comida…*) o abrir *🎓 Cursos Completos* y tocar la barra de un curso para ver sus clases paso a paso.',
+    },
+    {
+      id: 'arte_contador', tipo: 'guia', titulo: '🧶 Contador de vueltas y materiales', apps: ['arte'],
+      claves: ['contador', 'vueltas', 'contar vueltas', 'materiales', 'que necesito', 'lana', 'hilo'],
+      respuesta: '🧶 Dentro de cada tutorial:\n\n• Usa *+ y −* en el *contador de vueltas* mientras tejes.\n• En *Materiales sugeridos* ves qué necesitas para ese proyecto.',
+    },
+    {
+      id: 'arte_favoritos', tipo: 'guia', titulo: '❤️ Favoritos y clases vistas', apps: ['arte'],
+      claves: ['favorito', 'favoritos', 'guardar', 'marcar como visto', 'clases vistas', 'ya vi'],
+      respuesta: '❤️ Toca *🤍 Favorito* para guardar un tutorial y luego encuéntralo en *❤️ Favoritos*.\n\nCon *✓ Marcar como visto* llevas el control de las clases que ya completaste.',
+    },
+    {
+      id: 'arte_calculadora', tipo: 'guia', titulo: '🧮 Calcular el precio de venta', apps: ['arte'],
+      claves: ['calculadora', 'precio de venta', 'cuanto cobrar', 'cuanto vendo', 'costo', 'ganancia', 'vender mis amigurumis'],
+      respuesta: '🧮 Abre la *Calculadora de Costos y Precios*: escribe lo que gastaste en materiales y tiempo, y toca *Calcular Costo y Precio Sugerido*. Te da el precio de venta con *30% de ganancia*.',
+    },
+    {
+      id: 'arte_sugerir', tipo: 'guia', titulo: '💡 Sugerir un curso nuevo', apps: ['arte'],
+      claves: ['sugerir', 'sugerencia', 'nuevo curso', 'quiero aprender', 'no esta el curso', 'agreguen'],
+      respuesta: '💡 Toca *💡 Sugerir Curso*, escribe qué te gustaría aprender y toca *Enviar Sugerencia a Soporte*. ¡Las tenemos en cuenta para los próximos cursos!',
+      preguntar: false,
+    },
+    {
+      id: 'arte_anuncios', tipo: 'guia', titulo: '🚫 Ver las clases sin anuncios', apps: ['arte'],
+      claves: ['anuncios', 'publicidad', 'propaganda', 'sin anuncios', 'comerciales'],
+      respuesta: '🚫 Algunos videos traen anuncios de la plataforma de video. Para verlos sin anuncios, abre la app con el navegador *Brave* (en la app toca *🦁 ¿Ver las clases sin anuncios? Usa Brave*).',
+    },
   ];
 
   var GENERAL_DEF = {
     activo: true,
+    botonWhatsApp: false,  // botón verde de WhatsApp arriba en el chat
+    intentosAsesor: 3,     // veces que el asistente no entiende antes de ofrecer un asesor
     empresa: 'DL COMPANY -TECHNOLOGY-',
     whatsapp: '573218641539',
     mensajeAsesor: 'Te comunico con un asesor de *{empresa}* 👨‍💻.\n\nToca *Continuar en WhatsApp*: tu caso va *ya resumido* para que no tengas que repetirlo, y te responderemos lo antes posible.',
@@ -252,11 +569,33 @@
     return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
   }
-  function tiene(t, frase) {
-    var f = norm(frase).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp('(^|\\s)' + f + '(?=\\s|$|s\\b)').test(t);
+  // Coincidencia flexible: ignora palabras de relleno (un, el, mi…) y acepta variaciones
+  // de la misma palabra (agrego/agregar, vencen/vence, cobro/cobrar, productos/producto).
+  var VACIAS = { un: 1, una: 1, unos: 1, unas: 1, el: 1, la: 1, los: 1, las: 1, de: 1, del: 1, mi: 1, mis: 1, tu: 1, tus: 1,
+    a: 1, al: 1, por: 1, para: 1, en: 1, con: 1, me: 1, te: 1, lo: 1, le: 1, se: 1, y: 1, o: 1 };
+  var cacheTok = {};
+  function tokens(t) {
+    if (cacheTok[t]) return cacheTok[t];
+    var r = norm(t).split(' ').filter(function (w) { return w && !VACIAS[w]; });
+    if (Object.keys(cacheTok).length > 3000) cacheTok = {};
+    return (cacheTok[t] = r);
   }
-  function puntos(t, frases) { var s = 0; frases.forEach(function (f) { if (tiene(t, f)) s += norm(f).split(' ').length; }); return s; }
+  function igual(a, b) {
+    if (a === b) return true;
+    if (a.length < 4 || b.length < 4 || /\d/.test(a + b)) return false;
+    var k = Math.min(a.length, b.length) <= 5 ? 4 : 5;
+    return a.slice(0, k) === b.slice(0, k) && Math.abs(a.length - b.length) <= 4;
+  }
+  function tiene(t, frase) {
+    var tt = tokens(t), ft = tokens(frase);
+    if (!ft.length) return false;
+    for (var i = 0; i + ft.length <= tt.length; i++) {
+      for (var j = 0; j < ft.length && igual(tt[i + j], ft[j]); j++);
+      if (j === ft.length) return true;
+    }
+    return false;
+  }
+  function puntos(t, frases) { var s = 0; (frases || []).forEach(function (f) { if (tiene(t, f)) s += tokens(f).length || 1; }); return s; }
   function dinero(n) { return '$' + Number(n).toLocaleString('es-CO'); }
   function saludo() {
     var h;
@@ -322,6 +661,8 @@
     wa: { t: '💬 Continuar en WhatsApp', a: 'wa', wa: true },
     pedido: { t: '📲 Enviar pedido por WhatsApp', a: 'wa', wa: true },
     asesor: { t: '👨‍💻 Hablar con un asesor', a: 'asesor' },
+    asesorFinal: { t: '👨‍💻 Hablar con un asesor', a: 'asesor_si' },
+    todo: { t: '📋 Ver todas las opciones', a: 'todo' },
     menu: { t: '🏠 Menú principal', a: 'menu' },
     otra: { t: '🙋 Tengo otra pregunta', a: 'menu' },
     planes: { t: '👑 Ver planes y precios', a: 'planes' },
@@ -334,8 +675,8 @@
   function menuPrincipal(prefijo) {
     var a = st.app ? APPS[st.app] : null;
     var chips = st.origen === 'web' && !a
-      ? [{ t: '📱 Ver nuestras apps', a: 'apps' }, CH.planes, { t: '✨ Quiero una app a la medida', a: 'medida' }, CH.soporte, CH.asesor]
-      : [CH.soporte, CH.planes, { t: '🔑 Problemas con mi plan o código', a: 'problema_plan' }, CH.asesor];
+      ? [{ t: '📱 Ver nuestras apps', a: 'apps' }, CH.planes, { t: '✨ Quiero una app a la medida', a: 'medida' }, CH.soporte]
+      : [{ t: '🛠️ Tengo un problema', a: 'soporte' }, { t: '📘 Aprender a usar ' + (a ? a.nombre : 'la app'), a: 'guias' }, CH.planes, { t: '🔑 Problemas con mi plan o código', a: 'problema_plan' }];
     return r((prefijo ? prefijo + ' ' : '') + '¿En qué te puedo ayudar' + (a ? ' con *' + a.nombre + '*' : '') + '?', chips);
   }
 
@@ -381,7 +722,7 @@
     var a = APPS[st.app];
     var chips = [{ t: '🛒 Quiero comprar un plan', a: 'planes' }, { t: '🧾 Ya pagué y no tengo mi plan', a: 'pagado' }];
     if (!a.sinCodigo) chips.push({ t: '❌ Mi código no funciona', a: 'codigo_malo' });
-    chips.push(CH.asesor);
+    chips.push(CH.otra);
     return r('Claro que sí, te ayudo con tu plan de *' + a.nombre + '* 👑. ¿Qué pasó?', chips);
   }
 
@@ -402,13 +743,37 @@
 
   function soporte(prefijo) {
     if (!st.app) return pedirApp('soporte', '¿Con cuál app necesitas ayuda?');
-    st.modo = 'soporte'; st.fallos = 0;
+    st.modo = 'soporte';
     var a = APPS[st.app];
-    var propios = PROBLEMAS.filter(function (p) { return p.apps.indexOf('*') === -1 && aplica(p, st.app); });
-    var generales = PROBLEMAS.filter(function (p) { return p.apps.indexOf('*') !== -1; });
-    var lista = propios.concat(generales).slice(0, 8);
-    return r((prefijo || 'Claro que sí, estamos para ayudarte con *' + a.nombre + '* 🛠️.') + '\n\nCuéntame qué está pasando, o elige una opción:',
-      lista.map(function (p) { return { t: p.titulo, a: 'prob:' + p.id }; }).concat([CH.asesor]));
+    var lista = listaDe(st.app, 'problema').slice(0, 7);
+    var chips = lista.map(function (p) { return { t: p.titulo, a: 'prob:' + p.id }; });
+    if (listaDe(st.app, 'guia').length) chips.push({ t: '📘 Aprender a usar ' + a.nombre, a: 'guias' });
+    chips.push(CH.todo);
+    return r((prefijo || 'Claro que sí, estamos para ayudarte con *' + a.nombre + '* 🛠️.') + '\n\nCuéntame qué está pasando con tus palabras, o elige una opción:', chips);
+  }
+
+  // Respuestas de una app: primero las propias de la app y luego las generales
+  function listaDe(k, tipo) {
+    var ok = function (p) { return aplica(p, k) && (!tipo || (tipo === 'guia' ? p.tipo === 'guia' : p.tipo !== 'guia')); };
+    var propias = PROBLEMAS.filter(function (p) { return ok(p) && p.apps.indexOf('*') === -1; });
+    var generales = PROBLEMAS.filter(function (p) { return ok(p) && p.apps.indexOf('*') !== -1; });
+    return propias.concat(generales);
+  }
+
+  function guias(prefijo) {
+    if (!st.app) return pedirApp('guias', '¿Cuál app quieres aprender a usar?');
+    st.modo = 'soporte';
+    var a = APPS[st.app];
+    return r((prefijo || '📘 ¿Qué quieres aprender a hacer en *' + a.nombre + '*?') + '\n\nElige una opción o escríbeme tu pregunta:',
+      listaDe(st.app, 'guia').map(function (p) { return { t: p.titulo, a: 'prob:' + p.id }; }).concat([{ t: '🛠️ Tengo un problema', a: 'soporte' }]));
+  }
+
+  function todo(prefijo) {
+    if (!st.app) return pedirApp('todo', '¿De cuál app?');
+    st.modo = 'soporte';
+    var a = APPS[st.app];
+    return r((prefijo || 'Estas son todas las respuestas que tengo para *' + a.nombre + '* 📋:'),
+      listaDe(st.app).map(function (p) { return { t: p.titulo, a: 'prob:' + p.id }; }).concat([CH.menu]));
   }
 
   function textoRespuesta(p, campo) {
@@ -418,6 +783,7 @@
       .replace(/\{empresa\}/g, EMPRESA)
       .replace(/\{consejo_ingreso\}/g, a.login ? '\n\n💡 ' + a.login : '')
       .replace(/\{consejo_datos\}/g, a.gratisLocal ? '\n\n💡 ' + a.gratisLocal : '')
+      .replace(/\{planes_detalle\}/g, a.planes && a.planes.length ? textoPlanes(a, false) : '')
       .replace(/\{planes\}/g, a.planes && a.planes.length ? textoPlanes(a, true) : '');
     if (campo === 'respuesta' && p.porApp && p.porApp[st.app]) t += '\n\n' + p.porApp[st.app];
     return t;
@@ -425,14 +791,18 @@
 
   function resolver(p) {
     var a = APPS[st.app];
-    st.problema = p; st.alternativa = false; st.modo = 'confirmar';
+    st.problema = p; st.alternativa = false; st.modo = 'confirmar'; st.fallos = 0;
     nota('Problema: ' + p.titulo.replace(/^\S+\s/, ''));
     var texto = textoRespuesta(p, 'respuesta');
+    if (p.whatsapp) {
+      st.modo = null;
+      return r(texto, [CH.wa, CH.otra]);
+    }
     if (p.mostrarPlanes) {
       st.modo = null;
       return r(texto, a.planes.filter(function (x) { return x.p; }).map(function (x) { return { t: 'Quiero ' + x.n, a: 'plan:' + x.id }; }).concat([CH.otra]));
     }
-    if (p.preguntar === false) { st.modo = null; return r(texto, [CH.otra, CH.asesor]); }
+    if (p.preguntar === false) { st.modo = null; return r(texto, [CH.otra, { t: '📘 Ver más ayuda', a: 'todo' }]); }
     return r(texto + '\n\n¿Pudiste solucionarlo?', [{ t: '✅ Sí, gracias', a: 'si' }, { t: '❌ No, sigue igual', a: 'no' }]);
   }
 
@@ -447,7 +817,7 @@
     st.app = k; var a = APPS[k];
     nota('Pidió información de ' + a.nombre);
     return r(a.icono + ' *' + a.nombre + '*\n\n' + a.desc + '\n\nPuedes *probarla gratis* y activar un plan cuando quieras más funciones.',
-      [{ t: '🚀 Probar gratis', a: 'abrir:' + a.url }, CH.planes, { t: '💬 Tengo más preguntas', a: 'wa', wa: true }, CH.menu]);
+      [{ t: '🚀 Probar gratis', a: 'abrir:' + a.url }, CH.planes, { t: '🙋 Tengo más preguntas', a: 'menu' }]);
   }
 
   function aLaMedida() {
@@ -488,14 +858,20 @@
     if (/(ya )?(realice|hice|pague|envie|transferi|consigne) (mi |el )?pago|ya pague|comprobante/.test(t)) return pagado();
     if (/problemas? para acceder a un plan|problema con (el|mi) plan|codigo no (sirve|funciona)|no me (llego|ha llegado) el codigo/.test(t)) return problemaPlan();
     if (/codigo/.test(t) && /(no (sirve|funciona|deja|acepta)|invalido|incorrecto)/.test(t)) { if (!st.app) return pedirApp('codigo_malo'); return codigoMalo(); }
+    if (/(^|\s)(asesor|humano|una persona|hablar con alguien|agente)(\s|$)/.test(t)) return accion('asesor');
+    // Si el mensaje coincide claramente con una respuesta, darla de una vez
+    var fuerte = detectarProblema(t, st.app);
+    if (fuerte && puntos(t, fuerte.claves) >= 2 && (st.app || !fuerte.apps || fuerte.apps.indexOf('*') !== -1 || fuerte.apps.length === 1)) {
+      if (!st.app && fuerte.apps.length === 1 && fuerte.apps[0] !== '*') st.app = fuerte.apps[0];
+      if (st.app) return resolver(fuerte);
+    }
+
     if (/(quiero|deseo|me interesa|necesito|como (compro|pago|activo))( comprar| el| activar el| pagar el| adquirir| un| una)* (plan|codigo|membresia|suscripcion)|comprar|precio|precios|cuanto (cuesta|vale)|planes|cotizar|pagar el plan/.test(t)
       && !/app personalizada|a la medida/.test(t)) {
       return verPlanes(planId, anual);
     }
     if (/app personalizada|a la medida|pagina web para|mi propia app|una app para mi negocio/.test(t)) return aLaMedida();
     if (/pacientes|citas|odontolog|fisioterap|estetica/.test(t)) return pacientes();
-    if (/(^|\s)(asesor|humano|una persona|hablar con alguien|agente)(\s|$)/.test(t)) return aAsesor('Pidió hablar con un asesor');
-
     var premium = /soy (usuaria|usuario|cliente) (del )?(plan )?premium/.test(t);
     if (premium) { st.premium = true; nota('Cliente Premium (soporte prioritario)'); }
 
@@ -539,9 +915,16 @@
     st.fallos++;
     nota('Escribió: "' + texto.slice(0, 200) + '"');
     reportarPendiente(texto);
-    if (st.fallos >= 2) return aAsesor('El asistente no entendió el caso');
-    return st.app ? soporte('Quiero ayudarte bien 🙏 pero no logré entenderlo. ¿Es alguna de estas opciones?')
+    var limite = Math.max(2, Number(GENERAL.intentosAsesor) || 3);
+    if (st.fallos >= limite) {
+      st.modo = null;
+      return r('No encontré una respuesta para eso 😔. Puedes escribirlo de otra forma o revisar todas las opciones.\n\nSi aun así no lo encuentras, como *último recurso* te comunico con un asesor.',
+        [CH.todo, CH.asesorFinal]);
+    }
+    if (st.fallos === 1) return st.app ? soporte('Quiero ayudarte bien 🙏 pero no logré entenderlo. ¿Es alguna de estas opciones?')
       : menuPrincipal('Quiero ayudarte bien 🙏 pero no logré entenderlo.');
+    return st.app ? todo('Intenta escribirlo con otras palabras (por ejemplo: *"no me deja entrar"* o *"cómo creo un cajero"*), o busca aquí tu caso 👇')
+      : menuPrincipal('Intenta escribirlo con otras palabras, o elige una opción 👇');
   }
 
   // ----- botones (chips) -----
@@ -554,7 +937,15 @@
     if (a === 'problema_plan') return problemaPlan();
     if (a === 'pagado') return pagado();
     if (a === 'codigo_malo') return codigoMalo();
-    if (a === 'asesor') return aAsesor('Pidió hablar con un asesor');
+    if (a === 'asesor') {
+      if (st.pidioAsesor) return aAsesor('Pidió hablar con un asesor');
+      st.pidioAsesor = true;
+      return r('Claro 🙌. Antes cuéntame qué necesitas: la mayoría de casos los resuelvo *al instante*, sin que tengas que esperar.\n\nEscríbelo con tus palabras o elige una opción:',
+        [{ t: '🛠️ Tengo un problema', a: 'soporte' }, { t: '📘 Aprender a usar la app', a: 'guias' }, CH.planes, { t: '👨‍💻 Aun así, quiero un asesor', a: 'asesor_si' }]);
+    }
+    if (a === 'asesor_si') return aAsesor('Pidió hablar con un asesor');
+    if (a === 'guias') return guias();
+    if (a === 'todo') return todo();
     if (a === 'medida') return aLaMedida();
     if (a === 'apps') return r('Estas son nuestras apps 📱. Todas se pueden *probar gratis*:',
       ORDEN_APPS.map(function (k) { return { t: APPS[k].icono + ' ' + APPS[k].nombre, a: 'info:' + k }; }).concat([{ t: '🩺 Control de pacientes (pronto)', a: 'pacientes' }]));
@@ -566,6 +957,8 @@
       st.app = a.slice(4); var sig = st.siguiente; st.siguiente = null; st.modo = null;
       if (sig === 'planes') return verPlanes(null);
       if (sig === 'activar') return comoActivar();
+      if (sig === 'guias') return guias();
+      if (sig === 'todo') return todo();
       if (sig === 'problema_plan') return problemaPlan();
       if (sig === 'codigo_malo') return codigoMalo();
       if (sig === 'problema_pendiente' && st.pendiente) { var pp = problemaPorId(st.pendiente); st.pendiente = null; if (aplica(pp, st.app)) return resolver(pp); }
@@ -582,7 +975,10 @@
         st.alternativa = true;
         return r(textoRespuesta(p, 'alt') + '\n\n¿Ahora sí pudiste?', [{ t: '✅ Sí, ya quedó', a: 'si' }, { t: '❌ No, sigue igual', a: 'no' }]);
       }
-      return aAsesor('No se solucionó con los pasos del asistente');
+      st.modo = null;
+      nota('No se solucionó: ' + (p ? p.titulo.replace(/^\S+\s/, '') : ''));
+      return r('Lamento que no se haya solucionado 😔. Revisemos otras opciones: puede que tu caso sea otro de la lista.\n\nSi ya probaste todo, como *último recurso* te comunico con un asesor.',
+        [CH.todo, CH.asesorFinal]);
     }
     if (a === 'fin') return despedida();
     return menuPrincipal('');
@@ -716,6 +1112,8 @@
       nuevaConversacion(textoOriginal, urlOriginal);
       ui.msgs.innerHTML = '';
     }
+    // Botón directo a WhatsApp en la cabecera: solo si se activa en la app de administración
+    raiz.querySelector('.ib.wa').style.display = GENERAL.botonWhatsApp ? '' : 'none';
     host.style.pointerEvents = 'auto';
     abierto = true;
     requestAnimationFrame(function () { ui.cont.classList.add('on'); });
