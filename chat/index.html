@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Asistente DL COMPANY -TECHNOLOGY-</title>
+<meta name="description" content="Asistente automático de DL COMPANY -TECHNOLOGY-: soporte, planes y precios de nuestras apps al instante.">
+<meta property="og:title" content="Asistente DL COMPANY -TECHNOLOGY-">
+<meta property="og:description" content="Soporte, planes y precios de nuestras apps al instante, 24/7.">
+<meta property="og:image" content="https://dl-company-technology.github.io/assets/dl-company.png">
+<link rel="icon" href="../assets/dl-company.png">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100dvh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#e8eefc;
+    background:radial-gradient(circle at 50% 20%,#14234a 0,#070c18 70%)}
+  img{width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(0,212,255,.35))}
+  h1{font-size:22px;margin:18px 0 6px}
+  p{color:#9fb0d6;font-size:15px;max-width:320px;margin:0 auto 22px;line-height:1.45}
+  button{border:0;border-radius:28px;padding:15px 28px;font-size:16px;font-weight:700;cursor:pointer;
+    background:linear-gradient(135deg,#d4af37,#f5d77a);color:#1a1405;box-shadow:0 8px 24px rgba(212,175,55,.3)}
+  a{display:block;margin-top:18px;color:#7fb8ff;font-size:14px;text-decoration:none}
+</style>
+</head>
+<body>
+  <main>
+    <img src="../assets/dl-company.png" alt="DL COMPANY -TECHNOLOGY-">
+    <h1>Asistente DL COMPANY</h1>
+    <p>Soporte, planes y precios de nuestras apps. Te respondemos al instante, las 24 horas.</p>
+    <button type="button" id="abrir">💬 Abrir el chat</button>
+    <a href="../">Ver nuestra página web →</a>
+  </main>
+  <script>window.DL_CHAT_APP = 'web';</script>
+  <script src="dl-chat.js"></script>
+  <script>
+    document.getElementById('abrir').onclick = function () { DLChat.abrir(); };
+    DLChat.abrir(); // se abre solo al entrar
+  </script>
+</body>
+</html>
