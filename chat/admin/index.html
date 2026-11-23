@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b1220">
+<title>Admin · Asistente DL COMPANY</title>
+<link rel="icon" href="../../assets/dl-company.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{--fondo:#070c18;--panel:#0f1729;--panel2:#16213a;--borde:rgba(255,255,255,.09);--oro:#d4af37;--oro2:#f5d77a;
+    --texto:#e8eefc;--sub:#8ea0c8;--azul:#2563eb;--verde:#22c55e;--rojo:#ef4444}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--fondo);color:var(--texto);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px}
+  button,input,textarea,select{font:inherit;color:inherit}
+  .oculto{display:none!important}
+  /* --- login --- */
+  #login{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .tarjeta{width:100%;max-width:380px;background:var(--panel);border:1px solid rgba(212,175,55,.35);border-radius:20px;padding:26px 22px;text-align:center}
+  .tarjeta img{width:76px;height:76px;object-fit:contain}
+  .tarjeta h1{font-size:20px;margin:10px 0 4px}.tarjeta p{color:var(--sub);font-size:13.5px;margin-bottom:18px;line-height:1.4}
+  .tarjeta form{display:flex;flex-direction:column;gap:10px;text-align:left}
+  label{font-size:12.5px;color:var(--sub);font-weight:600;display:block;margin-bottom:5px}
+  input[type=text],input[type=email],input[type=password],input[type=number],input[type=tel],textarea{width:100%;background:#0b1324;border:1px solid var(--borde);
+    border-radius:12px;padding:11px 12px;font-size:16px;outline:none}
+  input:focus,textarea:focus{border-color:rgba(212,175,55,.7)}
+  textarea{min-height:110px;resize:vertical;line-height:1.4}
+  .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;background:var(--panel2);border:1px solid var(--borde)}
+  .btn.oro{background:linear-gradient(135deg,var(--oro),var(--oro2));color:#1a1405;border:0}
+  .btn.azul{background:var(--azul);border:0;color:#fff}
+  .btn.rojo{background:transparent;border:1px solid rgba(239,68,68,.6);color:#ff8a8a}
+  .btn.peq{padding:8px 11px;font-size:13px;border-radius:10px}
+  .error{color:#ff8a8a;font-size:13.5px;min-height:18px}
+  /* --- app --- */
+  header{position:sticky;top:0;z-index:5;background:rgba(7,12,24,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--borde);
+    padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px}
+  header img{width:34px;height:34px;object-fit:contain}
+  .htit{flex:1;min-width:0}.htit b{display:block;font-size:15px}.htit span{font-size:12px;color:var(--sub)}
+  .htit span.sucio{color:var(--oro2)}
+  main{max-width:760px;margin:0 auto;padding:14px 14px 110px}
+  nav{position:fixed;bottom:0;left:0;right:0;z-index:5;background:#0b1220;border-top:1px solid var(--borde);display:flex;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  nav button{flex:1;background:none;border:0;padding:6px 2px;font-size:11.5px;color:var(--sub);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+  nav button i{font-style:normal;font-size:20px}
+  nav button.on{color:var(--oro2)}
+  .globo{position:absolute;top:0;right:calc(50% - 22px);background:var(--rojo);color:#fff;border-radius:10px;font-size:10.5px;padding:1px 6px;font-weight:700}
+  h2{font-size:18px;margin:4px 0 4px}
+  .ayuda{color:var(--sub);font-size:13px;line-height:1.45;margin-bottom:14px}
+  .lista{display:flex;flex-direction:column;gap:9px}
+  .item{background:var(--panel);border:1px solid var(--borde);border-radius:14px;padding:12px 13px;cursor:pointer;display:flex;gap:10px;align-items:center}
+  .item:active{transform:scale(.99)}
+  .item .txt{flex:1;min-width:0}.item b{display:block;font-size:14.5px;line-height:1.3}
+  .item small{color:var(--sub);font-size:12px;display:block;margin-top:4px;line-height:1.4}
+  .etq{display:inline-block;font-size:11px;border-radius:8px;padding:2px 7px;margin:4px 4px 0 0;background:rgba(37,99,235,.18);color:#9cc0ff}
+  .etq.oro{background:rgba(212,175,55,.15);color:var(--oro2)}
+  .flecha{color:var(--sub);font-size:18px}
+  .campo{margin-bottom:13px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{border:1px solid var(--borde);background:var(--panel2);border-radius:18px;padding:7px 11px;font-size:13px;cursor:pointer}
+  .chip.on{border-color:var(--oro);background:rgba(212,175,55,.16);color:var(--oro2);font-weight:700}
+  .fila{display:flex;gap:8px;align-items:center}
+  .interruptor{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);border:1px solid var(--borde);
+    border-radius:12px;padding:11px 12px;margin-bottom:10px;cursor:pointer}
+  .interruptor span{font-size:14px;line-height:1.35}.interruptor small{display:block;color:var(--sub);font-size:12px}
+  .sw{width:46px;height:27px;border-radius:14px;background:#2a3550;position:relative;flex:none;transition:.2s}
+  .sw:after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:.2s}
+  .on>.sw{background:var(--verde)}.on>.sw:after{left:22px}
+  .bloque{background:var(--panel);border:1px solid var(--borde);border-radius:14px;padding:13px;margin-bottom:12px}
+  .plan{background:#0b1324;border:1px solid var(--borde);border-radius:12px;padding:10px;margin-bottom:8px}
+  .plan .fila input{min-width:0}
+  details.app{background:var(--panel);border:1px solid var(--borde);border-radius:14px;margin-bottom:10px;overflow:hidden}
+  details.app summary{padding:13px;cursor:pointer;font-weight:700;list-style:none;display:flex;align-items:center;gap:9px}
+  details.app summary::-webkit-details-marker{display:none}
+  details.app summary:after{content:"▾";margin-left:auto;color:var(--sub)}
+  details.app[open] summary:after{content:"▴"}
+  details.app .cuerpo{padding:0 13px 13px}
+  .vacio{text-align:center;color:var(--sub);padding:30px 10px;font-size:14px;line-height:1.5}
+  /* hoja de edición */
+  .hoja-fondo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20}
+  .hoja{position:fixed;left:0;right:0;bottom:0;max-height:92dvh;overflow-y:auto;background:var(--fondo);border-top:1px solid rgba(212,175,55,.45);
+    border-radius:20px 20px 0 0;z-index:21;padding:16px 14px calc(18px + env(safe-area-inset-bottom))}
+  @media(min-width:760px){.hoja{left:50%;right:auto;width:720px;transform:translateX(-50%)}}
+  .hoja-cab{display:flex;align-items:center;gap:10px;margin-bottom:12px}.hoja-cab h3{flex:1;font-size:17px}
+  .acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .aviso{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;background:#14532d;color:#d1fae5;
+    border-radius:12px;padding:11px 16px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw;text-align:center}
+  .aviso.mal{background:#7f1d1d;color:#fee2e2}
+  code{background:#0b1324;border:1px solid var(--borde);border-radius:6px;padding:1px 5px;font-size:12.5px;color:var(--oro2)}
+</style>
+</head>
+<body>
+
+<!-- ============ INGRESO ============ -->
+<section id="login">
+  <div class="tarjeta">
+    <img src="../../assets/dl-company.png" alt="DL COMPANY">
+    <h1>Administrar asistente</h1>
+    <p>Ingresa con tu cuenta de administrador de DL COMPANY (la misma de DL CUADRA PRO).</p>
+    <form id="fLogin">
+      <div><label for="lEmail">Correo</label><input id="lEmail" type="email" autocomplete="username" value="d.l.company.2026@gmail.com" required></div>
+      <div><label for="lPass">Contraseña</label><input id="lPass" type="password" autocomplete="current-password" required></div>
+      <div class="error" id="lErr"></div>
+      <button class="btn oro" id="lBtn">Ingresar</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ APP ============ -->
+<section id="app" class="oculto">
+  <header>
+    <img src="../../assets/dl-company.png" alt="">
+    <div class="htit"><b>Asistente</b><span id="estado">Todo guardado ✓</span></div>
+    <button class="btn peq" id="bProbar" title="Probar el chat con estos cambios">▶ Probar</button>
+    <button class="btn oro peq" id="bGuardar">💾 Guardar</button>
+  </header>
+  <main id="vista"></main>
+  <nav>
+    <button data-t="respuestas" class="on"><i>💬</i>Respuestas</button>
+    <button data-t="apps"><i>📱</i>Apps y planes</button>
+    <button data-t="pendientes"><i>❓</i>Sin respuesta<span class="globo oculto" id="nPend"></span></button>
+    <button data-t="ajustes"><i>⚙️</i>Ajustes</button>
+  </nav>
+</section>
+
+<div id="hoja" class="oculto"></div>
+
+<script>window.DL_CHAT_APP = 'web';</script>
+<script src="../dl-chat.js"></script>
+<script>
+(function () {
+  'use strict';
+  var ADMIN = 'd.l.company.2026@gmail.com';
+  var sb = supabase.createClient('https://geesohvgkqhhlxdnovfb.supabase.co', 'sb_publishable_oozUfY-BnwMxOnoUCmfBgg_INhu8KKd', {
+    auth: { storageKey: 'dlchat-admin-auth', persistSession: true, autoRefreshToken: true },
+  });
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var copiar = function (o) { return JSON.parse(JSON.stringify(o)); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var norm = function (t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim(); };
+
+  var guardado = null, draft = null, sucio = false, tab = 'respuestas', pendientes = [], usuario = null;
+
+  /* ---------------- avisos ---------------- */
+  var tAviso;
+  function aviso(msg, mal) {
+    var d = $('.aviso') || document.body.appendChild(Object.assign(document.createElement('div'), { className: 'aviso' }));
+    d.textContent = msg; d.classList.toggle('mal', !!mal); d.classList.remove('oculto');
+    clearTimeout(tAviso); tAviso = setTimeout(function () { d.classList.add('oculto'); }, 2800);
+  }
+  function marcar() {
+    sucio = true;
+    var e = $('#estado'); e.textContent = '● Cambios sin guardar'; e.className = 'sucio';
+  }
+  function limpio() {
+    sucio = false;
+    var e = $('#estado'); e.textContent = 'Todo guardado ✓'; e.className = '';
+  }
+  window.addEventListener('beforeunload', function (e) { if (sucio) { e.preventDefault(); e.returnValue = ''; } });
+
+  /* ---------------- ingreso ---------------- */
+  $('#fLogin').onsubmit = async function (e) {
+    e.preventDefault();
+    $('#lErr').textContent = ''; $('#lBtn').disabled = true; $('#lBtn').textContent = 'Ingresando…';
+    var r = await sb.auth.signInWithPassword({ email: $('#lEmail').value.trim(), password: $('#lPass').value });
+    $('#lBtn').disabled = false; $('#lBtn').textContent = 'Ingresar';
+    if (r.error) { $('#lErr').textContent = 'Correo o contraseña incorrectos.'; return; }
+    entrar(r.data.user);
+  };
+  async function entrar(u) {
+    if (!u || String(u.email).toLowerCase() !== ADMIN) {
+      await sb.auth.signOut();
+      $('#lErr').textContent = 'Esta cuenta no es administradora del asistente.';
+      return;
+    }
+    usuario = u;
+    $('#login').classList.add('oculto'); $('#app').classList.remove('oculto');
+    await cargar();
+  }
+  sb.auth.getSession().then(function (r) { if (r.data.session) entrar(r.data.session.user); });
+
+  /* ---------------- datos ---------------- */
+  async function cargar() {
+    var r = await sb.from('chatbot_config').select('config, actualizado').eq('id', 'principal').maybeSingle();
+    if (r.error) { aviso('No se pudo cargar la configuración: ' + r.error.message, true); }
+    var base = DLChat.defecto();
+    var c = (r.data && r.data.config) || base;
+    // completar campos que falten
+    c.general = Object.assign(base.general, c.general || {});
+    c.apps = c.apps || base.apps; c.orden_apps = c.orden_apps || base.orden_apps; c.problemas = c.problemas || base.problemas;
+    guardado = copiar(c); draft = copiar(c); limpio();
+    await cargarPendientes();
+    pintar();
+  }
+  async function cargarPendientes() {
+    var r = await sb.from('chatbot_pendientes').select('id, creado, app, texto').order('creado', { ascending: false }).limit(200);
+    pendientes = r.data || [];
+    var n = $('#nPend'); n.textContent = pendientes.length; n.classList.toggle('oculto', !pendientes.length);
+  }
+  function validar() {
+    var g = draft.general;
+    if (String(g.whatsapp || '').replace(/\D/g, '').length < 10) return 'El número de WhatsApp debe tener indicativo y número (ej. 573218641539).';
+    for (var i = 0; i < draft.problemas.length; i++) {
+      var p = draft.problemas[i];
+      if (!String(p.titulo || '').trim()) return 'Hay una respuesta sin título (#' + (i + 1) + ').';
+      if (!String(p.respuesta || '').trim()) return 'La respuesta "' + p.titulo + '" no tiene texto.';
+      if (!p.claves || !p.claves.length) return 'La respuesta "' + p.titulo + '" no tiene palabras clave.';
+    }
+    return null;
+  }
+  $('#bGuardar').onclick = async function () {
+    var err = validar(); if (err) { aviso(err, true); return; }
+    var b = this; b.disabled = true; b.textContent = 'Guardando…';
+    draft.general.whatsapp = String(draft.general.whatsapp).replace(/\D/g, '');
+    var r = await sb.from('chatbot_config').upsert({ id: 'principal', config: draft, actualizado: new Date().toISOString(), actualizado_por: usuario.email });
+    b.disabled = false; b.textContent = '💾 Guardar';
+    if (r.error) { aviso('No se pudo guardar: ' + r.error.message, true); return; }
+    guardado = copiar(draft); limpio();
+    aviso('✅ Guardado. Ya se aplica en la web y en todas las apps.');
+  };
+  $('#bProbar').onclick = function () {
+    DLChat.usarConfig(copiar(draft));
+    DLChat.abrir();
+  };
+
+  /* ---------------- navegación ---------------- */
+  document.querySelectorAll('nav button').forEach(function (b) {
+    b.onclick = function () {
+      tab = b.dataset.t;
+      document.querySelectorAll('nav button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      pintar(); window.scrollTo(0, 0);
+    };
+  });
+  function pintar() {
+    var v = $('#vista');
+    if (tab === 'respuestas') v.innerHTML = vistaRespuestas();
+    if (tab === 'apps') v.innerHTML = vistaApps();
+    if (tab === 'pendientes') v.innerHTML = vistaPendientes();
+    if (tab === 'ajustes') v.innerHTML = vistaAjustes();
+    enlazar(v);
+  }
+  function nombreApp(k) { return k === '*' ? 'Todas las apps' : (draft.apps[k] ? draft.apps[k].nombre : k); }
+
+  /* ---------------- RESPUESTAS ---------------- */
+  function vistaRespuestas() {
+    var h = '<h2>💬 Respuestas</h2><p class="ayuda">Cuando el cliente escribe algo con alguna de las <b>palabras clave</b>, el asistente responde con ese texto. ' +
+      'Los títulos también salen como botones en el menú de soporte (en este orden).</p>' +
+      '<button class="btn oro" data-a="nueva" style="width:100%;margin-bottom:12px">＋ Nueva respuesta</button><div class="lista">';
+    draft.problemas.forEach(function (p, i) {
+      h += '<div class="item" data-a="editar" data-i="' + i + '"><div class="txt"><b>' + esc(p.titulo || '(sin título)') + '</b>' +
+        '<small>' + esc(String(p.respuesta || '').replace(/\*/g, '').slice(0, 90)) + '…</small>' +
+        (p.apps || ['*']).map(function (k) { return '<span class="etq">' + esc(nombreApp(k)) + '</span>'; }).join('') +
+        '<span class="etq oro">' + (p.claves || []).length + ' palabras clave</span></div><span class="flecha">›</span></div>';
+    });
+    return h + '</div>';
+  }
+
+  function editarRespuesta(i, nueva) {
+    var p = nueva ? nueva : copiar(draft.problemas[i]);
+    var apps = Object.keys(draft.apps);
+    var todas = !p.apps || p.apps.indexOf('*') !== -1;
+    var h = '<div class="hoja-cab"><h3>' + (nueva ? 'Nueva respuesta' : 'Editar respuesta') + '</h3><button class="btn peq" data-a="cerrar">✕</button></div>' +
+      campo('Título (lo que ve el cliente en el botón del menú)', '<input type="text" id="eTit" maxlength="80" value="' + esc(p.titulo) + '" placeholder="Ej: 🧾 No puedo imprimir la factura">') +
+      '<div class="campo"><label>¿En cuáles apps aplica?</label><div class="chips" id="eApps">' +
+      '<button type="button" class="chip' + (todas ? ' on' : '') + '" data-k="*">Todas</button>' +
+      apps.map(function (k) { return '<button type="button" class="chip' + (!todas && p.apps.indexOf(k) !== -1 ? ' on' : '') + '" data-k="' + k + '">' + esc(draft.apps[k].icono + ' ' + draft.apps[k].nombre) + '</button>'; }).join('') +
+      '</div></div>' +
+      campo('Palabras clave (separadas por coma). Escribe cómo lo diría el cliente.',
+        '<textarea id="eClaves" style="min-height:80px" placeholder="no imprime, impresora, factura no sale">' + esc((p.claves || []).join(', ')) + '</textarea>') +
+      campo('Respuesta', '<textarea id="eResp" style="min-height:170px">' + esc(p.respuesta) + '</textarea>') +
+      '<p class="ayuda">Usa <code>*texto*</code> para <b>negrita</b> y <code>{app}</code> para el nombre de la app. También: <code>{planes}</code> (lista de planes), ' +
+      '<code>{consejo_ingreso}</code> y <code>{consejo_datos}</code> (consejos de cada app).</p>' +
+      campo('Segunda solución (si el cliente dice que no funcionó) — opcional', '<textarea id="eAlt" style="min-height:90px">' + esc(p.alt || '') + '</textarea>') +
+      interruptor('ePreg', 'Preguntar "¿Pudiste solucionarlo?"', 'Si dice que no, da la segunda solución y luego pasa a WhatsApp.', p.preguntar !== false) +
+      interruptor('ePlanes', 'Mostrar botones para comprar planes', 'Útil para respuestas sobre límites o funciones Premium.', !!p.mostrarPlanes) +
+      '<div class="acciones"><button class="btn oro" data-a="guardarResp" style="flex:1">Listo</button>' +
+      (nueva ? '' : '<button class="btn peq" data-a="subir">↑ Subir</button><button class="btn peq" data-a="bajar">↓ Bajar</button><button class="btn rojo peq" data-a="borrarResp">🗑 Eliminar</button>') +
+      '</div>';
+    abrirHoja(h, function (hoja) {
+      hoja.querySelectorAll('#eApps .chip').forEach(function (c) {
+        c.onclick = function () {
+          if (c.dataset.k === '*') { hoja.querySelectorAll('#eApps .chip').forEach(function (x) { x.classList.toggle('on', x === c); }); return; }
+          c.classList.toggle('on'); hoja.querySelector('#eApps [data-k="*"]').classList.remove('on');
+          if (!hoja.querySelector('#eApps .chip.on')) hoja.querySelector('#eApps [data-k="*"]').classList.add('on');
+        };
+      });
+      hoja.querySelector('[data-a="guardarResp"]').onclick = function () {
+        var sel = Array.prototype.map.call(hoja.querySelectorAll('#eApps .chip.on'), function (c) { return c.dataset.k; });
+        var claves = hoja.querySelector('#eClaves').value.split(/[,\n]/).map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+        var item = Object.assign(p, {
+          titulo: hoja.querySelector('#eTit').value.trim(),
+          apps: sel.indexOf('*') !== -1 || !sel.length ? ['*'] : sel,
+          claves: claves,
+          respuesta: hoja.querySelector('#eResp').value.trim(),
+          alt: hoja.querySelector('#eAlt').value.trim() || undefined,
+          preguntar: hoja.querySelector('#ePreg').classList.contains('on'),
+          mostrarPlanes: hoja.querySelector('#ePlanes').classList.contains('on'),
+        });
+        if (!item.titulo || !item.respuesta || !item.claves.length) { aviso('Completa el título, las palabras clave y la respuesta.', true); return; }
+        if (!item.id) item.id = 'r' + Date.now().toString(36);
+        if (nueva) draft.problemas.unshift(item); else draft.problemas[i] = item;
+        marcar(); cerrarHoja(); pintar(); aviso('Listo. Recuerda tocar 💾 Guardar.');
+      };
+      var b;
+      if ((b = hoja.querySelector('[data-a="borrarResp"]'))) b.onclick = function () {
+        if (b.dataset.ok) { draft.problemas.splice(i, 1); marcar(); cerrarHoja(); pintar(); return; }
+        b.dataset.ok = 1; b.textContent = '¿Seguro? Toca otra vez';
+      };
+      if ((b = hoja.querySelector('[data-a="subir"]'))) b.onclick = function () { mover(i, -1); };
+      if ((b = hoja.querySelector('[data-a="bajar"]'))) b.onclick = function () { mover(i, 1); };
+    });
+  }
+  function mover(i, d) {
+    var j = i + d; if (j < 0 || j >= draft.problemas.length) return;
+    var t = draft.problemas[i]; draft.problemas[i] = draft.problemas[j]; draft.problemas[j] = t;
+    marcar(); cerrarHoja(); pintar(); aviso(d < 0 ? 'Subió un puesto' : 'Bajó un puesto');
+  }
+
+  /* ---------------- APPS Y PLANES ---------------- */
+  function vistaApps() {
+    var h = '<h2>📱 Apps y planes</h2><p class="ayuda">Lo que el asistente dice de cada app: descripción, precios y cómo se paga y activa el plan. ' +
+      'Los precios son mensuales, en pesos y sin puntos.</p>';
+    Object.keys(draft.apps).forEach(function (k) {
+      var a = draft.apps[k], enMenu = draft.orden_apps.indexOf(k) !== -1;
+      h += '<details class="app" data-k="' + k + '"><summary>' + esc(a.icono + ' ' + a.nombre) + '</summary><div class="cuerpo">' +
+        '<div class="fila"><div class="campo" style="width:70px"><label>Ícono</label><input type="text" data-f="icono" value="' + esc(a.icono) + '"></div>' +
+        '<div class="campo" style="flex:1"><label>Nombre</label><input type="text" data-f="nombre" value="' + esc(a.nombre) + '"></div></div>' +
+        campo('Descripción', '<textarea data-f="desc" style="min-height:80px">' + esc(a.desc) + '</textarea>') +
+        campo('Enlace de la app', '<input type="text" data-f="url" value="' + esc(a.url) + '">') +
+        campo('Palabras con las que el cliente nombra esta app (separadas por coma)', '<input type="text" data-f="claves" data-lista="1" value="' + esc((a.claves || []).join(', ')) + '">') +
+        campo('Cómo se paga', '<textarea data-f="pago" style="min-height:70px">' + esc(a.pago) + '</textarea>') +
+        campo('Cómo se activa el plan después de pagar', '<textarea data-f="activar" style="min-height:80px">' + esc(a.activar) + '</textarea>') +
+        campo('Consejo de ingreso <code>{consejo_ingreso}</code> — opcional', '<textarea data-f="login" style="min-height:70px">' + esc(a.login || '') + '</textarea>') +
+        campo('Consejo de datos <code>{consejo_datos}</code> — opcional', '<textarea data-f="gratisLocal" style="min-height:70px">' + esc(a.gratisLocal || '') + '</textarea>') +
+        interruptor('m_' + k, 'Mostrar en el menú de apps', 'En la lista de apps de la página web y del soporte.', enMenu, 'menu') +
+        interruptor('a_' + k, 'Ofrecer pago anual (14 meses por 12)', '', !a.sinAnual, 'anual') +
+        interruptor('c_' + k, 'Usa código de activación', 'Si está apagado, no aparece la opción "Mi código no funciona".', !a.sinCodigo, 'codigo') +
+        '<label style="margin-top:6px">Planes</label><div class="planes">' +
+        (a.planes || []).map(function (p, j) {
+          return '<div class="plan" data-j="' + j + '"><div class="fila"><input type="text" data-p="n" value="' + esc(p.n) + '" placeholder="Nombre" style="flex:1.3">' +
+            '<input type="number" data-p="p" value="' + (p.p || 0) + '" placeholder="Precio" inputmode="numeric" style="flex:1">' +
+            '<input type="number" data-p="antes" value="' + (p.antes || '') + '" placeholder="Antes" inputmode="numeric" style="flex:1"></div>' +
+            '<div class="fila" style="margin-top:7px"><input type="text" data-p="inc" value="' + esc(p.inc) + '" placeholder="Qué incluye" style="flex:1">' +
+            '<button class="btn rojo peq" data-a="quitarPlan" data-k="' + k + '" data-j="' + j + '">✕</button></div></div>';
+        }).join('') + '</div><button class="btn peq" data-a="agregarPlan" data-k="' + k + '">＋ Agregar plan</button>' +
+        '</div></details>';
+    });
+    return h;
+  }
+
+  /* ---------------- SIN RESPUESTA ---------------- */
+  function vistaPendientes() {
+    var h = '<h2>❓ Preguntas sin respuesta</h2><p class="ayuda">Lo que escribieron los clientes y el asistente no entendió. ' +
+      'Toca <b>Crear respuesta</b> para enseñarle, o bórrala si no hace falta.</p>';
+    if (!pendientes.length) return h + '<div class="vacio">🎉 No hay preguntas pendientes.<br>Aquí aparecerán cuando el asistente no entienda algo.</div>';
+    h += '<div class="lista">';
+    pendientes.forEach(function (q, i) {
+      var f = new Date(q.creado).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+      h += '<div class="bloque" style="margin:0"><b style="font-size:14.5px;line-height:1.4;display:block">"' + esc(q.texto) + '"</b>' +
+        '<small style="color:var(--sub);font-size:12px">' + esc(nombreApp(q.app) || q.app) + ' · ' + esc(f) + '</small>' +
+        '<div class="acciones"><button class="btn azul peq" data-a="crearDe" data-i="' + i + '">＋ Crear respuesta</button>' +
+        '<button class="btn rojo peq" data-a="borrarPend" data-i="' + i + '">Borrar</button></div></div>';
+    });
+    return h + '</div>';
+  }
+
+  /* ---------------- AJUSTES ---------------- */
+  function vistaAjustes() {
+    var g = draft.general;
+    return '<h2>⚙️ Ajustes</h2><p class="ayuda">Configuración general del asistente.</p>' +
+      interruptor('gActivo', 'Asistente activo', 'Si lo apagas, los botones de las apps van directo a WhatsApp como antes.', g.activo !== false, 'activo') +
+      '<div class="bloque">' +
+      campo('Nombre de la empresa <code>{empresa}</code>', '<input type="text" data-g="empresa" value="' + esc(g.empresa) + '">') +
+      campo('WhatsApp donde llegan los casos (con indicativo, sin +)', '<input type="tel" data-g="whatsapp" value="' + esc(g.whatsapp) + '" inputmode="numeric">') +
+      campo('Mensaje al pasar a un asesor', '<textarea data-g="mensajeAsesor">' + esc(g.mensajeAsesor) + '</textarea>') +
+      campo('Mensaje de despedida', '<textarea data-g="mensajeDespedida">' + esc(g.mensajeDespedida) + '</textarea>') +
+      '</div>' +
+      '<div class="bloque"><b>Probar el chat</b><p class="ayuda" style="margin:6px 0 10px">Toca <b>▶ Probar</b> arriba para chatear con tus cambios antes de guardarlos. ' +
+      'Las pruebas no se guardan como preguntas sin respuesta.</p>' +
+      '<div class="acciones"><button class="btn peq" data-a="descartar">↺ Descartar cambios sin guardar</button>' +
+      '<button class="btn peq" data-a="fabrica">⟲ Restaurar respuestas originales</button></div></div>' +
+      '<div class="bloque"><small style="color:var(--sub)">Sesión: ' + esc(usuario.email) + '</small>' +
+      '<div class="acciones"><button class="btn rojo peq" data-a="salir">Cerrar sesión</button></div></div>';
+  }
+
+  /* ---------------- componentes ---------------- */
+  function campo(label, control) { return '<div class="campo"><label>' + label + '</label>' + control + '</div>'; }
+  function interruptor(id, titulo, sub, on, tipo) {
+    return '<div class="interruptor' + (on ? ' on' : '') + '" id="' + id + '"' + (tipo ? ' data-sw="' + tipo + '"' : '') + ' role="switch" aria-checked="' + !!on + '">' +
+      '<span>' + esc(titulo) + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span><div class="sw"></div></div>';
+  }
+  function abrirHoja(html, alAbrir) {
+    var c = $('#hoja');
+    c.innerHTML = '<div class="hoja-fondo"></div><div class="hoja">' + html + '</div>';
+    c.classList.remove('oculto'); document.body.style.overflow = 'hidden';
+    c.querySelector('.hoja-fondo').onclick = cerrarHoja;
+    c.querySelector('[data-a="cerrar"]').onclick = cerrarHoja;
+    c.querySelectorAll('.interruptor').forEach(function (s) { s.onclick = function () { s.classList.toggle('on'); }; });
+    alAbrir(c.querySelector('.hoja'));
+  }
+  function cerrarHoja() { $('#hoja').classList.add('oculto'); $('#hoja').innerHTML = ''; document.body.style.overflow = ''; }
+
+  /* ---------------- eventos de cada vista ---------------- */
+  function enlazar(v) {
+    v.querySelectorAll('[data-a]').forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        var a = b.dataset.a, i = Number(b.dataset.i);
+        if (a === 'nueva') editarRespuesta(null, { titulo: '', apps: ['*'], claves: [], respuesta: '' });
+        if (a === 'editar') editarRespuesta(i);
+        if (a === 'agregarPlan') { e.preventDefault(); draft.apps[b.dataset.k].planes.push({ id: '', n: '', p: 0, inc: '' }); marcar(); pintarAbierta(b.dataset.k); }
+        if (a === 'quitarPlan') { e.preventDefault(); draft.apps[b.dataset.k].planes.splice(Number(b.dataset.j), 1); marcar(); pintarAbierta(b.dataset.k); }
+        if (a === 'crearDe') {
+          var q = pendientes[i];
+          editarRespuesta(null, { titulo: '', apps: q.app && draft.apps[q.app] ? [q.app] : ['*'], claves: [norm(q.texto).split(' ').slice(0, 6).join(' ')], respuesta: '', _pend: q.id });
+        }
+        if (a === 'borrarPend') borrarPendiente(pendientes[i].id);
+        if (a === 'descartar') { draft = copiar(guardado); limpio(); pintar(); aviso('Cambios descartados'); }
+        if (a === 'fabrica') {
+          if (!b.dataset.ok) { b.dataset.ok = 1; b.textContent = '¿Seguro? Toca otra vez'; return; }
+          draft.problemas = DLChat.defecto().problemas; marcar(); pintar(); aviso('Respuestas originales cargadas. Toca 💾 Guardar para aplicarlas.');
+        }
+        if (a === 'salir') { if (sucio && !b.dataset.ok) { b.dataset.ok = 1; b.textContent = 'Hay cambios sin guardar. ¿Salir igual?'; return; } sucio = false; sb.auth.signOut().then(function () { location.reload(); }); }
+      });
+    });
+    // interruptores de apps y ajustes
+    v.querySelectorAll('.interruptor[data-sw]').forEach(function (s) {
+      s.onclick = function () {
+        s.classList.toggle('on'); var on = s.classList.contains('on'), t = s.dataset.sw;
+        if (t === 'activo') draft.general.activo = on;
+        else {
+          var k = s.closest('details').dataset.k;
+          if (t === 'menu') { draft.orden_apps = draft.orden_apps.filter(function (x) { return x !== k; }); if (on) draft.orden_apps.push(k); }
+          if (t === 'anual') { if (on) delete draft.apps[k].sinAnual; else draft.apps[k].sinAnual = true; }
+          if (t === 'codigo') { if (on) delete draft.apps[k].sinCodigo; else draft.apps[k].sinCodigo = true; }
+        }
+        marcar();
+      };
+    });
+    // campos de apps
+    v.querySelectorAll('details.app [data-f]').forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        var k = inp.closest('details').dataset.k, f = inp.dataset.f;
+        draft.apps[k][f] = inp.dataset.lista ? inp.value.split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean) : (inp.value.trim() ? inp.value : null);
+        marcar();
+      });
+    });
+    v.querySelectorAll('.plan [data-p]').forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        var k = inp.closest('details').dataset.k, j = Number(inp.closest('.plan').dataset.j), p = draft.apps[k].planes[j], f = inp.dataset.p;
+        if (f === 'p' || f === 'antes') { var n = Math.round(Number(inp.value) || 0); if (f === 'antes' && !n) delete p.antes; else p[f] = n; }
+        else p[f] = inp.value;
+        if (f === 'n') p.id = norm(inp.value).split(' ')[0] || ('plan' + j);
+        marcar();
+      });
+    });
+    // ajustes generales
+    v.querySelectorAll('[data-g]').forEach(function (inp) {
+      inp.addEventListener('input', function () { draft.general[inp.dataset.g] = inp.value; marcar(); });
+    });
+  }
+  function pintarAbierta(k) { pintar(); var d = $('details.app[data-k="' + k + '"]'); if (d) d.open = true; }
+
+  async function borrarPendiente(id) {
+    var r = await sb.from('chatbot_pendientes').delete().eq('id', id);
+    if (r.error) { aviso('No se pudo borrar: ' + r.error.message, true); return; }
+    await cargarPendientes(); pintar();
+  }
+  // al crear una respuesta desde una pregunta pendiente, borrar la pendiente
+  var resolverOriginal = editarRespuesta;
+  editarRespuesta = function (i, nueva) {
+    resolverOriginal(i, nueva);
+    if (nueva && nueva._pend) {
+      var idPend = nueva._pend;
+      var btn = document.querySelector('#hoja [data-a="guardarResp"]'), viejo = btn.onclick;
+      btn.onclick = function () {
+        var antes = draft.problemas.length; viejo.call(btn);
+        if (draft.problemas.length > antes) { delete draft.problemas[0]._pend; borrarPendiente(idPend); }
+      };
+    }
+  };
+})();
+</script>
+</body>
+</html>

@@ -10,14 +10,15 @@
  *   <script src="https://dl-company-technology.github.io/chat/dl-chat.js" async></script>
  *
  * Valores de DL_CHAT_APP: web, finanzas, stock, cuadra, comanda, arte
- * Para cambiar respuestas, precios o planes: edita la sección CONOCIMIENTO.
+ * Respuestas, precios y planes se editan en la app de administración:
+ *   https://dl-company-technology.github.io/chat/admin/
+ * (lo de este archivo es solo la configuración de respaldo si no hay internet).
  */
 (function () {
   'use strict';
   if (window.DLChat) return;
 
-  var WA_NUMERO = '573218641539';
-  var EMPRESA = 'DL COMPANY -TECHNOLOGY-';
+  var NUMERO_BOTONES = '573218641539'; // número que usan los botones de las apps
   var WEB = 'https://dl-company-technology.github.io/';
   var script = document.currentScript;
   var APP_ACTUAL = String(window.DL_CHAT_APP || (script && script.getAttribute('data-app')) || '').toLowerCase();
@@ -28,7 +29,7 @@
   var PAGO_DEFECTO = 'Te respondemos con los *datos para el pago* (Nequi o transferencia).';
   var ACTIVAR_CODIGO_CUADRA = 'Te enviamos tu *código de activación*. Lo escribes en *Planes → 🔑 ¿Ya pagaste? Activa tu código* y listo, sin perder tus datos.';
 
-  var APPS = {
+  var APPS_DEF = {
     finanzas: {
       nombre: 'DL FINANZAS', icono: '💰', url: WEB + 'dl-finanzas/',
       claves: ['dl finanzas', 'finanzas', 'gastos', 'presupuesto'],
@@ -104,113 +105,145 @@
       sinAnual: true,
     },
   };
-  var ORDEN_APPS = ['finanzas', 'stock', 'cuadra', 'comanda'];
-
-  // Problemas de soporte. "apps": a cuáles aplica ('*' = todas)
-  var PROBLEMAS = [
+  // Preguntas y respuestas (se editan desde la app de administración).
+  // "apps": a cuáles aplica ('*' = todas). En la respuesta puedes usar:
+  //   {app} nombre de la app · {consejo_ingreso} · {consejo_datos} · {planes} lista corta de planes
+  var PROBLEMAS_DEF = [
     {
       id: 'correo_no_llega', titulo: '📧 No me llega el correo para cambiar la contraseña', apps: ['*'],
       claves: ['no me llega el correo', 'no llega el correo', 'no me llego el correo', 'no me llega el link', 'no llega el link',
         'no me llega el enlace', 'no llega el enlace', 'no recibo el correo', 'no me ha llegado', 'recuperar mi contrasena', 'recuperar la contrasena'],
-      resp: function (a) {
-        return 'Entendido 📧. Revisa esto:\n\n1. Busca el correo en *Spam* o *Correo no deseado* (y en *Promociones* si usas Gmail).\n' +
-          '2. Espera unos 5 minutos, a veces tarda.\n3. Verifica que escribiste el correo *exactamente igual* al de tu cuenta de ' + a.nombre + '.\n\n' +
-          'Luego vuelve a pedirlo desde *¿Olvidaste tu contraseña?*' + (a.login && /Google/.test(a.login) ? '\n\n💡 ' + a.login : '');
-      },
+      respuesta: 'Entendido 📧. Revisa esto:\n\n1. Busca el correo en *Spam* o *Correo no deseado* (y en *Promociones* si usas Gmail).\n' +
+        '2. Espera unos 5 minutos, a veces tarda.\n3. Verifica que escribiste el correo *exactamente igual* al de tu cuenta de {app}.\n\n' +
+        'Luego vuelve a pedirlo desde *¿Olvidaste tu contraseña?*',
     },
     {
       id: 'login', titulo: '🔐 No puedo ingresar a mi cuenta', apps: ['*'],
       claves: ['no puedo ingresar', 'no puedo entrar', 'no puedo acceder', 'no me deja entrar', 'no me deja ingresar', 'iniciar sesion',
         'no inicia sesion', 'contrasena', 'clave', 'incorrecta', 'incorrecto', 'esta mal', 'olvide', 'no recuerdo', 'pin', 'acceder a mi cuenta', 'ingresar a mi cuenta'],
-      resp: function (a) {
-        return 'Listo, para solucionar ese problema 🔐:\n\nEn la pantalla de ingreso, debajo de donde escribes tus datos, toca *¿Olvidaste tu contraseña?*. ' +
-          'Te llega un link a tu correo para crear una contraseña nueva y recuperas tu cuenta *sin perder los datos* de ' + a.nombre + '.' +
-          (a.login ? '\n\n💡 ' + a.login : '');
-      },
-      alt: function () {
-        return 'Intentemos esto 👇\n\n1. Revisa que el correo esté bien escrito y *sin espacios* al final.\n2. Toca el 👁️ para ver la contraseña mientras la escribes.\n' +
-          '3. Si el link no llega, búscalo en *Spam* o *Correo no deseado*.';
-      },
+      respuesta: 'Listo, para solucionar ese problema 🔐:\n\nEn la pantalla de ingreso, debajo de donde escribes tus datos, toca *¿Olvidaste tu contraseña?*. ' +
+        'Te llega un link a tu correo para crear una contraseña nueva y recuperas tu cuenta *sin perder los datos* de {app}.{consejo_ingreso}',
+      alt: 'Intentemos esto 👇\n\n1. Revisa que el correo esté bien escrito y *sin espacios* al final.\n2. Toca el 👁️ para ver la contraseña mientras la escribes.\n' +
+        '3. Si el link no llega, búscalo en *Spam* o *Correo no deseado*.',
     },
     {
       id: 'crear_cuenta', titulo: '🆕 No sé cómo crear mi cuenta', apps: ['*'],
       claves: ['crear mi cuenta', 'crear una cuenta', 'crear cuenta', 'registrarme', 'registrarse', 'como me registro', 'abrir cuenta'],
-      resp: function (a, k) {
-        var extra = k === 'cuadra' ? '\n\nSi prefieres, usa *Déjanos tus datos* (tu nombre, negocio, celular y correo) y nosotros te creamos la cuenta.' : '';
-        return 'Crear tu cuenta es gratis 🙌:\n\n1. Abre ' + a.nombre + ' y en la pantalla de ingreso toca *Crear cuenta*.\n' +
-          '2. Escribe tu correo y una contraseña (mínimo 6 caracteres).\n3. Acepta los términos y listo: ya puedes usar el plan Gratis.' + extra;
-      },
+      respuesta: 'Crear tu cuenta es gratis 🙌:\n\n1. Abre {app} y en la pantalla de ingreso toca *Crear cuenta*.\n' +
+        '2. Escribe tu correo y una contraseña (mínimo 6 caracteres).\n3. Acepta los términos y listo: ya puedes usar el plan Gratis.',
+      porApp: { cuadra: 'Si prefieres, usa *Déjanos tus datos* (tu nombre, negocio, celular y correo) y nosotros te creamos la cuenta.' },
     },
     {
       id: 'no_carga', titulo: '⏳ La app no abre, se cierra o se queda cargando', apps: ['*'],
       claves: ['no abre', 'no me abre', 'no carga', 'no me carga', 'se cierra', 'se queda cargando', 'se queda pegada', 'pantalla blanca',
         'pantalla en blanco', 'se congela', 'se traba', 'lenta', 'no funciona', 'no sirve', 'error', 'falla', 'se bloquea'],
-      resp: function (a) {
-        return 'Vamos a solucionarlo 🛠️. Hazlo en orden:\n\n1. Revisa que tengas *internet*.\n2. Cierra ' + a.nombre + ' por completo y vuelve a abrirla.\n' +
-          '3. Si la usas en el navegador, *recarga la página*.\n4. Si la instalaste en el celular, ábrela una vez desde el navegador para que se actualice a la última versión.';
-      },
-      alt: function () { return 'Prueba también *reiniciar el celular* o computador y abrir la app de nuevo. Si tu plan tiene nube, tus datos están guardados y no se pierden 👍'; },
+      respuesta: 'Vamos a solucionarlo 🛠️. Hazlo en orden:\n\n1. Revisa que tengas *internet*.\n2. Cierra {app} por completo y vuelve a abrirla.\n' +
+        '3. Si la usas en el navegador, *recarga la página*.\n4. Si la instalaste en el celular, ábrela una vez desde el navegador para que se actualice a la última versión.',
+      alt: 'Prueba también *reiniciar el celular* o computador y abrir la app de nuevo. Si tu plan tiene nube, tus datos están guardados y no se pierden 👍',
     },
     {
       id: 'datos', titulo: '🗂️ No aparecen mis datos o no se sincronizan', apps: ['*'],
       claves: ['no aparecen', 'no aparece', 'no me aparece', 'se borraron', 'se borro', 'perdi', 'desaparecio', 'desaparecieron', 'no se guardo',
         'no guarda', 'no sincroniza', 'no se sincroniza', 'otro celular', 'el computador', 'no se actualiza', 'mis datos'],
-      resp: function (a) {
-        return 'Revisemos tus datos 🗂️:\n\n1. Ingresa con la *misma cuenta* (correo) con la que guardaste la información.\n2. Ten internet al guardar.\n' +
-          '3. Cierra y abre la app para que se actualice.' + (a.gratisLocal ? '\n\n💡 ' + a.gratisLocal : '');
-      },
+      respuesta: 'Revisemos tus datos 🗂️:\n\n1. Ingresa con la *misma cuenta* (correo) con la que guardaste la información.\n2. Ten internet al guardar.\n' +
+        '3. Cierra y abre la app para que se actualice.{consejo_datos}',
     },
     {
       id: 'instalar', titulo: '📲 Instalar la app en el celular', apps: ['*'],
       claves: ['instalar', 'descargar', 'pantalla de inicio', 'icono', 'como la bajo', 'play store', 'app store'],
-      resp: function (a) {
-        return 'La app se instala desde el navegador, sin tienda 📲:\n\n*Android (Chrome):* abre ' + a.nombre + ', toca los *⋮ tres puntos* → *Instalar app* o *Agregar a pantalla de inicio*.\n\n' +
-          '*iPhone (Safari):* toca *Compartir* (el cuadrito con flecha) → *Agregar a inicio*.';
-      },
+      respuesta: 'La app se instala desde el navegador, sin tienda 📲:\n\n*Android (Chrome):* abre {app}, toca los *⋮ tres puntos* → *Instalar app* o *Agregar a pantalla de inicio*.\n\n' +
+        '*iPhone (Safari):* toca *Compartir* (el cuadrito con flecha) → *Agregar a inicio*.',
     },
     {
       id: 'limite', titulo: '🔒 Me dice que llegué al límite o que es Premium', apps: ['*'],
       claves: ['limite', 'no me deja agregar', 'no deja agregar', 'no puedo agregar', 'bloqueado', 'bloqueada', 'candado', 'mejora tu plan', 'es premium', 'dice premium'],
-      resp: function (a) {
-        return 'Eso pasa cuando llegas al límite de tu plan 🔒. Estos son los planes de ' + a.nombre + ':\n\n' + textoPlanes(a, true) +
-          '\n\nCon un plan mayor se desbloquea al instante y *no pierdes tus datos*.';
-      },
-      sigue: 'planes',
+      respuesta: 'Eso pasa cuando llegas al límite de tu plan 🔒. Estos son los planes de {app}:\n\n{planes}\n\nCon un plan mayor se desbloquea al instante y *no pierdes tus datos*.',
+      mostrarPlanes: true, preguntar: false,
     },
     {
       id: 'escaner', titulo: '📷 El escáner no lee los códigos', apps: ['stock', 'cuadra', 'comanda'],
       claves: ['escaner', 'escanear', 'camara', 'codigo de barras', 'no lee', 'no escanea'],
-      resp: function () {
-        return 'Para que el escáner lea bien 📷:\n\n1. Cuando el navegador pregunte, toca *Permitir* el uso de la cámara.\n2. Busca buena luz (o enciende la *linterna*) y acerca o aleja el código hasta que enfoque.\n' +
-          '3. Si no lo lee, puedes *escribir el código* a mano.';
-      },
-      alt: function () { return 'Si la cámara no abre: revisa en los ajustes del celular que el navegador tenga permiso de *cámara*, cierra la app y vuelve a abrirla.'; },
+      respuesta: 'Para que el escáner lea bien 📷:\n\n1. Cuando el navegador pregunte, toca *Permitir* el uso de la cámara.\n2. Busca buena luz (o enciende la *linterna*) y acerca o aleja el código hasta que enfoque.\n' +
+        '3. Si no lo lee, puedes *escribir el código* a mano.',
+      alt: 'Si la cámara no abre: revisa en los ajustes del celular que el navegador tenga permiso de *cámara*, cierra la app y vuelve a abrirla.',
     },
     {
       id: 'caja', titulo: '💵 La caja del día no me cuadra', apps: ['cuadra', 'comanda'],
       claves: ['no cuadra', 'no me cuadra', 'descuadre', 'falta plata', 'falta dinero', 'sobra plata', 'cierre de caja', 'cierre del dia'],
-      resp: function () {
-        return 'Revisemos el cierre 💵:\n\n1. Mira el *cierre del día*: ventas, gastos y efectivo que debe haber en caja.\n2. Verifica que no haya ventas *pendientes por enviar* (las ventas sin internet se envían solas al volver la señal).\n' +
-          '3. Revisa *gastos* o *fiados* sin registrar y ventas duplicadas.\n4. Confirma que estás viendo la *sede y la fecha* correctas.';
-      },
+      respuesta: 'Revisemos el cierre 💵:\n\n1. Mira el *cierre del día*: ventas, gastos y efectivo que debe haber en caja.\n2. Verifica que no haya ventas *pendientes por enviar* (las ventas sin internet se envían solas al volver la señal).\n' +
+        '3. Revisa *gastos* o *fiados* sin registrar y ventas duplicadas.\n4. Confirma que estás viendo la *sede y la fecha* correctas.',
     },
     {
       id: 'cocina', titulo: '🔔 Los pedidos no llegan o no suenan en cocina', apps: ['comanda'],
       claves: ['no llega a cocina', 'no llegan a cocina', 'no llegan los pedidos', 'no suena', 'no avisa', 'no vibra', 'sonido', 'cocina no recibe'],
-      resp: function () {
-        return 'Para que cocina reciba y avise 🔔:\n\n1. Cocina debe tener *su usuario abierto* y con internet.\n2. Toca *Activar avisos* en ese equipo y sube el volumen.\n' +
-          '3. No dejes la app minimizada mucho tiempo: algunos celulares la pausan para ahorrar batería.';
-      },
+      respuesta: 'Para que cocina reciba y avise 🔔:\n\n1. Cocina debe tener *su usuario abierto* y con internet.\n2. Toca *Activar avisos* en ese equipo y sube el volumen.\n' +
+        '3. No dejes la app minimizada mucho tiempo: algunos celulares la pausan para ahorrar batería.',
     },
     {
       id: 'videos', titulo: '🎬 Los videos o cursos no cargan', apps: ['arte'],
       claves: ['video', 'videos', 'no reproduce', 'curso bloqueado', 'cursos bloqueados', 'no carga el video'],
-      resp: function () {
-        return 'Para ver los cursos 🎬:\n\n1. Revisa tu conexión a internet (los videos necesitan buena señal).\n2. Cierra y abre la app.\n' +
-          '3. Si un curso tiene 🔒, es de un plan superior: los marcados *NUEVO* son exclusivos de *Premium*.';
-      },
+      respuesta: 'Para ver los cursos 🎬:\n\n1. Revisa tu conexión a internet (los videos necesitan buena señal).\n2. Cierra y abre la app.\n' +
+        '3. Si un curso tiene 🔒, es de un plan superior: los marcados *NUEVO* son exclusivos de *Premium*.',
     },
   ];
+
+  var GENERAL_DEF = {
+    activo: true,
+    empresa: 'DL COMPANY -TECHNOLOGY-',
+    whatsapp: '573218641539',
+    mensajeAsesor: 'Te comunico con un asesor de *{empresa}* 👨‍💻.\n\nToca *Continuar en WhatsApp*: tu caso va *ya resumido* para que no tengas que repetirlo, y te responderemos lo antes posible.',
+    mensajeDespedida: '¡Con mucho gusto! 😊 Fue un placer ayudarte. Si necesitas algo más, aquí estoy.\n\n— *{empresa}*',
+  };
+
+  var DEFECTO = { version: 1, general: GENERAL_DEF, apps: APPS_DEF, orden_apps: ['finanzas', 'stock', 'cuadra', 'comanda'], problemas: PROBLEMAS_DEF };
+  function copiar(o) { return JSON.parse(JSON.stringify(o)); }
+
+  // Configuración activa (se reemplaza con la que guardas en la app de administración)
+  var CFG, APPS, ORDEN_APPS, PROBLEMAS, GENERAL, WA_NUMERO, EMPRESA;
+  function aplicarConfig(c) {
+    var base = copiar(DEFECTO);
+    c = c && typeof c === 'object' ? c : {};
+    CFG = {
+      version: 1,
+      general: Object.assign(base.general, c.general || {}),
+      apps: c.apps && Object.keys(c.apps).length ? c.apps : base.apps,
+      orden_apps: c.orden_apps && c.orden_apps.length ? c.orden_apps : base.orden_apps,
+      problemas: Array.isArray(c.problemas) ? c.problemas : base.problemas,
+    };
+    APPS = CFG.apps; ORDEN_APPS = CFG.orden_apps.filter(function (k) { return APPS[k]; });
+    PROBLEMAS = CFG.problemas.filter(function (p) { return p && p.titulo && p.respuesta; })
+      .map(function (p) { p.apps = p.apps && p.apps.length ? p.apps : ['*']; p.claves = p.claves || []; return p; });
+    GENERAL = CFG.general; WA_NUMERO = String(GENERAL.whatsapp || GENERAL_DEF.whatsapp).replace(/\D/g, ''); EMPRESA = GENERAL.empresa || GENERAL_DEF.empresa;
+  }
+  aplicarConfig(null);
+
+  // Nube (Supabase): lectura pública de la configuración y reporte de preguntas sin respuesta
+  var NUBE = {
+    url: 'https://geesohvgkqhhlxdnovfb.supabase.co/rest/v1/',
+    llave: 'sb_publishable_oozUfY-BnwMxOnoUCmfBgg_INhu8KKd',
+  };
+  var CACHE = 'dlchat_config_v1';
+  var configFija = false; // true cuando la app de administración está probando cambios
+  try { var guardada = localStorage.getItem(CACHE); if (guardada) aplicarConfig(JSON.parse(guardada)); } catch (e) {}
+  try {
+    fetch(NUBE.url + 'chatbot_config?id=eq.principal&select=config', { headers: { apikey: NUBE.llave, Authorization: 'Bearer ' + NUBE.llave } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (filas) {
+        if (!filas || !filas[0] || configFija) return;
+        aplicarConfig(filas[0].config);
+        try { localStorage.setItem(CACHE, JSON.stringify(filas[0].config)); } catch (e) {}
+      }).catch(function () {});
+  } catch (e) {}
+  function reportarPendiente(texto) {
+    if (configFija) return;
+    try {
+      fetch(NUBE.url + 'chatbot_pendientes', {
+        method: 'POST',
+        headers: { apikey: NUBE.llave, Authorization: 'Bearer ' + NUBE.llave, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ app: (st && st.app) || APP_ACTUAL || 'web', texto: String(texto).slice(0, 500) }),
+      }).catch(function () {});
+    } catch (e) {}
+  }
 
   /* =====================================================================
    * UTILIDADES
@@ -378,21 +411,35 @@
       lista.map(function (p) { return { t: p.titulo, a: 'prob:' + p.id }; }).concat([CH.asesor]));
   }
 
+  function textoRespuesta(p, campo) {
+    var a = APPS[st.app] || { nombre: 'la app', planes: [] };
+    var t = String(p[campo] || '')
+      .replace(/\{app\}/g, a.nombre)
+      .replace(/\{empresa\}/g, EMPRESA)
+      .replace(/\{consejo_ingreso\}/g, a.login ? '\n\n💡 ' + a.login : '')
+      .replace(/\{consejo_datos\}/g, a.gratisLocal ? '\n\n💡 ' + a.gratisLocal : '')
+      .replace(/\{planes\}/g, a.planes && a.planes.length ? textoPlanes(a, true) : '');
+    if (campo === 'respuesta' && p.porApp && p.porApp[st.app]) t += '\n\n' + p.porApp[st.app];
+    return t;
+  }
+
   function resolver(p) {
     var a = APPS[st.app];
     st.problema = p; st.alternativa = false; st.modo = 'confirmar';
     nota('Problema: ' + p.titulo.replace(/^\S+\s/, ''));
-    if (p.sigue === 'planes') {
+    var texto = textoRespuesta(p, 'respuesta');
+    if (p.mostrarPlanes) {
       st.modo = null;
-      return r(p.resp(a, st.app), a.planes.filter(function (x) { return x.p; }).map(function (x) { return { t: 'Quiero ' + x.n, a: 'plan:' + x.id }; }).concat([CH.otra]));
+      return r(texto, a.planes.filter(function (x) { return x.p; }).map(function (x) { return { t: 'Quiero ' + x.n, a: 'plan:' + x.id }; }).concat([CH.otra]));
     }
-    return r(p.resp(a, st.app) + '\n\n¿Pudiste solucionarlo?', [{ t: '✅ Sí, gracias', a: 'si' }, { t: '❌ No, sigue igual', a: 'no' }]);
+    if (p.preguntar === false) { st.modo = null; return r(texto, [CH.otra, CH.asesor]); }
+    return r(texto + '\n\n¿Pudiste solucionarlo?', [{ t: '✅ Sí, gracias', a: 'si' }, { t: '❌ No, sigue igual', a: 'no' }]);
   }
 
   function aAsesor(motivo) {
     st.modo = null;
     if (motivo) nota(motivo);
-    return r('Te comunico con un asesor de *' + EMPRESA + '* 👨‍💻.\n\nToca *Continuar en WhatsApp*: tu caso va *ya resumido* para que no tengas que repetirlo, y te responderemos lo antes posible.',
+    return r(String(GENERAL.mensajeAsesor || GENERAL_DEF.mensajeAsesor).replace(/\{empresa\}/g, EMPRESA),
       [CH.wa, CH.menu]);
   }
 
@@ -420,7 +467,7 @@
 
   function despedida() {
     st.modo = null;
-    return r('¡Con mucho gusto! 😊 Fue un placer ayudarte. Si necesitas algo más, aquí estoy.\n\n— *' + EMPRESA + '*', [CH.menu]);
+    return r(String(GENERAL.mensajeDespedida || GENERAL_DEF.mensajeDespedida).replace(/\{empresa\}/g, EMPRESA), [CH.menu]);
   }
 
   // ----- primer mensaje (lo que traía el botón) -----
@@ -491,6 +538,7 @@
 
     st.fallos++;
     nota('Escribió: "' + texto.slice(0, 200) + '"');
+    reportarPendiente(texto);
     if (st.fallos >= 2) return aAsesor('El asistente no entendió el caso');
     return st.app ? soporte('Quiero ayudarte bien 🙏 pero no logré entenderlo. ¿Es alguna de estas opciones?')
       : menuPrincipal('Quiero ayudarte bien 🙏 pero no logré entenderlo.');
@@ -532,7 +580,7 @@
       var p = st.problema;
       if (p && p.alt && !st.alternativa) {
         st.alternativa = true;
-        return r(p.alt(APPS[st.app]) + '\n\n¿Ahora sí pudiste?', [{ t: '✅ Sí, ya quedó', a: 'si' }, { t: '❌ No, sigue igual', a: 'no' }]);
+        return r(textoRespuesta(p, 'alt') + '\n\n¿Ahora sí pudiste?', [{ t: '✅ Sí, ya quedó', a: 'si' }, { t: '❌ No, sigue igual', a: 'no' }]);
       }
       return aAsesor('No se solucionó con los pasos del asistente');
     }
@@ -698,7 +746,7 @@
       if (host2 === 'wa.me') num = u.pathname.replace(/\D/g, '');
       else if (host2 === 'api.whatsapp.com' || host2 === 'web.whatsapp.com') num = (u.searchParams.get('phone') || '').replace(/\D/g, '');
       else return null;
-      if (num !== WA_NUMERO) return null; // solo el número de la empresa (no clientes ni proveedores)
+      if (num !== NUMERO_BOTONES && num !== WA_NUMERO) return null; // solo el número de la empresa (no clientes ni proveedores)
       return { texto: u.searchParams.get('text') || '', url: u.href };
     } catch (e) { return null; }
   }
@@ -706,7 +754,7 @@
   function pasaDirecto(texto) { return /•|sugerir este video/i.test(texto); }
 
   window.open = function (url) {
-    var d = url && datosWhatsApp(url);
+    var d = GENERAL.activo !== false && url && datosWhatsApp(url);
     if (d && !pasaDirecto(d.texto)) {
       abrir(d.texto, d.url);
       return { closed: false, close: function () {}, focus: function () {}, blur: function () {}, postMessage: function () {} };
@@ -717,6 +765,7 @@
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
     var a = e.target && e.target.closest && e.target.closest('a[href]');
     if (!a) return;
+    if (GENERAL.activo === false) return;
     var d = datosWhatsApp(a.getAttribute('href'));
     if (!d || pasaDirecto(d.texto)) return;
     e.preventDefault(); e.stopPropagation();
@@ -725,8 +774,12 @@
 
   window.DLChat = {
     abrir: function (texto) { abrir(texto || undefined); },
+    // Para la app de administración: probar cambios sin guardarlos
+    usarConfig: function (c) { configFija = true; aplicarConfig(c); st = null; },
+    defecto: function () { return copiar(DEFECTO); },
+    config: function () { return copiar(CFG); },
     cerrar: cerrar,
-    version: '1.0.0',
+    version: '2.0.0',
     // Para pruebas: simula una conversación sin interfaz
     _probar: function (texto, app) {
       var prev = APP_ACTUAL; APP_ACTUAL = app || APP_ACTUAL;
