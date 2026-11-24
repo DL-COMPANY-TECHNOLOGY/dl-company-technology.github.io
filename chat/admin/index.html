@@ -6,8 +6,13 @@
 <meta name="robots" content="noindex">
 <meta name="google" content="notranslate">
 <meta name="theme-color" content="#0b1220">
-<title>Admin · Asistente DL COMPANY</title>
-<link rel="icon" href="../../assets/dl-company.png">
+<title>ARIA · Asistente DL COMPANY</title>
+<link rel="icon" href="aria-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="aria-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ARIA">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root{--fondo:#070c18;--panel:#0f1729;--panel2:#16213a;--borde:rgba(255,255,255,.09);--oro:#d4af37;--oro2:#f5d77a;
@@ -36,7 +41,7 @@
   /* --- app --- */
   header{position:sticky;top:0;z-index:5;background:rgba(7,12,24,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--borde);
     padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px}
-  header img{width:34px;height:34px;object-fit:contain}
+  header img{width:34px;height:34px;object-fit:contain;border-radius:9px}
   .htit{flex:1;min-width:0}.htit b{display:block;font-size:15px}.htit span{font-size:12px;color:var(--sub)}
   .htit span.sucio{color:var(--oro2)}
   main{max-width:760px;margin:0 auto;padding:14px 14px 110px}
@@ -120,9 +125,9 @@
 <!-- ============ INGRESO ============ -->
 <section id="login">
   <div class="tarjeta">
-    <img src="../../assets/dl-company.png" alt="DL COMPANY">
-    <h1>Administrar asistente</h1>
-    <p>Ingresa con tu cuenta de administrador de DL COMPANY (la misma de DL CUADRA PRO).</p>
+    <img src="aria-512.png" alt="ARIA" style="border-radius:22px">
+    <h1>ARIA</h1>
+    <p><b>Tu asistente personal.</b> Atiende a los clientes de tus apps y te pasa solo lo importante.<br>Ingresa con tu cuenta de administrador de DL COMPANY (la misma de DL CUADRA PRO).</p>
     <form id="fLogin">
       <div><label for="lEmail">Correo</label><input id="lEmail" type="email" autocomplete="username" value="d.l.company.2026@gmail.com" required></div>
       <div><label for="lPass">Contraseña</label><input id="lPass" type="password" autocomplete="current-password" required></div>
@@ -135,8 +140,8 @@
 <!-- ============ APP ============ -->
 <section id="app" class="oculto">
   <header>
-    <img src="../../assets/dl-company.png" alt="">
-    <div class="htit"><b>Asistente</b><span id="estado">Todo guardado ✓</span></div>
+    <img src="aria-192.png" alt="ARIA">
+    <div class="htit"><b>ARIA</b><span id="estado">Todo guardado ✓</span></div>
     <button class="btn peq" id="bProbar" title="Probar el chat con estos cambios">▶ Probar</button>
     <button class="btn oro peq" id="bGuardar">💾 Guardar</button>
   </header>
@@ -378,6 +383,24 @@
   }
   function nombreApp(k) { return k === '*' ? 'Todas las apps' : (draft.apps[k] ? draft.apps[k].nombre : k); }
 
+  /* ---------------- instalar como app ---------------- */
+  var promptInstalar = null;
+  var instalada = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  if (navigator.serviceWorker) navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); promptInstalar = e; if (usuario && tab === 'chats' && !chatAbierto) pintar(); });
+  window.addEventListener('appinstalled', function () { instalada = true; promptInstalar = null; aviso('📲 ARIA quedó instalada en tu celular'); if (tab === 'chats' && !chatAbierto) pintar(); });
+  function bloqueInstalar() {
+    if (instalada) return '';
+    if (promptInstalar) return '<button class="btn peq" data-a="instalar" style="width:100%;margin-bottom:10px">📲 Instalar ARIA en este celular</button>';
+    if (/iphone|ipad/i.test(navigator.userAgent)) return '<p class="ayuda" style="margin-bottom:10px">📲 Para instalar ARIA: toca <b>Compartir</b> → <b>Agregar a inicio</b>.</p>';
+    return '<p class="ayuda" style="margin-bottom:10px">📲 Para instalar ARIA: menú <b>⋮</b> de Chrome → <b>Agregar a la pantalla principal</b> / <b>Instalar app</b>.</p>';
+  }
+  async function instalar() {
+    if (!promptInstalar) return;
+    promptInstalar.prompt(); var r = await promptInstalar.userChoice; promptInstalar = null;
+    if (r.outcome !== 'accepted') pintar();
+  }
+
   /* ---------------- CHATS (como WhatsApp) ---------------- */
   var SALUDO_DEF = 'Hola 👋 Soy *Lenin Benjumea*, tu asesor el día de hoy. ¿En qué te puedo servir?';
   function saludo() { return String(draft.general.saludoAsesor || SALUDO_DEF).replace(/\{empresa\}/g, draft.general.empresa || ''); }
@@ -391,7 +414,7 @@
   function appDe(k) { return k && draft.apps[k] ? draft.apps[k].nombre : 'Página web'; }
   function vistaChats() {
     var nec = convs.filter(function (c) { return c.estado === 'humano'; }).length;
-    var h = '<h2>💬 Chats</h2><p class="ayuda">Todas las conversaciones del asistente. Las que dicen <b>Te necesita</b> esperan tu respuesta; ' +
+    var h = bloqueInstalar() + '<h2>💬 Chats</h2><p class="ayuda">Todas las conversaciones del asistente. Las que dicen <b>Te necesita</b> esperan tu respuesta; ' +
       'puedes entrar a cualquiera y escribirle al cliente: le llega en el mismo chat de la app.</p>';
     h += avisosActivos
       ? '<div class="fila" style="margin-bottom:10px"><small style="color:var(--sub);flex:1">🔔 Avisos activos en este celular</small><button class="btn peq" data-a="probarAviso">Probar aviso</button></div>'
@@ -727,6 +750,7 @@
     v.querySelectorAll('[data-a]').forEach(function (b) {
       b.addEventListener('click', function (e) {
         var a = b.dataset.a, i = Number(b.dataset.i);
+        if (a === 'instalar') instalar();
         if (a === 'activarAvisos') activarAvisos();
         if (a === 'probarAviso') probarAviso();
         if (a === 'nueva') editarRespuesta(null, { titulo: '', apps: ['*'], claves: [], respuesta: '' });

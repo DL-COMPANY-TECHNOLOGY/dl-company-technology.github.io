@@ -1,0 +1,18 @@
+{
+  "name": "ARIA · Asistente DL COMPANY",
+  "short_name": "ARIA",
+  "description": "Tu asistente personal: atiende a los clientes de las apps de DL COMPANY y te pasa solo lo importante.",
+  "id": "./",
+  "start_url": "./#chats",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070c18",
+  "theme_color": "#0b1220",
+  "lang": "es",
+  "icons": [
+    { "src": "aria-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "aria-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "aria-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
