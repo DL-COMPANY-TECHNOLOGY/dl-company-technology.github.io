@@ -665,12 +665,27 @@
    * CONVERSACIÓN
    * ===================================================================== */
   var st;
+  // ¿De dónde viene el cliente? 1) la app donde está instalado el chat; 2) si no, lo que dice el botón
+  // ("Vengo de la app DL FINANZAS…" / "Vengo de la página web…").
+  function origenDe(texto) {
+    if (APPS[APP_ACTUAL]) return { app: APP_ACTUAL, origen: 'app' };
+    var t = norm(texto);
+    var m = t.match(/vengo de la app (.+)/);
+    if (m) {
+      var k = null, mp = 0;
+      Object.keys(APPS).forEach(function (x) { var n = norm(APPS[x].nombre); if (m[1].indexOf(n) === 0 && n.length > mp) { mp = n.length; k = x; } });
+      if (k) return { app: k, origen: 'app' };
+    }
+    return { app: null, origen: 'web' };
+  }
+
   function nuevaConversacion(textoOriginal, urlOriginal) {
+    var o = origenDe(textoOriginal || '');
     st = {
       original: textoOriginal || '',
       url: urlOriginal || '',
-      app: APPS[APP_ACTUAL] ? APP_ACTUAL : null,
-      origen: APP_ACTUAL === 'web' || !APP_ACTUAL ? 'web' : 'app',
+      app: o.app,
+      origen: o.origen,
       modo: null,            // soporte | confirmar | elegir_app | detalles
       siguiente: null,       // qué hacer después de elegir la app
       problema: null, alternativa: false, fallos: 0,
@@ -1212,6 +1227,11 @@
 
   window.open = function (url) {
     var d = GENERAL.activo !== false && url && datosWhatsApp(url);
+    if (d && pasaDirecto(d.texto)) {
+      var w = abrirOriginal(url, '_blank');
+      if (w) { try { w.opener = null; } catch (e) {} return w; }
+      return abrirOriginal.apply(window, arguments);
+    }
     if (d && !pasaDirecto(d.texto)) {
       abrir(d.texto, d.url);
       return { closed: false, close: function () {}, focus: function () {}, blur: function () {}, postMessage: function () {} };
@@ -1245,6 +1265,7 @@
       nuevaConversacion(texto); var out = interpretarPrimero(texto); APP_ACTUAL = prev; return out;
     },
     _texto: function (t) { return procesarTexto(t); },
+    _estado: function () { return st ? { app: st.app, origen: st.origen, original: st.original } : null; },
     _accion: function (a) { return accion(a); },
     _whatsapp: function () { return mensajeWhatsApp(); },
   };
