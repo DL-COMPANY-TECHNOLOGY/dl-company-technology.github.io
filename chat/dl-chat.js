@@ -751,7 +751,7 @@
     function intentar() {
       return asegurarConv(s2)
         .then(function (id) { return rpc('chat_enviar', { p_id: id, p_token: token(), p_de: de, p_texto: String(texto || '').slice(0, 2500), p_adjunto: adjunto || null, p_app: s2.app || null }); })
-        .then(function (mid) { if (mid > s2.ultimoId) s2.ultimoId = mid; if (alCambiar) alCambiar('ok'); })
+        .then(function (mid) { if (mid) { s2.vistos = s2.vistos || {}; s2.vistos[mid] = 1; } if (alCambiar) alCambiar('ok'); })
         .catch(function (e) {
           intentos++;
           // error definitivo del servidor (permiso, límite): no insistir
@@ -1329,7 +1329,7 @@
       estado.textContent = '✓ Enviado';
       var nombre = esImg ? '📎 Comprobante' : '📎 ' + f.name;
       cola = cola.then(function () { return rpc('chat_enviar', { p_id: s2.convId, p_token: token(), p_de: 'cliente', p_texto: nombre, p_adjunto: ruta, p_app: s2.app || null }); })
-        .then(function (mid) { if (mid > s2.ultimoId) s2.ultimoId = mid; }).catch(function () {});
+        .then(function (mid) { if (mid) { s2.vistos = s2.vistos || {}; s2.vistos[mid] = 1; } }).catch(function () {});
       if (s2.estado !== 'humano') {
         nota('Envió un comprobante');
         s2.estado = 'humano';
@@ -1343,10 +1343,15 @@
   var tPoll = null;
   function leerNuevos(s2, todo) {
     if (!s2 || !s2.convId || configFija) return Promise.resolve();
-    return rpc('chat_leer', { p_id: s2.convId, p_token: token(), p_desde: todo ? 0 : s2.ultimoId }).then(function (res) {
+    // una sola lectura a la vez (si no, dos lecturas simultáneas pintaban el mismo mensaje dos veces)
+    if (s2._leyendo && !todo) return s2._leyendo;
+    var p = rpc('chat_leer', { p_id: s2.convId, p_token: token(), p_desde: todo ? 0 : s2.ultimoId }).then(function (res) {
       if (!res || s2 !== st) return;
+      s2.vistos = s2.vistos || {};
       (res.mensajes || []).forEach(function (m) {
         if (m.id > s2.ultimoId) s2.ultimoId = m.id;
+        if (s2.vistos[m.id]) return; // ya está en pantalla
+        s2.vistos[m.id] = 1;
         if (todo) burbuja(m.texto || (m.adjunto ? '📎 Adjunto' : ''), m.de === 'cliente' ? 'yo' : m.de === 'admin' ? 'asesor' : 'bot', { historial: true });
         else if (m.de === 'admin') { burbuja(m.texto, 'asesor', { historial: true }); pintarChips([]); }
       });
@@ -1356,6 +1361,8 @@
         if (res.estado === 'resuelta') avisoSistema('El asesor marcó la conversación como resuelta ✅');
       }
     }).catch(function () {});
+    if (!todo) { s2._leyendo = p; p.then(function () { s2._leyendo = null; }); }
+    return p;
   }
   function programarLectura() {
     clearInterval(tPoll);
@@ -1398,7 +1405,8 @@
       ui.msgs.innerHTML = '';
       avisoSistema('Tu conversación con DL COMPANY');
       leerNuevos(st, true).then(function () {
-        if (textoOriginal) burbuja(textoOriginal.replace(/^¡?hola dl company!?\s*👋?\s*/i, ''), 'yo');
+        var extra = textoOriginal && textoOriginal.replace(/^¡?hola dl company!?\s*👋?\s*/i, '').trim();
+        if (extra && !/^vengo de (la p[aá]gina web|la app [^.]*)\.?$/i.test(extra)) burbuja(extra, 'yo');
         pintarChips([]);
       });
       return;
