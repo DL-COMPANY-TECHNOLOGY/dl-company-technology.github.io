@@ -232,11 +232,19 @@
     escucharEnVivo();
     abrirSegunHash();
     // respaldo por si el tiempo real se desconecta
-    setInterval(function () {
-      if (document.visibilityState !== 'visible') return;
-      cargarChats().then(function () { if (tab === 'chats' && !chatAbierto && $('#hoja').classList.contains('oculto')) pintar(); });
-      if (chatAbierto) cargarMensajes(true);
-    }, 20000);
+    setInterval(refrescar, 8000);
+    // al volver a la app (estaba en segundo plano): traer todo ya y reconectar el tiempo real
+    document.addEventListener('visibilitychange', refrescar);
+    window.addEventListener('online', refrescar);
+    window.addEventListener('pageshow', refrescar);
+  }
+  function refrescar() {
+    if (document.visibilityState !== 'visible' || !usuario) return;
+    if (canal && canal.state !== 'joined' && canal.state !== 'joining') { try { sb.removeChannel(canal); } catch (e) {} canal = null; escucharEnVivo(); }
+    cargarChats().then(function () { if (tab === 'chats' && !chatAbierto && $('#hoja').classList.contains('oculto')) pintar(); });
+    if (chatAbierto) cargarMensajes(true).then(function () {
+      if (chatAbierto && mensajes.some(function (m) { return m.de === 'cliente'; })) marcarLeido(chatAbierto.id);
+    });
   }
   function abrirSegunHash() {
     var h = location.hash;

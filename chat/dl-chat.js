@@ -733,22 +733,46 @@
       body: JSON.stringify(args),
     }).then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); });
   }
+  function esperar(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
   var cola = Promise.resolve();
   function asegurarConv(s2) {
     if (s2.convId) return Promise.resolve(s2.convId);
     if (!s2._creando) s2._creando = rpc('chat_iniciar', { p_token: token(), p_app: s2.app || APP_ACTUAL || 'web', p_origen: s2.origen })
-      .then(function (r) { s2.convId = r.id; s2.codigo = r.codigo; guardarLocal(s2); return r.id; });
+      .then(function (r) { s2.convId = r.id; s2.codigo = r.codigo; guardarLocal(s2); return r.id; })
+      .catch(function (e) { s2._creando = null; throw e; }); // si falla, se vuelve a intentar
     return s2._creando;
   }
-  function registrar(de, texto, adjunto) {
+  // Guarda un mensaje en la nube. Si falla (sin internet, celular en segundo plano…)
+  // lo reintenta solo hasta que llegue, y avisa en la burbuja cómo va.
+  var despertar = null;
+  function registrar(de, texto, adjunto, alCambiar) {
     if (configFija || !st) return Promise.resolve();
-    var s2 = st;
-    cola = cola.then(function () { return asegurarConv(s2); })
-      .then(function (id) { return rpc('chat_enviar', { p_id: id, p_token: token(), p_de: de, p_texto: String(texto || '').slice(0, 2500), p_adjunto: adjunto || null, p_app: s2.app || null }); })
-      .then(function (mid) { if (mid > s2.ultimoId) s2.ultimoId = mid; })
-      .catch(function () {});
+    var s2 = st, intentos = 0;
+    function intentar() {
+      return asegurarConv(s2)
+        .then(function (id) { return rpc('chat_enviar', { p_id: id, p_token: token(), p_de: de, p_texto: String(texto || '').slice(0, 2500), p_adjunto: adjunto || null, p_app: s2.app || null }); })
+        .then(function (mid) { if (mid > s2.ultimoId) s2.ultimoId = mid; if (alCambiar) alCambiar('ok'); })
+        .catch(function (e) {
+          intentos++;
+          // error definitivo del servidor (permiso, límite): no insistir
+          if (typeof e === 'number' && e >= 400 && e < 500 && e !== 408 && e !== 429) { if (alCambiar) alCambiar('error'); return; }
+          if (alCambiar) alCambiar('reintento');
+          var espera = Math.min(15000, 1500 * intentos);
+          return Promise.race([esperar(espera), new Promise(function (ok) { despertar = ok; })]).then(intentar);
+        });
+    }
+    cola = cola.then(intentar);
     return cola;
   }
+  // Al volver a la app o recuperar internet: reintentar ya y traer lo nuevo
+  function alVolver() {
+    if (document.visibilityState !== 'visible') return;
+    if (despertar) { var d = despertar; despertar = null; d(); }
+    if (abierto && st && st.convId) leerNuevos(st, false);
+  }
+  document.addEventListener('visibilitychange', alVolver);
+  window.addEventListener('online', alVolver);
+  window.addEventListener('pageshow', alVolver);
   function pedirAsesor(s2) {
     s2.estado = 'humano';
     if (configFija) return;
@@ -1162,6 +1186,7 @@
     '.m.asesor{align-self:flex-start;background:#123326;border:1px solid rgba(34,197,94,.45);border-top-left-radius:4px}' +
     '.m.asesor .quien{display:block;font-size:11.5px;font-weight:700;color:#5ee69a;margin-bottom:3px}' +
     '.m img{display:block;max-width:220px;max-height:260px;border-radius:10px;margin-top:4px}' +
+    '.m .est{display:block;text-align:right;font-size:10.5px;opacity:.75;margin-top:3px}.m .est.mal{opacity:1;color:#ffd0d0}' +
     '.aviso-sis{align-self:center;font-size:12px;color:#8fa3c8;background:rgba(255,255,255,.05);border-radius:10px;padding:5px 10px;text-align:center}' +
     'form .clip{background:rgba(255,255,255,.08);color:#e8eefc;font-size:19px}' +
     '.pastilla{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:3;pointer-events:auto;display:flex;align-items:center;gap:8px;' +
@@ -1217,10 +1242,17 @@
   function burbuja(texto, quien, opciones) {
     opciones = opciones || {};
     if (st && st.chat) { st.chat.push({ de: quien === 'yo' ? 'cliente' : quien === 'asesor' ? 'admin' : 'asistente', t: String(texto).slice(0, 700) }); if (st.chat.length > 60) st.chat.shift(); }
-    if (!opciones.historial && quien !== 'asesor') registrar(quien === 'yo' ? 'cliente' : 'asistente', texto, opciones.adjunto);
     var d = document.createElement('div'); d.className = 'm ' + quien;
     d.innerHTML = (quien === 'asesor' ? '<span class="quien">👨‍💻 Asesor DL COMPANY</span>' : '') + formato(texto) +
       (opciones.img ? '<img alt="Adjunto" src="' + opciones.img + '">' : '');
+    if (!opciones.historial && quien !== 'asesor') {
+      var est = null;
+      if (quien === 'yo' && !configFija) { est = document.createElement('span'); est.className = 'est'; est.textContent = '🕓'; d.appendChild(est); }
+      registrar(quien === 'yo' ? 'cliente' : 'asistente', texto, opciones.adjunto, est && function (e) {
+        est.className = 'est' + (e === 'ok' ? '' : ' mal');
+        est.textContent = e === 'ok' ? '✓ Enviado' : e === 'error' ? '⚠️ No se pudo enviar' : '⚠️ Sin conexión · reintentando…';
+      });
+    }
     ui.msgs.appendChild(d); bajar();
     // Respuesta larga: mostrarla desde el inicio
     if (quien === 'bot' && d.offsetHeight > ui.msgs.clientHeight - 20) ui.msgs.scrollTop = d.offsetTop - 10;
