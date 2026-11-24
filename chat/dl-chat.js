@@ -26,7 +26,7 @@
   /* =====================================================================
    * CONOCIMIENTO  (planes y precios tomados de la página web)
    * ===================================================================== */
-  var PAGO_DEFECTO = 'Te respondemos con los *datos para el pago* (Nequi o transferencia).';
+  var PAGO_DEFECTO = 'Paga por *Nequi* al *3218641539* o por *Bre-B* a la llave *@NEQUILEN197*, y envíanos el *comprobante* por WhatsApp.';
   var ACTIVAR_CODIGO_CUADRA = 'Te enviamos tu *código de activación*. Lo escribes en *Planes → 🔑 ¿Ya pagaste? Activa tu código* y listo, sin perder tus datos.';
 
   var APPS_DEF = {
@@ -261,6 +261,16 @@
       preguntar: false,
     },
 
+    {
+      id: 'metodos_pago', tipo: 'guia', titulo: '💳 Métodos de pago (Colombia)', apps: ['finanzas', 'stock', 'cuadra', 'comanda'],
+      claves: ['metodos de pago', 'metodo de pago', 'medios de pago', 'como pago', 'como puedo pagar', 'como hago el pago', 'donde pago', 'a donde pago',
+        'numero de nequi', 'nequi', 'pagar por nequi', 'pagar con nequi', 'bre b', 'llave', 'llave bre b', 'datos para pagar', 'datos de pago',
+        'consignar', 'consignacion', 'transferir', 'transferencia', 'numero para pagar', 'cuenta para pagar', 'a que cuenta'],
+      respuesta: '💳 *Métodos de pago en Colombia*\n\n📱 *Nequi:* 3218641539\n🔑 *Bre-B (llave):* @NEQUILEN197\n\n*Después de pagar:*\n' +
+        '1. Toma una captura del *comprobante*.\n2. Toca *Continuar en WhatsApp* y envíalo con el *correo de tu cuenta* y el plan que pagaste.\n3. {activar}',
+      whatsapp: true, preguntar: false,
+    },
+
     // ================= DL STOCK PRO =================
     {
       id: 'stock_agregar', tipo: 'guia', titulo: '➕ Agregar mis productos', apps: ['stock'],
@@ -396,7 +406,7 @@
     },
     {
       id: 'comanda_qr', tipo: 'guia', titulo: '📱 Cobrar con QR (Nequi, Bancolombia…)', apps: ['comanda'],
-      claves: ['qr', 'nequi', 'daviplata', 'bancolombia', 'bre b', 'llave', 'codigo qr', 'cobrar con qr', 'cobrar con nequi', 'pagar con nequi', 'pagar con qr', 'transferencia'],
+      claves: ['qr', 'nequi', 'daviplata', 'bancolombia', 'bre b', 'llave', 'codigo qr', 'cobrar con qr', 'cobrar con nequi', 'subir qr', 'qr de pago'],
       respuesta: '📱 En *Administración → QR de pago* sube el QR de Nequi, Bancolombia, Daviplata o tu llave Bre-B.\n\nCuando el cliente quiera pagar así, el mesero toca la mesa → *📱 Pagar con QR* y se muestra en grande con el valor a pagar.',
     },
     {
@@ -721,6 +731,7 @@
     nota('Tiene problemas para acceder a un plan o comprarlo');
     var a = APPS[st.app];
     var chips = [{ t: '🛒 Quiero comprar un plan', a: 'planes' }, { t: '🧾 Ya pagué y no tengo mi plan', a: 'pagado' }];
+    if (problemaPorId('metodos_pago') && aplica(problemaPorId('metodos_pago'), st.app)) chips.splice(1, 0, { t: '💳 ¿Cómo pago?', a: 'prob:metodos_pago' });
     if (!a.sinCodigo) chips.push({ t: '❌ Mi código no funciona', a: 'codigo_malo' });
     chips.push(CH.otra);
     return r('Claro que sí, te ayudo con tu plan de *' + a.nombre + '* 👑. ¿Qué pasó?', chips);
@@ -781,6 +792,8 @@
     var t = String(p[campo] || '')
       .replace(/\{app\}/g, a.nombre)
       .replace(/\{empresa\}/g, EMPRESA)
+      .replace(/\{activar\}/g, a.activar || '')
+      .replace(/\{pago\}/g, a.pago || '')
       .replace(/\{consejo_ingreso\}/g, a.login ? '\n\n💡 ' + a.login : '')
       .replace(/\{consejo_datos\}/g, a.gratisLocal ? '\n\n💡 ' + a.gratisLocal : '')
       .replace(/\{planes_detalle\}/g, a.planes && a.planes.length ? textoPlanes(a, false) : '')
@@ -859,6 +872,8 @@
     if (/problemas? para acceder a un plan|problema con (el|mi) plan|codigo no (sirve|funciona)|no me (llego|ha llegado) el codigo/.test(t)) return problemaPlan();
     if (/codigo/.test(t) && /(no (sirve|funciona|deja|acepta)|invalido|incorrecto)/.test(t)) { if (!st.app) return pedirApp('codigo_malo'); return codigoMalo(); }
     if (/(^|\s)(asesor|humano|una persona|hablar con alguien|agente)(\s|$)/.test(t)) return accion('asesor');
+    // Si nombra un plan para comprarlo, ir directo a la compra
+    if (planId && /(^|\s)plan(\s|$)/.test(t) && !/cancel|renov|vence|vencio|reembols|devol|app personalizada/.test(t)) return verPlanes(planId, anual);
     // Si el mensaje coincide claramente con una respuesta, darla de una vez
     var fuerte = detectarProblema(t, st.app);
     if (fuerte && puntos(t, fuerte.claves) >= 2 && (st.app || !fuerte.apps || fuerte.apps.indexOf('*') !== -1 || fuerte.apps.length === 1)) {

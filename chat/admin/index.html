@@ -286,7 +286,7 @@
         '<textarea id="eClaves" style="min-height:80px" placeholder="no imprime, impresora, factura no sale">' + esc((p.claves || []).join(', ')) + '</textarea>') +
       campo('Respuesta', '<textarea id="eResp" style="min-height:170px">' + esc(p.respuesta) + '</textarea>') +
       '<p class="ayuda">Usa <code>*texto*</code> para <b>negrita</b> y <code>{app}</code> para el nombre de la app. También: <code>{planes}</code> (lista de planes), ' +
-      '<code>{planes_detalle}</code> (planes con lo que incluyen), <code>{consejo_ingreso}</code> y <code>{consejo_datos}</code> (consejos de cada app).</p>' +
+      '<code>{planes_detalle}</code> (planes con lo que incluyen), <code>{pago}</code> y <code>{activar}</code> (cómo se paga y se activa en esa app), <code>{consejo_ingreso}</code> y <code>{consejo_datos}</code> (consejos de cada app).</p>' +
       campo('Segunda solución (si el cliente dice que no funcionó) — opcional', '<textarea id="eAlt" style="min-height:90px">' + esc(p.alt || '') + '</textarea>') +
       interruptor('ePreg', 'Preguntar "¿Pudiste solucionarlo?"', 'Si dice que no, da la segunda solución y luego le ofrece más opciones (el asesor es el último recurso).', p.preguntar !== false) +
       interruptor('ePlanes', 'Mostrar botones para comprar planes', 'Útil para respuestas sobre límites o funciones Premium.', !!p.mostrarPlanes) +
