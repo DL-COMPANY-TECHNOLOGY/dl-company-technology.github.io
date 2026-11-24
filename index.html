@@ -30,7 +30,8 @@
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:30px;font-weight:800;font-size:14px;border:1px solid transparent;transition:transform .15s,box-shadow .15s;cursor:pointer}
     .btn:hover{transform:translateY(-2px)}
     .btn-primary{background:linear-gradient(110deg,#1b6ff0,#3cc8f5);color:#fff;box-shadow:0 8px 24px #1b6ff044}
-    .btn-wa{background:var(--green);color:#06210f;box-shadow:0 8px 24px #25d36633}
+    .btn-wa{background:linear-gradient(135deg,#d4af37,#f5d77a);color:#1a1405;box-shadow:0 8px 24px #d4af3733}
+    .btn-wa:before{content:"";width:1.35em;height:1.35em;border-radius:50%;background:#0b1220 url(chat/aria.png) center/cover;flex:none;display:inline-block}
     .btn-ghost{border-color:#3a4a63;color:var(--silver)}
     .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
     .wa-ico{width:17px;height:17px;fill:currentColor}
@@ -163,8 +164,9 @@
     .featured.comanda{background:radial-gradient(ellipse at 85% 0,#e7b84a22,transparent 55%),var(--bg)}
     .featured.comanda .eyebrow{color:#f6dc85}
     .featured.comanda .f-price{background:linear-gradient(160deg,#2a2210,#0b1118);border-color:#e7b84a55}
-    .wa-float{position:fixed;right:18px;bottom:18px;z-index:40;width:58px;height:58px;border-radius:50%;background:var(--green);display:grid;place-items:center;box-shadow:0 10px 30px #0008}
-    .wa-float svg{width:30px;height:30px;fill:#fff}
+    .wa-float{position:fixed;right:18px;bottom:18px;z-index:40;width:62px;height:62px;border-radius:50%;background:#0b1220;overflow:hidden;box-shadow:0 0 0 2px #d4af37c0,0 10px 30px #0008;transition:transform .2s}
+    .wa-float:hover{transform:scale(1.07)}
+    .wa-float img{width:100%;height:100%;display:block;object-fit:cover}
 
     @media(max-width:900px){.f-grid>div:last-child{order:-1}nav{display:none}.hero-grid,.story-grid,.f-grid{grid-template-columns:1fr}.hero-grid{padding:56px 0 64px;gap:34px}.hero-logo{max-width:380px;margin:auto}.apps,.steps{grid-template-columns:1fr}}
     @media(max-width:480px){.f-list{grid-template-columns:1fr}.nav{min-height:64px}.brand{font-size:13px}.brand img{width:38px;height:38px}.nav>.btn{padding:9px 13px;font-size:12px}section{padding:58px 0}.app{padding:20px}.app-actions .btn{min-width:100%}}
@@ -250,7 +252,7 @@
             <p class="note" style="margin:10px 0 18px">Precios en <span class="cur">COP</span> por mes. Pago anual: 14 meses por el precio de 12. Sin renovación automática.</p>
             <div class="app-actions">
               <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-finanzas/" target="_blank" rel="noopener">Probar gratis</a>
-              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Comprar por WhatsApp</a>
+              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Comprar con ARIA</a>
             </div>
           </div>
         </div>
@@ -309,7 +311,7 @@
             <p class="note" style="margin:10px 0 18px">Precios en <span class="cur">COP</span> por mes. Pago anual: 14 meses por el precio de 12. Sin renovación automática.</p>
             <div class="app-actions">
               <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-stock-pro/" target="_blank" rel="noopener">Probar gratis</a>
-              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Comprar por WhatsApp</a>
+              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Comprar con ARIA</a>
             </div>
           </div>
         </div>
@@ -368,7 +370,7 @@
             <p class="note" style="margin:10px 0 18px">Precios en <span class="cur">COP</span> por mes. Pago anual: 14 meses por el precio de 12. Sin renovación automática.</p>
             <div class="app-actions">
               <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-cuadra-pro/" target="_blank" rel="noopener">Probar gratis</a>
-              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Comprar por WhatsApp</a>
+              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Comprar con ARIA</a>
             </div>
           </div>
         </div>
@@ -426,7 +428,7 @@
             <p class="note" style="margin:10px 0 18px">Precios en <span class="cur">COP</span> por mes. Pago anual: 14 meses por el precio de 12. Sin renovación automática.</p>
             <div class="app-actions">
               <a class="btn btn-primary" href="https://dl-company-technology.github.io/dl-comanda-pro/" target="_blank" rel="noopener">Probar gratis</a>
-              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20COMANDA%20PRO." target="_blank" rel="noopener">Comprar por WhatsApp</a>
+              <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20comprar%20un%20plan%20de%20DL%20COMANDA%20PRO." target="_blank" rel="noopener">Comprar con ARIA</a>
             </div>
           </div>
         </div>
@@ -566,7 +568,7 @@
       <div class="intro"><div class="eyebrow">Cómo comprar</div><h2>Empieza hoy en tres pasos.</h2></div>
       <div class="steps">
         <div class="step"><div class="n">1</div><h3>Pruébala gratis</h3><p>Abre la app desde el botón “Probar gratis”, crea tu cuenta e instálala en tu celular desde el navegador.</p></div>
-        <div class="step"><div class="n">2</div><h3>Escríbenos por WhatsApp</h3><p>Dinos qué app y qué plan quieres. Te enviamos los datos para el pago.</p></div>
+        <div class="step"><div class="n">2</div><h3>Escríbele a ARIA</h3><p>Toca cualquier botón de compra: ARIA, nuestra asistente, te muestra los planes y los datos para el pago.</p></div>
         <div class="step"><div class="n">3</div><h3>Activamos tu plan</h3><p>Apenas confirmamos el pago, activamos tu plan o te enviamos un código de activación para escribirlo en la app. Sin perder tus datos.</p></div>
       </div>
     </div>
@@ -646,7 +648,7 @@
   <span>© 2026 DL COMPANY -TECHNOLOGY- · Colombia</span>
 </div></footer>
 
-<a class="wa-float" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web." target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.2 1.2z"/></svg></a>
+<a class="wa-float" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web." target="_blank" rel="noopener" aria-label="Habla con ARIA, la asistente de DL COMPANY" title="Habla con ARIA"><img src="chat/aria.png" alt="ARIA"></a>
 
 <div class="lightbox" id="lightbox" aria-hidden="true"><div class="lb-track" id="lb-track"></div><button class="lb-btn lb-close" aria-label="Cerrar">✕</button><button class="lb-btn lb-prev" aria-label="Anterior">‹</button><button class="lb-btn lb-next" aria-label="Siguiente">›</button><div class="lb-count"><span id="lb-num"></span><div class="lb-dots" id="lb-dots"></div></div></div>
 <script>

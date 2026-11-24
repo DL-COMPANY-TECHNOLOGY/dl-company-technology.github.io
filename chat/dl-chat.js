@@ -21,6 +21,7 @@
 
   var NUMERO_BOTONES = '573218641539'; // número que usan los botones de las apps
   var WEB = 'https://dl-company-technology.github.io/';
+  var ARIA_LOGO = WEB + 'chat/aria.png';
   var script = document.currentScript;
   var APP_ACTUAL = String(window.DL_CHAT_APP || (script && script.getAttribute('data-app')) || '').toLowerCase();
 
@@ -615,6 +616,11 @@
     return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   }
 
+  // ARIA se presenta al abrir el chat
+  function presentacion() {
+    return saludo() + ' 👋, soy *ARIA*, la asistente virtual de *' + EMPRESA + '*.';
+  }
+
   function detectarApp(t) {
     var mejor = null, mp = 0;
     Object.keys(APPS).forEach(function (k) { var p = puntos(t, APPS[k].claves); if (p > mp) { mp = p; mejor = k; } });
@@ -958,7 +964,7 @@
     var t = norm(texto);
     // La app de origen manda: si el cliente viene de una app, no se cambia.
     if (!st.app) { var app = detectarApp(t.replace(/vengo de la pagina web/, '')); if (app) st.app = app; }
-    var cab = saludo() + ' 👋, gracias por escribir a *' + EMPRESA + '*.';
+    var cab = presentacion();
     var resp = interpretar(t, true);
     resp.texto = cab + ' ' + resp.texto;
     return resp;
@@ -1132,8 +1138,7 @@
     '@media(min-width:720px){.panel{left:auto;right:24px;bottom:24px;width:400px;height:min(80vh,680px);border-radius:22px;border-bottom:1px solid rgba(212,175,55,.45)}}' +
     '.on .fondo{opacity:1}.on .panel{transform:none}' +
     '.cab{display:flex;align-items:center;gap:11px;padding:14px 14px 12px;background:linear-gradient(135deg,#0f1b33,#101a2e 60%,#1a1630);border-bottom:1px solid rgba(212,175,55,.25)}' +
-    '.av{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff;letter-spacing:.5px;' +
-    'background:linear-gradient(135deg,#00d4ff,#2563eb);box-shadow:0 0 0 2px rgba(212,175,55,.6)}' +
+    '.av{width:42px;height:42px;border-radius:50%;flex:none;display:block;object-fit:cover;background:#0b1220;box-shadow:0 0 0 2px rgba(212,175,55,.7)}' +
     '.tit{flex:1;min-width:0}.tit b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.tit span{font-size:12px;color:#8fd6a8;display:flex;align-items:center;gap:5px}.tit span:before{content:"";width:7px;height:7px;border-radius:50%;background:#22c55e}' +
     '.ib{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center;flex:none}' +
@@ -1162,6 +1167,7 @@
     '.pastilla{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:3;pointer-events:auto;display:flex;align-items:center;gap:8px;' +
     'background:linear-gradient(135deg,#0f1b33,#16213a);color:#e8eefc;border:1px solid rgba(34,197,94,.6);border-radius:24px;padding:10px 14px 10px 12px;' +
     'font-size:14px;font-weight:700;box-shadow:0 8px 26px rgba(0,0,0,.45);cursor:pointer;animation:e .25s ease-out}' +
+    '.pastilla img{width:26px;height:26px;border-radius:50%}' +
     '.pastilla i{font-style:normal;background:#22c55e;color:#04210f;border-radius:10px;padding:1px 7px;font-size:12px}' +
     '.oculto{display:none!important}';
 
@@ -1175,15 +1181,15 @@
     host.style.cssText = 'position:fixed;inset:0;z-index:2147483000;pointer-events:none';
     raiz = host.attachShadow ? host.attachShadow({ mode: 'open' }) : host;
     raiz.innerHTML = '<style>' + CSS + '</style>' +
-      '<div class="cont"><div class="fondo"></div><div class="panel" role="dialog" aria-label="Asistente DL COMPANY">' +
-      '<div class="cab"><div class="av">DL</div><div class="tit"><b>Asistente DL COMPANY</b><span>Responde al instante</span></div>' +
+      '<div class="cont"><div class="fondo"></div><div class="panel" role="dialog" aria-label="ARIA, asistente de DL COMPANY">' +
+      '<div class="cab"><img class="av" src="' + ARIA_LOGO + '" alt="ARIA"><div class="tit"><b>ARIA · Asistente de DL COMPANY</b><span>En línea · responde al instante</span></div>' +
       '<button class="ib x" type="button" aria-label="Cerrar">✕</button></div>' +
       '<div class="msgs"></div><div class="chips"></div>' +
       '<form><button type="button" class="clip" aria-label="Adjuntar comprobante" title="Adjuntar foto o PDF">📎</button>' +
       '<input class="txt" placeholder="Escribe tu mensaje…" autocomplete="off" aria-label="Mensaje"><button aria-label="Enviar">➤</button>' +
       '<input class="archivo" type="file" accept="image/*,application/pdf" hidden></form>' +
-      '<div class="pie">Asistente automático · ' + EMPRESA + '</div></div></div>' +
-      '<button type="button" class="pastilla oculto">💬 DL COMPANY te respondió <i>1</i></button>';
+      '<div class="pie">ARIA · asistente virtual de ' + EMPRESA + '</div></div></div>' +
+      '<button type="button" class="pastilla oculto"><img src="' + ARIA_LOGO + '" alt="">Tienes una respuesta <i>1</i></button>';
     document.body.appendChild(host);
     ui.cont = raiz.querySelector('.cont');
     ui.msgs = raiz.querySelector('.msgs');
@@ -1377,8 +1383,8 @@
       var resp = interpretarPrimero(textoOriginal) ;
       responder(resp);
     } else {
-      var quien = st.app ? 'el asistente de soporte de *' + APPS[st.app].nombre + '* ' + APPS[st.app].icono : 'el asistente de *' + EMPRESA + '*';
-      responder(r(saludo() + ' 👋, soy ' + quien + '. ' + menuPrincipal('').texto, menuPrincipal('').chips));
+      var m = menuPrincipal('');
+      responder(r(presentacion() + ' ' + (st.app ? 'Estoy aquí para ayudarte con todo lo de *' + APPS[st.app].nombre + '* ' + APPS[st.app].icono + '.\n\n' : 'Estoy aquí para ayudarte.\n\n') + m.texto, m.chips));
     }
   }
   function cerrar() {
@@ -1431,6 +1437,87 @@
     abrir(d.texto, d.url);
   }, true);
 
+  /* =====================================================================
+   * VESTIR LOS BOTONES DE WHATSAPP CON EL LOGO DE ARIA
+   * (en la web y en todas las apps que cargan este archivo)
+   * ===================================================================== */
+  var VERDE = /37,\s*211,\s*102|18,\s*140,\s*126|7,\s*94,\s*84/; // verdes de WhatsApp
+  function logoImg(px) {
+    var img = document.createElement('img');
+    img.src = ARIA_LOGO; img.alt = 'ARIA'; img.className = 'dl-aria-logo';
+    img.style.cssText = px ? 'width:100%;height:100%;border-radius:50%;object-fit:cover;display:block'
+      : 'width:1.35em;height:1.35em;border-radius:50%;object-fit:cover;vertical-align:-.3em;display:inline-block;flex:none';
+    return img;
+  }
+  function quitarVerde(el) {
+    var cs = getComputedStyle(el);
+    if (VERDE.test(cs.backgroundColor) || VERDE.test(cs.backgroundImage)) {
+      var transp = /rgba\([^)]*,\s*0?\.\d+\)/.test(cs.backgroundColor);
+      el.style.setProperty('background', transp ? 'rgba(212,175,55,.1)' : 'linear-gradient(135deg,#d4af37,#f5d77a)', 'important');
+      if (!transp) el.style.setProperty('color', '#1a1405', 'important');
+    }
+    if (VERDE.test(cs.borderTopColor) && parseFloat(cs.borderTopWidth) > 0) el.style.setProperty('border-color', '#d4af37', 'important');
+    if (VERDE.test(cs.boxShadow)) el.style.setProperty('box-shadow', '0 8px 24px rgba(212,175,55,.35)', 'important');
+  }
+  function vestir(a) {
+    if (a.getAttribute('data-aria') || a.closest('#dl-chat')) return;
+    var d = datosWhatsApp(a.getAttribute('href'));
+    if (!d || pasaDirecto(d.texto)) return;
+    a.setAttribute('data-aria', '1');
+    var flotante = getComputedStyle(a).position === 'fixed';
+    if (flotante) {
+      // Botón flotante: se vuelve el logo de ARIA completo
+      a.innerHTML = ''; a.appendChild(logoImg(true));
+      a.style.setProperty('background', '#0b1220', 'important');
+      a.style.setProperty('padding', '0', 'important');
+      a.style.setProperty('overflow', 'hidden', 'important');
+      a.style.setProperty('box-shadow', '0 0 0 2px rgba(212,175,55,.75), 0 10px 28px rgba(0,0,0,.45)', 'important');
+    } else {
+      // Íconos de WhatsApp (svg o Font Awesome) → logo de ARIA
+      var iconos = a.querySelectorAll('svg, i[class*="whatsapp"], img[src*="whatsapp" i]');
+      Array.prototype.forEach.call(iconos, function (ic) {
+        var cont = ic.parentNode;
+        if (cont !== a && cont.children.length === 1 && !cont.textContent.trim()) {
+          cont.style.setProperty('background', 'transparent', 'important');
+          cont.style.setProperty('padding', '0', 'important');
+          cont.innerHTML = ''; cont.appendChild(logoImg(true));
+        } else ic.parentNode.replaceChild(logoImg(false), ic);
+      });
+      // Textos: "por WhatsApp" → "con ARIA"; un 💬/📲 inicial → logo
+      var tw = document.createTreeWalker(a, NodeFilter.SHOW_TEXT), nodos = [], n;
+      while ((n = tw.nextNode())) nodos.push(n);
+      var primero = true;
+      nodos.forEach(function (t) {
+        var v = t.nodeValue;
+        if (primero && v.trim()) {
+          primero = false;
+          var mm = v.match(/^(\s*)(💬|📲|📱)\s*/);
+          if (mm && !iconos.length) { t.parentNode.insertBefore(logoImg(false), t); t.parentNode.insertBefore(document.createTextNode(' '), t); v = v.slice(mm[0].length); }
+        }
+        v = v.replace(/\b(por|a|al|en|v[ií]a) WhatsApp\b/gi, 'con ARIA').replace(/WhatsApp/gi, 'ARIA');
+        if (v !== t.nodeValue) t.nodeValue = v;
+      });
+    }
+    ['title', 'aria-label'].forEach(function (k) {
+      var v = a.getAttribute(k);
+      if (v && /whatsapp/i.test(v)) a.setAttribute(k, v.replace(/\b(por|a|al|en) WhatsApp\b/gi, 'con ARIA').replace(/WhatsApp/gi, 'ARIA'));
+    });
+    if (!a.getAttribute('title')) a.setAttribute('title', 'Habla con ARIA, la asistente de DL COMPANY');
+    try {
+      quitarVerde(a);
+      Array.prototype.forEach.call(a.querySelectorAll('*'), function (el) { if (!el.classList.contains('dl-aria-logo')) quitarVerde(el); });
+    } catch (e) {}
+  }
+  var tVestir = 0;
+  function vestirTodo() {
+    tVestir = 0;
+    if (GENERAL.activo === false || !document.body) return;
+    Array.prototype.forEach.call(document.querySelectorAll('a[href*="wa.me"], a[href*="whatsapp.com"]'), function (a) { try { vestir(a); } catch (e) {} });
+  }
+  function programarVestir() { if (!tVestir) tVestir = setTimeout(vestirTodo, 120); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', vestirTodo); else vestirTodo();
+  try { new MutationObserver(programarVestir).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {}
+
   // Al cargar la página: si el asesor respondió mientras el cliente no estaba, mostrar el aviso
   setTimeout(function () { revisarRespuestas(); programarLectura(); }, 2500);
 
@@ -1443,7 +1530,7 @@
     defecto: function () { return copiar(DEFECTO); },
     config: function () { return copiar(CFG); },
     cerrar: cerrar,
-    version: '2.0.0',
+    version: '2.1.0',
     // Para pruebas: simula una conversación sin interfaz
     _probar: function (texto, app) {
       var prev = APP_ACTUAL; APP_ACTUAL = app || APP_ACTUAL;
