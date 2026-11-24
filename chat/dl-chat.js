@@ -3,7 +3,8 @@
  * ----------------------------------------------------------
  * Cuando un cliente toca un botón de WhatsApp (al 321 864 1539) en la página web
  * o en una app, se abre este mini chat y responde al instante según lo que pidió.
- * Si necesita a una persona, el cliente pasa a WhatsApp con su caso ya resumido.
+ * Si necesita a una persona, el asesor le responde AQUÍ MISMO desde la administración
+ * (sección Chats), sin salir a WhatsApp.
  *
  * Instalación en cada app (antes de </body>):
  *   <script>window.DL_CHAT_APP='stock';</script>
@@ -26,7 +27,7 @@
   /* =====================================================================
    * CONOCIMIENTO  (planes y precios tomados de la página web)
    * ===================================================================== */
-  var PAGO_DEFECTO = 'Paga por *Nequi* al *3218641539* o por *Bre-B* a la llave *@NEQUILEN197*, y envíanos el *comprobante* por WhatsApp.';
+  var PAGO_DEFECTO = 'Paga por *Nequi* al *3218641539* o por *Bre-B* a la llave *@NEQUILEN197*, y envíanos aquí la foto del *comprobante* con el botón 📎.';
   var ACTIVAR_CODIGO_CUADRA = 'Te enviamos tu *código de activación*. Lo escribes en *Planes → 🔑 ¿Ya pagaste? Activa tu código* y listo, sin perder tus datos.';
 
   var APPS_DEF = {
@@ -215,7 +216,7 @@
     {
       id: 'reembolso', titulo: '💸 Reembolsos o cobro duplicado', apps: ['*'],
       claves: ['reembolso', 'devolucion', 'devolver mi dinero', 'devuelvan', 'me arrepenti', 'cobro doble', 'me cobraron dos veces', 'cobro duplicado', 'cobraron de mas'],
-      respuesta: 'Las condiciones completas están en la *Política de reembolsos* de la app. Si te hicimos un *cobro duplicado o por un valor incorrecto*, toca *Continuar en WhatsApp* y envíanos el comprobante: lo revisamos y te lo solucionamos.',
+      respuesta: 'Las condiciones completas están en la *Política de reembolsos* de la app. Si te hicimos un *cobro duplicado o por un valor incorrecto*, envíanos aquí el comprobante con el botón 📎 y toca *Hablar con un asesor*: lo revisamos y te lo solucionamos.',
       porApp: { arte: 'En *EL ARTE EN TUS MANOS*: si pagaste pero *aún no has canjeado tu código*, puedes pedir el reembolso dentro de los *5 días* siguientes a la compra. Si el código ya se canjeó, no aplica reembolso. Respondemos en máximo 15 días hábiles.' },
       whatsapp: true, preguntar: false,
     },
@@ -250,7 +251,7 @@
     {
       id: 'eliminar_cuenta', titulo: '🗑️ Eliminar mi cuenta', apps: ['*'],
       claves: ['eliminar mi cuenta', 'borrar mi cuenta', 'eliminar la cuenta', 'borrar la cuenta', 'darme de baja', 'cerrar mi cuenta'],
-      respuesta: 'Eliminar la cuenta *borra todos tus datos y no se puede deshacer* ⚠️. Por seguridad lo hacemos nosotros: toca *Continuar en WhatsApp* y escríbenos el correo de la cuenta.',
+      respuesta: 'Eliminar la cuenta *borra todos tus datos y no se puede deshacer* ⚠️. Por seguridad lo hacemos nosotros: toca *Hablar con un asesor* y escríbenos el correo de la cuenta.',
       porApp: { finanzas: 'En *DL FINANZAS* lo puedes hacer tú: menú *☰ → Eliminar mi cuenta*.' },
       whatsapp: true, preguntar: false,
     },
@@ -267,7 +268,7 @@
         'numero de nequi', 'nequi', 'pagar por nequi', 'pagar con nequi', 'bre b', 'llave', 'llave bre b', 'datos para pagar', 'datos de pago',
         'consignar', 'consignacion', 'transferir', 'transferencia', 'numero para pagar', 'cuenta para pagar', 'a que cuenta'],
       respuesta: '💳 *Métodos de pago en Colombia*\n\n📱 *Nequi:* 3218641539\n🔑 *Bre-B (llave):* @NEQUILEN197\n\n*Después de pagar:*\n' +
-        '1. Toma una captura del *comprobante*.\n2. Toca *Continuar en WhatsApp* y envíalo con el *correo de tu cuenta* y el plan que pagaste.\n3. {activar}',
+        '1. Toma una captura del *comprobante*.\n2. Envíala aquí con el botón 📎 y escribe el *correo de tu cuenta* y el plan que pagaste.\n3. {activar}',
       whatsapp: true, preguntar: false,
     },
 
@@ -514,11 +515,10 @@
 
   var GENERAL_DEF = {
     activo: true,
-    botonWhatsApp: false,  // botón verde de WhatsApp arriba en el chat
     intentosAsesor: 3,     // veces que el asistente no entiende antes de ofrecer un asesor
     empresa: 'DL COMPANY -TECHNOLOGY-',
     whatsapp: '573218641539',
-    mensajeAsesor: 'Te comunico con un asesor de *{empresa}* 👨‍💻.\n\nToca *Continuar en WhatsApp*: tu caso va *ya resumido* para que no tengas que repetirlo, y te responderemos lo antes posible.',
+    mensajeAsesor: 'Listo 🙌 Ya le avisé a un asesor de *{empresa}* 👨‍💻. Te va a responder *aquí mismo, en este chat*.\n\nPuedes cerrar el chat tranquilo: tu conversación queda guardada y cuando te respondan verás un aviso al volver a abrir la app.',
     mensajeDespedida: '¡Con mucho gusto! 😊 Fue un placer ayudarte. Si necesitas algo más, aquí estoy.\n\n— *{empresa}*',
   };
 
@@ -691,48 +691,71 @@
       problema: null, alternativa: false, fallos: 0,
       premium: false,
       resumen: [],
-      chat: [],              // conversación completa (se guarda en el caso del admin)
-      codigo: null,          // código del caso que se pasa a WhatsApp
+      chat: [],
+      estado: 'bot',         // bot | humano (un asesor responde en este chat)
+      convId: null,          // conversación guardada en la nube
+      ultimoId: 0,           // último mensaje recibido de la nube
+      avisoHumano: 0,
     };
   }
 
   function nota(linea) { if (st.resumen.indexOf(linea) === -1) st.resumen.push(linea); }
 
-  function mensajeWhatsApp() {
-    var base = st.original || ('Hola DL COMPANY 👋 ' + (st.origen === 'web' ? 'Vengo de la página web.' : 'Vengo de la app ' + (st.app ? APPS[st.app].nombre : '') + '.'));
-    return st.codigo ? base + '\n\n(Caso ' + st.codigo + ')' : base;
+  /* ---------- Conversación guardada en la nube (para que el asesor la vea y responda) ---------- */
+  var CLAVE_TOKEN = 'dlchat_token', CLAVE_CONV = 'dlchat_conv_' + (APP_ACTUAL || 'web');
+  function token() {
+    var t = null;
+    try { t = localStorage.getItem(CLAVE_TOKEN); } catch (e) {}
+    if (!t || t.length < 20) {
+      var L = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'; t = '';
+      for (var i = 0; i < 32; i++) t += L.charAt(Math.floor(Math.random() * L.length));
+      try { localStorage.setItem(CLAVE_TOKEN, t); } catch (e) {}
+    }
+    return t;
   }
-
-  // El resumen y la conversación se guardan directo en la administración (sección Casos)
-  // y le llega un aviso al celular del admin. No depende de lo que el cliente envíe.
-  function nuevoCodigo() {
-    var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', c = '';
-    for (var i = 0; i < 4; i++) c += L.charAt(Math.floor(Math.random() * L.length));
-    return c;
+  function guardarLocal(s2) {
+    if (!s2 || !s2.convId) return;
+    try { localStorage.setItem(CLAVE_CONV, JSON.stringify({ id: s2.convId, estado: s2.estado, t: Date.now() })); } catch (e) {}
   }
-  function guardarCaso() {
-    if (configFija) return; // pruebas desde la administración: no se crean casos
-    if (st.casoEnviado) return;
-    st.casoEnviado = true;
-    var caso = {
-      codigo: st.codigo, app: st.app || null, origen: st.origen,
-      resumen: st.resumen.slice(0, 30).map(function (x) { return String(x).slice(0, 300); }),
-      conversacion: st.chat.slice(-40),
-      mensaje: String(st.original || '').slice(0, 1500),
-    };
-    try {
-      fetch(NUBE.url + 'chatbot_casos', {
-        method: 'POST', keepalive: true,
-        headers: { apikey: NUBE.llave, Authorization: 'Bearer ' + NUBE.llave, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-        body: JSON.stringify(caso),
-      }).catch(function () {});
-    } catch (e) {}
+  function leerLocal() {
+    try { var o = JSON.parse(localStorage.getItem(CLAVE_CONV) || 'null'); if (o && o.id && Date.now() - o.t < 14 * 864e5) return o; } catch (e) {}
+    return null;
+  }
+  function rpc(fn, args) {
+    return fetch(NUBE.url + 'rpc/' + fn, {
+      method: 'POST', headers: { apikey: NUBE.llave, Authorization: 'Bearer ' + NUBE.llave, 'Content-Type': 'application/json' },
+      body: JSON.stringify(args),
+    }).then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); });
+  }
+  var cola = Promise.resolve();
+  function asegurarConv(s2) {
+    if (s2.convId) return Promise.resolve(s2.convId);
+    if (!s2._creando) s2._creando = rpc('chat_iniciar', { p_token: token(), p_app: s2.app || APP_ACTUAL || 'web', p_origen: s2.origen })
+      .then(function (r) { s2.convId = r.id; s2.codigo = r.codigo; guardarLocal(s2); return r.id; });
+    return s2._creando;
+  }
+  function registrar(de, texto, adjunto) {
+    if (configFija || !st) return Promise.resolve();
+    var s2 = st;
+    cola = cola.then(function () { return asegurarConv(s2); })
+      .then(function (id) { return rpc('chat_enviar', { p_id: id, p_token: token(), p_de: de, p_texto: String(texto || '').slice(0, 2500), p_adjunto: adjunto || null, p_app: s2.app || null }); })
+      .then(function (mid) { if (mid > s2.ultimoId) s2.ultimoId = mid; })
+      .catch(function () {});
+    return cola;
+  }
+  function pedirAsesor(s2) {
+    s2.estado = 'humano';
+    if (configFija) return;
+    cola = cola.then(function () { return asegurarConv(s2); })
+      .then(function (id) { guardarLocal(s2); return rpc('chat_pedir_asesor', { p_id: id, p_token: token(), p_resumen: s2.resumen.slice(0, 30) }); })
+      .catch(function () {});
   }
 
   // Chips (respuestas rápidas)
   var CH = {
-    wa: { t: '💬 Continuar en WhatsApp', a: 'wa', wa: true },
-    pedido: { t: '📲 Enviar pedido por WhatsApp', a: 'wa', wa: true },
+    wa: { t: '👨‍💻 Hablar con un asesor', a: 'asesor_si', wa: true },
+    pedido: { t: '📲 Pedir este plan', a: 'pedir_plan', wa: true },
+    comprobante: { t: '📎 Ya pagué, enviar comprobante', a: 'comprobante' },
     asesor: { t: '👨‍💻 Hablar con un asesor', a: 'asesor' },
     asesorFinal: { t: '👨‍💻 Hablar con un asesor', a: 'asesor_si' },
     todo: { t: '📋 Ver todas las opciones', a: 'todo' },
@@ -783,8 +806,8 @@
           ? '*' + dinero(plan.p * meses) + '* por ' + meses + ' meses (' + dinero(plan.p) + '/mes, 50% de lanzamiento)'
           : '*' + dinero(plan.p) + '*/mes' + (plan.antes ? ' (antes ' + dinero(plan.antes) + ', 50% de lanzamiento)' : '');
       return r('¡Excelente elección! 🎉\n\n*Plan ' + plan.n + ' de ' + a.nombre + '*\n' + precio + '\n✅ ' + plan.inc +
-        '\n\n*Así lo activas:*\n1. Toca *Enviar pedido por WhatsApp* 👇\n2. ' + a.pago + '\n3. ' + a.activar,
-        [CH.pedido, { t: '📋 Ver todos los planes', a: 'planes_todos' }, CH.otra]);
+        '\n\n*Así lo activas:*\n1. ' + a.pago + '\n2. Toca *📲 Pedir este plan* y un asesor te confirma aquí mismo.\n3. ' + a.activar,
+        [CH.pedido, CH.comprobante, { t: '📋 Ver todos los planes', a: 'planes_todos' }, CH.otra]);
     }
     nota('Preguntó por los planes de ' + a.nombre);
     return r('*Planes de ' + a.nombre + '* 🚀 50% de descuento de lanzamiento\n\n' + textoPlanes(a) +
@@ -795,8 +818,8 @@
   function comoActivar() {
     if (!st.app) return pedirApp('activar', '¿En cuál app quieres activar tu plan?');
     var a = APPS[st.app];
-    return r('*Cómo activar tu plan en ' + a.nombre + '* 🔑\n\n1. Escríbenos por WhatsApp qué plan quieres.\n2. ' + a.pago + '\n3. ' + a.activar,
-      [CH.planes, CH.pedido, CH.otra]);
+    return r('*Cómo activar tu plan en ' + a.nombre + '* 🔑\n\n1. Elige tu plan y toca *📲 Pedir este plan*.\n2. ' + a.pago + '\n3. ' + a.activar,
+      [CH.planes, CH.comprobante, CH.otra]);
   }
 
   function problemaPlan() {
@@ -814,8 +837,9 @@
   function pagado() {
     var a = st.app ? APPS[st.app] : null;
     nota('Dice que ya realizó el pago');
-    return r('¡Gracias por tu pago! 🙌\n\nPara activarlo rápido, toca *Continuar en WhatsApp* y envía:\n1. La *foto del comprobante*.\n2. El *correo* de tu cuenta' +
-      (a ? ' de ' + a.nombre : '') + '.\n\n' + (a ? a.activar : 'Apenas lo confirmemos activamos tu plan.'), [CH.wa, CH.otra]);
+    pedirAsesor(st);
+    return r('¡Gracias por tu pago! 🙌\n\n1. Envía aquí la *foto del comprobante* con el botón 📎 (abajo, junto a donde escribes).\n2. Escribe el *correo* de tu cuenta' +
+      (a ? ' de ' + a.nombre : '') + '.\n\nUn asesor lo verifica y te responde *aquí mismo*. ' + (a ? a.activar : ''), [{ t: '📎 Adjuntar comprobante', a: 'adjuntar' }]);
   }
 
   function codigoMalo() {
@@ -896,8 +920,10 @@
   function aAsesor(motivo) {
     st.modo = null;
     if (motivo) nota(motivo);
-    return r(String(GENERAL.mensajeAsesor || GENERAL_DEF.mensajeAsesor).replace(/\{empresa\}/g, EMPRESA),
-      [CH.wa, CH.menu]);
+    var msj = String(GENERAL.mensajeAsesor || GENERAL_DEF.mensajeAsesor);
+    if (/whatsapp/i.test(msj)) msj = GENERAL_DEF.mensajeAsesor; // textos viejos que mandaban a WhatsApp
+    pedirAsesor(st);
+    return r(msj.replace(/\{empresa\}/g, EMPRESA), []);
   }
 
   function infoApp(k) {
@@ -911,15 +937,15 @@
     st.modo = 'detalles';
     nota('Quiere una app o página personalizada');
     return r('¡Claro! ✨ Creamos apps y páginas *a la medida*, con tu marca y lo que tu negocio necesita, y nosotros las mantenemos. ' + (st.origen === 'web' ? '(Ejemplo: *El Arte en Tus Manos*, academia de manualidades).' : '') + '\n\n' +
-      'Para cotizarte, escríbeme aquí:\n1. ¿Qué tipo de negocio tienes?\n2. ¿Qué necesitas controlar o mostrar?\n3. ¿App, página web o ambas?\n\nLo que me cuentes va incluido en tu mensaje de WhatsApp 👇',
-      [CH.wa, CH.menu]);
+      'Para cotizarte, escríbeme aquí:\n1. ¿Qué tipo de negocio tienes?\n2. ¿Qué necesitas controlar o mostrar?\n3. ¿App, página web o ambas?\n\nCuando termines toca *📨 Enviar a un asesor* y te respondemos aquí mismo con la propuesta.',
+      [{ t: '📨 Enviar a un asesor', a: 'asesor_si' }, CH.menu]);
   }
 
   function pacientes() {
     st.modo = 'detalles';
     nota('Le interesa la app de control de pacientes y citas');
     return r('🩺 La *app de control de pacientes y citas* está en desarrollo (odontología, fisioterapia, estética y más: datos del paciente, agenda y recordatorios).\n\n' +
-      'Cuéntame aquí tu *tipo de negocio* y te avisamos apenas salga. Luego toca *Continuar en WhatsApp* 👇', [CH.wa, { t: '📱 Ver las apps disponibles', a: 'apps' }]);
+      'Cuéntame aquí tu *tipo de negocio* y te avisamos apenas salga. Luego toca *📨 Enviar a un asesor* 👇', [{ t: '📨 Enviar a un asesor', a: 'asesor_si' }, { t: '📱 Ver las apps disponibles', a: 'apps' }]);
   }
 
   function despedida() {
@@ -981,10 +1007,16 @@
   function procesarTexto(texto) {
     var t = norm(texto);
     if (!t) return null;
+    if (st.estado === 'humano') {
+      // Ya lo atiende una persona: el mensaje le llega al asesor (se guardó al mostrarlo)
+      if (Date.now() - st.avisoHumano < 10 * 60000) return null;
+      st.avisoHumano = Date.now();
+      return r('📨 Tu mensaje le llegó al asesor. Te responderá *aquí mismo*.', []);
+    }
 
     if (st.modo === 'detalles') {
       nota('Detalles: ' + texto.slice(0, 300));
-      return r('¡Anotado! ✍️ Si quieres agregar algo más, escríbelo. Cuando termines toca *Continuar en WhatsApp* y te respondemos con la propuesta.', [CH.wa]);
+      return r('¡Anotado! ✍️ Si quieres agregar algo más, escríbelo. Cuando termines toca *📨 Enviar a un asesor* y te respondemos aquí mismo.', [{ t: '📨 Enviar a un asesor', a: 'asesor_si' }]);
     }
     if (st.modo === 'confirmar') {
       var otroP = detectarProblema(t, st.app);
@@ -1036,6 +1068,8 @@
         [{ t: '🛠️ Tengo un problema', a: 'soporte' }, { t: '📘 Aprender a usar la app', a: 'guias' }, CH.planes, { t: '👨‍💻 Aun así, quiero un asesor', a: 'asesor_si' }]);
     }
     if (a === 'asesor_si') return aAsesor('Pidió hablar con un asesor');
+    if (a === 'pedir_plan') return aAsesor('Pidió activar el plan');
+    if (a === 'comprobante') return pagado();
     if (a === 'guias') return guias();
     if (a === 'todo') return todo();
     if (a === 'medida') return aLaMedida();
@@ -1103,7 +1137,6 @@
     '.tit{flex:1;min-width:0}.tit b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.tit span{font-size:12px;color:#8fd6a8;display:flex;align-items:center;gap:5px}.tit span:before{content:"";width:7px;height:7px;border-radius:50%;background:#22c55e}' +
     '.ib{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center;flex:none}' +
-    '.ib.wa{background:#25d366}.ib svg{width:20px;height:20px}' +
     '.msgs{position:relative;flex:1;overflow-y:auto;padding:14px 12px 6px;display:flex;flex-direction:column;gap:6px;overscroll-behavior:contain}' +
     '.m{max-width:86%;padding:9px 11px;border-radius:14px;font-size:14.5px;line-height:1.42;white-space:pre-wrap;word-wrap:break-word;animation:e .18s ease-out}' +
     '.m.bot{align-self:flex-start;background:#16213a;border:1px solid rgba(255,255,255,.06);border-top-left-radius:4px}' +
@@ -1120,9 +1153,18 @@
     'input{flex:1;min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:11px 15px;font-size:16px;background:#111b30;color:#e8eefc;outline:none}' +
     'input:focus{border-color:rgba(212,175,55,.7)}' +
     'form button{width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(135deg,#d4af37,#f5d77a);color:#1a1405;font-size:18px;cursor:pointer;flex:none}' +
-    '.pie{text-align:center;font-size:10.5px;color:#6b7aa0;padding:0 0 2px}';
+    '.pie{text-align:center;font-size:10.5px;color:#6b7aa0;padding:0 0 2px}' +
+    '.m.asesor{align-self:flex-start;background:#123326;border:1px solid rgba(34,197,94,.45);border-top-left-radius:4px}' +
+    '.m.asesor .quien{display:block;font-size:11.5px;font-weight:700;color:#5ee69a;margin-bottom:3px}' +
+    '.m img{display:block;max-width:220px;max-height:260px;border-radius:10px;margin-top:4px}' +
+    '.aviso-sis{align-self:center;font-size:12px;color:#8fa3c8;background:rgba(255,255,255,.05);border-radius:10px;padding:5px 10px;text-align:center}' +
+    'form .clip{background:rgba(255,255,255,.08);color:#e8eefc;font-size:19px}' +
+    '.pastilla{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:3;pointer-events:auto;display:flex;align-items:center;gap:8px;' +
+    'background:linear-gradient(135deg,#0f1b33,#16213a);color:#e8eefc;border:1px solid rgba(34,197,94,.6);border-radius:24px;padding:10px 14px 10px 12px;' +
+    'font-size:14px;font-weight:700;box-shadow:0 8px 26px rgba(0,0,0,.45);cursor:pointer;animation:e .25s ease-out}' +
+    '.pastilla i{font-style:normal;background:#22c55e;color:#04210f;border-radius:10px;padding:1px 7px;font-size:12px}' +
+    '.oculto{display:none!important}';
 
-  var ICONO_WA = '<svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>';
 
   function construir() {
     if (host) return;
@@ -1135,19 +1177,25 @@
     raiz.innerHTML = '<style>' + CSS + '</style>' +
       '<div class="cont"><div class="fondo"></div><div class="panel" role="dialog" aria-label="Asistente DL COMPANY">' +
       '<div class="cab"><div class="av">DL</div><div class="tit"><b>Asistente DL COMPANY</b><span>Responde al instante</span></div>' +
-      '<button class="ib wa" type="button" title="Abrir WhatsApp" aria-label="Abrir WhatsApp">' + ICONO_WA + '</button>' +
       '<button class="ib x" type="button" aria-label="Cerrar">✕</button></div>' +
       '<div class="msgs"></div><div class="chips"></div>' +
-      '<form><input placeholder="Escribe tu mensaje…" autocomplete="off" aria-label="Mensaje"><button aria-label="Enviar">➤</button></form>' +
-      '<div class="pie">Asistente automático · ' + EMPRESA + '</div></div></div>';
+      '<form><button type="button" class="clip" aria-label="Adjuntar comprobante" title="Adjuntar foto o PDF">📎</button>' +
+      '<input class="txt" placeholder="Escribe tu mensaje…" autocomplete="off" aria-label="Mensaje"><button aria-label="Enviar">➤</button>' +
+      '<input class="archivo" type="file" accept="image/*,application/pdf" hidden></form>' +
+      '<div class="pie">Asistente automático · ' + EMPRESA + '</div></div></div>' +
+      '<button type="button" class="pastilla oculto">💬 DL COMPANY te respondió <i>1</i></button>';
     document.body.appendChild(host);
     ui.cont = raiz.querySelector('.cont');
     ui.msgs = raiz.querySelector('.msgs');
     ui.chips = raiz.querySelector('.chips');
-    ui.input = raiz.querySelector('input');
+    ui.input = raiz.querySelector('input.txt');
+    ui.archivo = raiz.querySelector('input.archivo');
+    ui.pastilla = raiz.querySelector('.pastilla');
     raiz.querySelector('.fondo').onclick = cerrar;
     raiz.querySelector('.x').onclick = cerrar;
-    raiz.querySelector('.wa').onclick = irAWhatsApp;
+    raiz.querySelector('.clip').onclick = function () { ui.archivo.click(); };
+    ui.archivo.onchange = function () { var f = ui.archivo.files && ui.archivo.files[0]; ui.archivo.value = ''; if (f) enviarAdjunto(f); };
+    ui.pastilla.onclick = function () { ui.pastilla.classList.add('oculto'); abrir(); };
     raiz.querySelector('form').onsubmit = function (e) {
       e.preventDefault();
       var v = ui.input.value.trim(); if (!v || ocupado) return;
@@ -1160,12 +1208,19 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function formato(s) { return esc(s).replace(/\*([^*\n]+)\*/g, '<b>$1</b>'); }
   function bajar() { ui.msgs.scrollTop = ui.msgs.scrollHeight; }
-  function burbuja(texto, quien) {
-    if (st && st.chat) { st.chat.push({ de: quien === 'yo' ? 'cliente' : 'asistente', t: String(texto).slice(0, 700) }); if (st.chat.length > 60) st.chat.shift(); }
-    var d = document.createElement('div'); d.className = 'm ' + quien; d.innerHTML = formato(texto);
+  function burbuja(texto, quien, opciones) {
+    opciones = opciones || {};
+    if (st && st.chat) { st.chat.push({ de: quien === 'yo' ? 'cliente' : quien === 'asesor' ? 'admin' : 'asistente', t: String(texto).slice(0, 700) }); if (st.chat.length > 60) st.chat.shift(); }
+    if (!opciones.historial && quien !== 'asesor') registrar(quien === 'yo' ? 'cliente' : 'asistente', texto, opciones.adjunto);
+    var d = document.createElement('div'); d.className = 'm ' + quien;
+    d.innerHTML = (quien === 'asesor' ? '<span class="quien">👨‍💻 Asesor DL COMPANY</span>' : '') + formato(texto) +
+      (opciones.img ? '<img alt="Adjunto" src="' + opciones.img + '">' : '');
     ui.msgs.appendChild(d); bajar();
     // Respuesta larga: mostrarla desde el inicio
     if (quien === 'bot' && d.offsetHeight > ui.msgs.clientHeight - 20) ui.msgs.scrollTop = d.offsetTop - 10;
+  }
+  function avisoSistema(texto) {
+    var d = document.createElement('div'); d.className = 'aviso-sis'; d.textContent = texto; ui.msgs.appendChild(d); bajar();
   }
   function pintarChips(chips) {
     ui.chips.innerHTML = '';
@@ -1174,7 +1229,7 @@
       if (c.wa) b.className = 'w';
       b.onclick = function () {
         if (ocupado) return;
-        if (c.a === 'wa') return irAWhatsApp();
+        if (c.a === 'adjuntar') return ui.archivo.click();
         if (c.a.indexOf('abrir:') === 0) { abrirOriginal(c.a.slice(6), '_blank', 'noopener'); return; }
         enviarUsuario(c.t, function () { return accion(c.a); });
       };
@@ -1199,27 +1254,123 @@
     if (resp) responder(resp);
   }
 
-  function irAWhatsApp() {
-    if (!st.codigo) st.codigo = nuevoCodigo();
-    guardarCaso();
-    var url = 'https://wa.me/' + WA_NUMERO + '?text=' + encodeURIComponent(mensajeWhatsApp());
-    // Sin 'noopener' para saber si se abrió (con noopener window.open siempre devuelve null)
-    var w = abrirOriginal(url, '_blank');
-    if (w) { try { w.opener = null; } catch (e) {} } else location.href = url;
+  // Reduce la foto (máx. 1600 px) para que suba rápido
+  function comprimir(f) {
+    return new Promise(function (ok) {
+      if (!/^image\/(jpeg|png|webp)$/.test(f.type)) return ok(f);
+      var img = new Image(), url = URL.createObjectURL(f);
+      img.onload = function () {
+        var k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (b) { URL.revokeObjectURL(url); ok(b && b.size < f.size ? new File([b], 'comprobante.jpg', { type: 'image/jpeg' }) : f); }, 'image/jpeg', 0.82);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); ok(f); };
+      img.src = url;
+    });
+  }
+  function enviarAdjunto(f) {
+    if (f.size > 15 * 1024 * 1024) { avisoSistema('El archivo es muy grande. Envía una foto o un PDF de menos de 5 MB.'); return; }
+    var s2 = st, esImg = /^image\//.test(f.type);
+    var vista = esImg ? URL.createObjectURL(f) : null;
+    var d = document.createElement('div'); d.className = 'm yo';
+    d.innerHTML = formato(esImg ? '📎 Comprobante' : '📎 ' + f.name) + (vista ? '<img alt="Adjunto" src="' + vista + '">' : '');
+    ui.msgs.appendChild(d); bajar();
+    if (s2.chat) s2.chat.push({ de: 'cliente', t: '📎 Adjunto' });
+    if (configFija) { avisoSistema('(En las pruebas de la administración el archivo no se sube.)'); return; }
+    var estado = document.createElement('div'); estado.className = 'aviso-sis'; estado.textContent = 'Enviando…'; ui.msgs.appendChild(estado); bajar();
+    comprimir(f).then(function (f2) {
+      return asegurarConv(s2).then(function (id) {
+        var ext = f2.type === 'application/pdf' ? 'pdf' : f2.type === 'image/png' ? 'png' : f2.type === 'image/webp' ? 'webp' : f2.type === 'image/heic' ? 'heic' : 'jpg';
+        var ruta = id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+        return fetch(NUBE.url.replace('/rest/v1/', '/storage/v1/object/') + 'chatbot-adjuntos/' + ruta, {
+          method: 'POST', headers: { apikey: NUBE.llave, Authorization: 'Bearer ' + NUBE.llave, 'Content-Type': f2.type || 'application/octet-stream' }, body: f2,
+        }).then(function (r) { if (!r.ok) throw new Error('subida'); return ruta; });
+      });
+    }).then(function (ruta) {
+      estado.textContent = '✓ Enviado';
+      var nombre = esImg ? '📎 Comprobante' : '📎 ' + f.name;
+      cola = cola.then(function () { return rpc('chat_enviar', { p_id: s2.convId, p_token: token(), p_de: 'cliente', p_texto: nombre, p_adjunto: ruta, p_app: s2.app || null }); })
+        .then(function (mid) { if (mid > s2.ultimoId) s2.ultimoId = mid; }).catch(function () {});
+      if (s2.estado !== 'humano') {
+        nota('Envió un comprobante');
+        s2.estado = 'humano';
+        pedirAsesor(s2);
+        responder(r('¡Recibido! 🙌 Un asesor revisa tu comprobante y te responde *aquí mismo*. Si no lo has hecho, escribe el *correo* de tu cuenta.', []));
+      }
+    }).catch(function () { estado.textContent = '⚠️ No se pudo enviar. Revisa tu internet e inténtalo de nuevo.'; });
+  }
+
+  /* ---------- Recibir las respuestas del asesor ---------- */
+  var tPoll = null;
+  function leerNuevos(s2, todo) {
+    if (!s2 || !s2.convId || configFija) return Promise.resolve();
+    return rpc('chat_leer', { p_id: s2.convId, p_token: token(), p_desde: todo ? 0 : s2.ultimoId }).then(function (res) {
+      if (!res || s2 !== st) return;
+      (res.mensajes || []).forEach(function (m) {
+        if (m.id > s2.ultimoId) s2.ultimoId = m.id;
+        if (todo) burbuja(m.texto || (m.adjunto ? '📎 Adjunto' : ''), m.de === 'cliente' ? 'yo' : m.de === 'admin' ? 'asesor' : 'bot', { historial: true });
+        else if (m.de === 'admin') { burbuja(m.texto, 'asesor', { historial: true }); pintarChips([]); }
+      });
+      if (res.estado && res.estado !== s2.estado) {
+        s2.estado = res.estado === 'resuelta' ? 'bot' : res.estado;
+        guardarLocal(s2);
+        if (res.estado === 'resuelta') avisoSistema('El asesor marcó la conversación como resuelta ✅');
+      }
+    }).catch(function () {});
+  }
+  function programarLectura() {
+    clearInterval(tPoll);
+    tPoll = setInterval(function () {
+      if (document.visibilityState !== 'visible') return;
+      if (abierto && st && st.convId) leerNuevos(st, false);
+      else if (!abierto) revisarRespuestas();
+    }, 5000);
+  }
+  // Con el chat cerrado: avisar si el asesor respondió
+  var ultimaRevision = 0;
+  function revisarRespuestas() {
+    if (configFija || Date.now() - ultimaRevision < 30000) return;
+    ultimaRevision = Date.now();
+    var loc = leerLocal();
+    if (!loc || loc.estado !== 'humano') return;
+    rpc('chat_estado', { p_id: loc.id, p_token: token() }).then(function (e) {
+      if (!e) return;
+      if (e.no_leidos > 0 && !abierto) {
+        construir();
+        ui.pastilla.querySelector('i').textContent = e.no_leidos;
+        ui.pastilla.classList.remove('oculto');
+      }
+      if (e.estado !== 'humano') { try { localStorage.setItem(CLAVE_CONV, JSON.stringify({ id: loc.id, estado: e.estado, t: Date.now() })); } catch (x) {} }
+    }).catch(function () {});
   }
 
   function abrir(textoOriginal, urlOriginal) {
     construir();
+    ui.pastilla.classList.add('oculto');
+    host.style.pointerEvents = 'auto';
+    abierto = true;
+    requestAnimationFrame(function () { ui.cont.classList.add('on'); });
+    programarLectura();
+    // ¿Tiene una conversación abierta con un asesor? Se continúa ahí mismo.
+    var loc = !configFija && leerLocal();
+    if (loc && loc.estado === 'humano' && (!st || st.convId !== loc.id)) {
+      nuevaConversacion('', urlOriginal);
+      st.convId = loc.id; st.estado = 'humano'; st.avisoHumano = Date.now();
+      ui.msgs.innerHTML = '';
+      avisoSistema('Tu conversación con DL COMPANY');
+      leerNuevos(st, true).then(function () {
+        if (textoOriginal) burbuja(textoOriginal.replace(/^¡?hola dl company!?\s*👋?\s*/i, ''), 'yo');
+        pintarChips([]);
+      });
+      return;
+    }
+    if (st && st.estado === 'humano' && textoOriginal === undefined) { leerNuevos(st, false); return; }
     var nuevo = !st || textoOriginal !== undefined;
     if (nuevo) {
       nuevaConversacion(textoOriginal, urlOriginal);
       ui.msgs.innerHTML = '';
     }
-    // Botón directo a WhatsApp en la cabecera: solo si se activa en la app de administración
-    raiz.querySelector('.ib.wa').style.display = GENERAL.botonWhatsApp ? '' : 'none';
-    host.style.pointerEvents = 'auto';
-    abierto = true;
-    requestAnimationFrame(function () { ui.cont.classList.add('on'); });
     if (!nuevo) return;
     if (textoOriginal) {
       burbuja(textoOriginal.replace(/^¡?hola dl company!?\s*👋?\s*/i, ''), 'yo');
@@ -1233,6 +1384,7 @@
   function cerrar() {
     if (!host) return;
     abierto = false;
+    ultimaRevision = Date.now();
     ui.cont.classList.remove('on');
     setTimeout(function () { if (!abierto) host.style.pointerEvents = 'none'; }, 280);
   }
@@ -1279,6 +1431,9 @@
     abrir(d.texto, d.url);
   }, true);
 
+  // Al cargar la página: si el asesor respondió mientras el cliente no estaba, mostrar el aviso
+  setTimeout(function () { revisarRespuestas(); programarLectura(); }, 2500);
+
   window.DLChat = {
     abrir: function (texto) { abrir(texto || undefined); },
     // Abrir como si el cliente viniera de una app (web, finanzas, stock, cuadra, comanda, arte)
@@ -1297,6 +1452,5 @@
     _texto: function (t) { return procesarTexto(t); },
     _estado: function () { return st ? { app: st.app, origen: st.origen, original: st.original, codigo: st.codigo, chat: st.chat } : null; },
     _accion: function (a) { return accion(a); },
-    _whatsapp: function () { return mensajeWhatsApp(); },
   };
 })();

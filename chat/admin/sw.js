@@ -10,18 +10,18 @@ self.addEventListener('push', function (e) {
     tag: d.tag || 'caso',
     icon: '../../assets/dl-company.png',
     badge: '../../assets/dl-company.png',
-    data: { url: d.url || './#casos' },
+    data: { url: d.url || './#chats' },
     requireInteraction: false,
   }));
 });
 
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
-  var url = (e.notification.data && e.notification.data.url) || './#casos';
+  var url = (e.notification.data && e.notification.data.url) || './#chats';
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (lista) {
     for (var i = 0; i < lista.length; i++) {
       if (lista[i].url.indexOf('/chat/admin/') !== -1) {
-        lista[i].postMessage({ tipo: 'abrir-casos' });
+        lista[i].postMessage({ tipo: 'abrir', url: url });
         return lista[i].focus();
       }
     }

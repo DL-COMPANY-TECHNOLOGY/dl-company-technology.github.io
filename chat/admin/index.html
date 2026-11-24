@@ -87,6 +87,31 @@
   .aviso{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;background:#14532d;color:#d1fae5;
     border-radius:12px;padding:11px 16px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw;text-align:center}
   .aviso.mal{background:#7f1d1d;color:#fee2e2}
+  /* bandeja y conversación tipo WhatsApp */
+  .conv{display:flex;gap:11px;align-items:center;background:var(--panel);border:1px solid var(--borde);border-radius:14px;padding:11px 12px;cursor:pointer}
+  .conv .ic{width:42px;height:42px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-size:20px;flex:none}
+  .conv .txt{flex:1;min-width:0}.conv b{display:block;font-size:14.5px}
+  .conv small{display:block;color:var(--sub);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .conv .der{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none;font-size:11.5px;color:var(--sub)}
+  .conv .n{background:var(--verde);color:#04210f;border-radius:11px;padding:1px 7px;font-weight:800;font-size:12px}
+  .conv.necesita{border-color:rgba(34,197,94,.55)}
+  #chatv{position:fixed;inset:0;z-index:25;background:var(--fondo);display:flex;flex-direction:column}
+  #chatv .cab{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;border-bottom:1px solid var(--borde);background:#0b1220}
+  #chatv .cab b{display:block;font-size:15px}#chatv .cab span{font-size:12px;color:var(--sub)}
+  #chatv .barra{display:flex;gap:7px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--borde)}
+  #chatv .resumen{margin:8px 12px 0;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.3);border-radius:12px;padding:9px 11px;font-size:13px;line-height:1.45}
+  #chatv .msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+  .bm{max-width:86%;padding:8px 10px;border-radius:12px;font-size:14.5px;line-height:1.42;white-space:pre-wrap;word-wrap:break-word}
+  .bm.cliente{align-self:flex-start;background:var(--panel2);border-top-left-radius:4px}
+  .bm.asistente{align-self:flex-end;background:#1a2540;color:#c9d4f0;border-top-right-radius:4px;opacity:.9}
+  .bm.admin{align-self:flex-end;background:#0f5132;border-top-right-radius:4px}
+  .bm .de{display:block;font-size:11px;font-weight:700;color:var(--sub);margin-bottom:2px}
+  .bm.admin .de{color:#7ff0b0}.bm b{color:#ffd875}
+  .bm img{display:block;max-width:230px;max-height:280px;border-radius:9px;margin-top:5px;cursor:zoom-in}
+  .bm .hora{display:block;text-align:right;font-size:10.5px;color:var(--sub);margin-top:3px}
+  #chatv form{display:flex;gap:8px;padding:8px 10px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--borde);background:#0b1220}
+  #chatv textarea{flex:1;min-height:44px;max-height:120px;resize:none}
+  #chatv form button{width:46px;height:46px;border-radius:50%;border:0;background:var(--verde);color:#04210f;font-size:19px;cursor:pointer;flex:none;align-self:flex-end}
   code{background:#0b1324;border:1px solid var(--borde);border-radius:6px;padding:1px 5px;font-size:12.5px;color:var(--oro2)}
 </style>
 </head>
@@ -117,8 +142,8 @@
   </header>
   <main id="vista"></main>
   <nav>
-    <button data-t="casos"><i>📥</i>Casos<span class="globo oculto" id="nCasos"></span></button>
-    <button data-t="respuestas" class="on"><i>💬</i>Respuestas</button>
+    <button data-t="chats"><i>💬</i>Chats<span class="globo oculto" id="nChats"></span></button>
+    <button data-t="respuestas" class="on"><i>📝</i>Respuestas</button>
     <button data-t="apps"><i>📱</i>Apps y planes</button>
     <button data-t="pendientes"><i>❓</i>Sin resp.<span class="globo oculto" id="nPend"></span></button>
     <button data-t="ajustes"><i>⚙️</i>Ajustes</button>
@@ -126,6 +151,7 @@
 </section>
 
 <div id="hoja" class="oculto"></div>
+<div id="chatv" class="oculto"></div>
 
 <script>window.DL_CHAT_APP = 'web';</script>
 <script src="../dl-chat.js"></script>
@@ -143,7 +169,7 @@
 
   var guardado = null, draft = null, sucio = false, tab = 'respuestas', pendientes = [], usuario = null;
   var filtroApp = '', filtroTexto = '';
-  var casos = [], filtroCasos = 'pendientes', avisosActivos = false;
+  var convs = [], filtroChats = 'necesitan', avisosActivos = false, chatAbierto = null, mensajes = [], canal = null;
   var URL_PUSH = 'https://geesohvgkqhhlxdnovfb.supabase.co/functions/v1/push-chatbot';
   var VAPID = 'BNMIHlUAXQFENegoZu-9q-LFiOhrm6bFQPRMySD4vK9ba3dhy44BRXFNifZ9vPB-r76W-mufEVZeD6X1s7wvgrc';
 
@@ -196,25 +222,54 @@
     c.apps = c.apps || base.apps; c.orden_apps = c.orden_apps || base.orden_apps; c.problemas = c.problemas || base.problemas;
     guardado = copiar(c); draft = copiar(c); limpio();
     await cargarPendientes();
-    await cargarCasos();
+    await cargarChats();
     await revisarAvisos();
-    if (location.hash === '#casos') irA('casos'); else pintar();
-    // revisar casos nuevos cada 30 segundos mientras la app esté abierta
+    escucharEnVivo();
+    abrirSegunHash();
+    // respaldo por si el tiempo real se desconecta
     setInterval(function () {
       if (document.visibilityState !== 'visible') return;
-      var antes = casos.filter(function (x) { return !x.atendido; }).length;
-      cargarCasos().then(function () {
-        var ahora = casos.filter(function (x) { return !x.atendido; }).length;
-        if (tab === 'casos' && $('#hoja').classList.contains('oculto') && ahora !== antes) pintar();
-      });
-    }, 30000);
+      cargarChats().then(function () { if (tab === 'chats' && !chatAbierto && $('#hoja').classList.contains('oculto')) pintar(); });
+      if (chatAbierto) cargarMensajes(true);
+    }, 20000);
   }
-  async function cargarCasos() {
-    var r = await sb.from('chatbot_casos').select('*').order('creado', { ascending: false }).limit(150);
+  function abrirSegunHash() {
+    var h = location.hash;
+    if (h.indexOf('#chat-') === 0) { irA('chats'); abrirChat(h.slice(6)); }
+    else if (h === '#chats' || h === '#casos') irA('chats');
+    else pintar();
+  }
+  window.addEventListener('hashchange', function () { if (usuario) abrirSegunHash(); });
+  async function cargarChats() {
+    var r = await sb.from('chatbot_conversaciones').select('id,codigo,app,origen,estado,resumen,ultimo,ultimo_de,no_leidos_admin,creado,actualizado')
+      .order('actualizado', { ascending: false }).limit(300);
     if (r.error) return;
-    casos = r.data || [];
-    var n = casos.filter(function (x) { return !x.atendido; }).length, g = $('#nCasos');
+    convs = (r.data || []).filter(function (c) { return c.ultimo; }); // sin mensajes = conversación vacía
+    contarChats();
+  }
+  function contarChats() {
+    var n = convs.filter(function (c) { return c.estado === 'humano' && c.no_leidos_admin > 0; }).length, g = $('#nChats');
     g.textContent = n; g.classList.toggle('oculto', !n);
+  }
+  function escucharEnVivo() {
+    if (canal) return;
+    canal = sb.channel('chatbot-admin')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chatbot_conversaciones' }, function (p) {
+        var c = p.new, k = convs.findIndex(function (x) { return x.id === (c && c.id) || x.id === (p.old && p.old.id); });
+        if (p.eventType === 'DELETE') { if (k >= 0) convs.splice(k, 1); }
+        else if (c && c.ultimo) { if (k >= 0) convs.splice(k, 1); convs.unshift(c); }
+        if (chatAbierto && c && c.id === chatAbierto.id) { chatAbierto = Object.assign(chatAbierto, c); pintarCabChat(); }
+        contarChats();
+        if (tab === 'chats' && !chatAbierto && $('#hoja').classList.contains('oculto')) pintar();
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chatbot_mensajes' }, function (p) {
+        var m = p.new;
+        if (chatAbierto && m.conversacion_id === chatAbierto.id && !mensajes.some(function (x) { return x.id === m.id; })) {
+          mensajes.push(m); agregarBurbuja(m, true);
+          if (m.de === 'cliente') marcarLeido(chatAbierto.id);
+        }
+      })
+      .subscribe();
   }
   function irA(t) {
     tab = t;
@@ -222,7 +277,9 @@
     pintar(); window.scrollTo(0, 0);
   }
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', function (e) {
-    if (e.data && e.data.tipo === 'abrir-casos' && usuario) cargarCasos().then(function () { irA('casos'); });
+    if (!e.data || !usuario) return;
+    if (e.data.tipo === 'abrir' && e.data.url) { var h = e.data.url.split('#')[1]; if (h) location.hash = h; }
+    if (e.data.tipo === 'abrir-casos') irA('chats');
   });
 
   /* ---------------- avisos al celular ---------------- */
@@ -308,11 +365,11 @@
 
   /* ---------------- navegación ---------------- */
   document.querySelectorAll('nav button').forEach(function (b) {
-    b.onclick = function () { irA(b.dataset.t); if (b.dataset.t === 'casos') cargarCasos().then(function () { if (tab === 'casos') pintar(); }); };
+    b.onclick = function () { irA(b.dataset.t); if (b.dataset.t === 'chats') cargarChats().then(function () { if (tab === 'chats' && !chatAbierto) pintar(); }); };
   });
   function pintar() {
     var v = $('#vista');
-    if (tab === 'casos') v.innerHTML = vistaCasos();
+    if (tab === 'chats') v.innerHTML = vistaChats();
     if (tab === 'respuestas') v.innerHTML = vistaRespuestas();
     if (tab === 'apps') v.innerHTML = vistaApps();
     if (tab === 'pendientes') v.innerHTML = vistaPendientes();
@@ -321,59 +378,136 @@
   }
   function nombreApp(k) { return k === '*' ? 'Todas las apps' : (draft.apps[k] ? draft.apps[k].nombre : k); }
 
-  /* ---------------- CASOS ---------------- */
-  function fechaCorta(iso) { return new Date(iso).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }); }
-  function vistaCasos() {
-    var pend = casos.filter(function (x) { return !x.atendido; }).length;
-    var h = '<h2>📥 Casos</h2><p class="ayuda">Clientes que el asistente pasó a tu WhatsApp. Aquí ves el resumen y toda la conversación, ' +
-      'aunque el cliente no te lo envíe. En su mensaje de WhatsApp aparece el <b>código del caso</b> para que sepas cuál es.</p>';
+  /* ---------------- CHATS (como WhatsApp) ---------------- */
+  function fechaCorta(iso) {
+    var d = new Date(iso), hoy = new Date();
+    return d.toDateString() === hoy.toDateString() ? d.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' })
+      : d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+  }
+  function nombreConv(c) { return 'Cliente ' + c.codigo; }
+  function iconoApp(k) { return k && draft.apps[k] ? draft.apps[k].icono : '🌐'; }
+  function appDe(k) { return k && draft.apps[k] ? draft.apps[k].nombre : 'Página web'; }
+  function vistaChats() {
+    var nec = convs.filter(function (c) { return c.estado === 'humano'; }).length;
+    var h = '<h2>💬 Chats</h2><p class="ayuda">Todas las conversaciones del asistente. Las que dicen <b>Te necesita</b> esperan tu respuesta; ' +
+      'puedes entrar a cualquiera y escribirle al cliente: le llega en el mismo chat de la app.</p>';
     h += avisosActivos
-      ? '<div class="bloque"><b>🔔 Avisos activos en este celular</b><p class="ayuda" style="margin:6px 0 10px">Te llega una notificación cada vez que un cliente pasa a WhatsApp.</p>' +
-        '<button class="btn peq" data-a="probarAviso">Enviar aviso de prueba</button></div>'
-      : '<div class="bloque"><b>🔔 Recibe un aviso cuando alguien te vaya a escribir</b><p class="ayuda" style="margin:6px 0 10px">Actívalo en el celular donde quieres recibir los avisos (funciona aunque esta página esté cerrada).</p>' +
-        '<button class="btn oro" data-a="activarAvisos" style="width:100%">🔔 Activar avisos en este celular</button></div>';
+      ? '<div class="fila" style="margin-bottom:10px"><small style="color:var(--sub);flex:1">🔔 Avisos activos en este celular</small><button class="btn peq" data-a="probarAviso">Probar aviso</button></div>'
+      : '<button class="btn oro" data-a="activarAvisos" style="width:100%;margin-bottom:12px">🔔 Recibir un aviso cuando un cliente me necesite</button>';
     h += '<div class="chips" style="margin-bottom:12px">' +
-      [['pendientes', 'Pendientes (' + pend + ')'], ['atendidos', 'Atendidos'], ['todos', 'Todos']].map(function (x) {
-        return '<button type="button" class="chip' + (filtroCasos === x[0] ? ' on' : '') + '" data-fcasos="' + x[0] + '">' + x[1] + '</button>';
+      [['necesitan', '👨‍💻 Te necesitan (' + nec + ')'], ['todas', 'Todas'], ['resueltas', '✅ Resueltas']].map(function (x) {
+        return '<button type="button" class="chip' + (filtroChats === x[0] ? ' on' : '') + '" data-fchats="' + x[0] + '">' + x[1] + '</button>';
       }).join('') + '</div>';
-    var lista = casos.filter(function (x) { return filtroCasos === 'todos' || (filtroCasos === 'pendientes' ? !x.atendido : x.atendido); });
-    if (!lista.length) return h + '<div class="vacio">' + (filtroCasos === 'pendientes' ? '🎉 No tienes casos pendientes.' : 'No hay casos aquí.') + '</div>';
+    var lista = convs.filter(function (c) {
+      return filtroChats === 'todas' || (filtroChats === 'necesitan' ? c.estado === 'humano' : c.estado === 'resuelta');
+    });
+    if (!lista.length) return h + '<div class="vacio">' + (filtroChats === 'necesitan' ? '🎉 Nadie te está esperando.<br>Revisa "Todas" para ver lo que el asistente atendió.' : 'No hay conversaciones aquí.') + '</div>';
     h += '<div class="lista">';
     lista.forEach(function (c) {
-      var i = casos.indexOf(c);
-      var app = c.app && draft.apps[c.app] ? draft.apps[c.app].icono + ' ' + draft.apps[c.app].nombre : '🌐 Página web';
-      h += '<div class="bloque" style="margin:0' + (c.atendido ? ';opacity:.6' : '') + '">' +
-        '<div class="fila" style="justify-content:space-between"><b style="font-size:15px">Caso ' + esc(c.codigo) + '</b><small style="color:var(--sub)">' + esc(fechaCorta(c.creado)) + '</small></div>' +
-        '<span class="etq">' + esc(app) + '</span>' + (c.atendido ? '<span class="etq oro">✅ Atendido</span>' : '<span class="etq oro">⏳ Pendiente</span>') +
-        '<ul style="margin:9px 0 0 18px;font-size:14px;line-height:1.5">' + (c.resumen || []).map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>' +
-        '<div class="acciones"><button class="btn azul peq" data-a="verCaso" data-i="' + i + '">💬 Ver conversación</button>' +
-        '<button class="btn peq" data-a="atender" data-i="' + i + '">' + (c.atendido ? '↺ Pendiente' : '✅ Atendido') + '</button>' +
-        '<button class="btn rojo peq" data-a="borrarCaso" data-i="' + i + '">🗑</button></div></div>';
+      var quien = c.ultimo_de === 'admin' ? 'Tú: ' : c.ultimo_de === 'asistente' ? '🤖 ' : '';
+      h += '<div class="conv' + (c.estado === 'humano' ? ' necesita' : '') + '" data-chat="' + c.id + '"><div class="ic">' + iconoApp(c.app) + '</div>' +
+        '<div class="txt"><b>' + esc(nombreConv(c)) + ' · ' + esc(appDe(c.app)) + '</b><small>' + esc(quien + (c.ultimo || '')) + '</small></div>' +
+        '<div class="der"><span>' + esc(fechaCorta(c.actualizado)) + '</span>' +
+        (c.estado === 'humano' && c.no_leidos_admin ? '<span class="n">' + c.no_leidos_admin + '</span>' : c.estado === 'humano' ? '<span>👨‍💻</span>' : c.estado === 'resuelta' ? '<span>✅</span>' : '<span>🤖</span>') +
+        '</div></div>';
     });
     return h + '</div>';
   }
-  function verCaso(i) {
-    var c = casos[i];
-    var conv = (c.conversacion || []).map(function (m) {
-      var yo = m.de === 'cliente';
-      return '<div style="align-self:' + (yo ? 'flex-end' : 'flex-start') + ';max-width:88%;background:' + (yo ? '#1d4ed8' : 'var(--panel2)') +
-        ';border-radius:12px;padding:8px 10px;font-size:14px;line-height:1.4;white-space:pre-wrap">' + esc(m.t).replace(/\*([^*\n]+)\*/g, '<b>$1</b>') + '</div>';
-    }).join('');
-    abrirHoja('<div class="hoja-cab"><h3>Caso ' + esc(c.codigo) + '</h3><button class="btn peq" data-a="cerrar">✕</button></div>' +
-      '<p class="ayuda">' + esc(fechaCorta(c.creado)) + ' · ' + esc(c.app && draft.apps[c.app] ? draft.apps[c.app].nombre : 'Página web') + '</p>' +
-      '<div style="display:flex;flex-direction:column;gap:7px">' + (conv || '<div class="vacio">Sin conversación guardada.</div>') + '</div>', function () {});
+
+  async function abrirChat(id) {
+    var c = convs.find(function (x) { return x.id === id; });
+    if (!c) { var r0 = await sb.from('chatbot_conversaciones').select('*').eq('id', id).maybeSingle(); c = r0.data; }
+    if (!c) { aviso('No encontré esa conversación', true); return; }
+    chatAbierto = c; mensajes = [];
+    var v = $('#chatv');
+    v.innerHTML = '<div class="cab"><button class="btn peq" data-a="cerrarChat">←</button><div style="font-size:26px">' + iconoApp(c.app) + '</div>' +
+      '<div style="flex:1;min-width:0"><b>' + esc(nombreConv(c)) + '</b><span id="cvEstado"></span></div></div>' +
+      '<div class="barra" id="cvBarra"></div>' +
+      ((c.resumen || []).length ? '<div class="resumen"><b>📝 Resumen del asistente</b><br>' + c.resumen.map(function (x) { return '• ' + esc(x); }).join('<br>') + '</div>' : '') +
+      '<div class="msgs" id="cvMsgs"><div class="vacio">Cargando…</div></div>' +
+      '<form id="cvForm"><textarea id="cvTxt" placeholder="Escribe tu respuesta al cliente…" rows="1"></textarea><button aria-label="Enviar">➤</button></form>';
+    v.classList.remove('oculto'); document.body.style.overflow = 'hidden';
+    if (location.hash !== '#chat-' + id) history.replaceState(null, '', '#chat-' + id);
+    v.querySelector('[data-a="cerrarChat"]').onclick = cerrarChat;
+    var txt = $('#cvTxt');
+    txt.addEventListener('input', function () { txt.style.height = 'auto'; txt.style.height = Math.min(120, txt.scrollHeight) + 'px'; });
+    $('#cvForm').onsubmit = function (e) { e.preventDefault(); enviarRespuesta(); };
+    pintarCabChat();
+    await cargarMensajes(false);
+    marcarLeido(id);
   }
-  async function atender(i) {
-    var c = casos[i];
-    var r = await sb.from('chatbot_casos').update({ atendido: !c.atendido }).eq('id', c.id);
-    if (r.error) { aviso('No se pudo actualizar: ' + r.error.message, true); return; }
-    await cargarCasos(); pintar();
+  function pintarCabChat() {
+    var c = chatAbierto; if (!c || !$('#cvEstado')) return;
+    $('#cvEstado').textContent = appDe(c.app) + ' · ' + (c.estado === 'humano' ? '👨‍💻 Atendido por ti' : c.estado === 'resuelta' ? '✅ Resuelta' : '🤖 Lo atiende el asistente');
+    $('#cvBarra').innerHTML =
+      (c.estado !== 'resuelta' ? '<button class="btn peq" data-cv="resuelta">✅ Marcar resuelta</button>' : '') +
+      (c.estado === 'humano' ? '<button class="btn peq" data-cv="bot">🤖 Devolver al asistente</button>' : '<button class="btn peq" data-cv="humano">👨‍💻 Atender yo</button>') +
+      '<button class="btn rojo peq" data-cv="borrar">🗑</button>';
+    $('#cvBarra').querySelectorAll('[data-cv]').forEach(function (b) { b.onclick = function () { cambiarEstado(b.dataset.cv, b); }; });
   }
-  async function borrarCaso(i, b) {
-    if (!b.dataset.ok) { b.dataset.ok = 1; b.textContent = '¿Borrar?'; return; }
-    var r = await sb.from('chatbot_casos').delete().eq('id', casos[i].id);
-    if (r.error) { aviso('No se pudo borrar: ' + r.error.message, true); return; }
-    await cargarCasos(); pintar();
+  async function cargarMensajes(soloNuevos) {
+    if (!chatAbierto) return;
+    var desde = soloNuevos && mensajes.length ? mensajes[mensajes.length - 1].id : 0;
+    var r = await sb.from('chatbot_mensajes').select('*').eq('conversacion_id', chatAbierto.id).gt('id', desde).order('id').limit(500);
+    if (r.error || !chatAbierto) return;
+    var cont = $('#cvMsgs');
+    if (!soloNuevos) { mensajes = []; cont.innerHTML = ''; }
+    (r.data || []).forEach(function (m) { if (!mensajes.some(function (x) { return x.id === m.id; })) { mensajes.push(m); agregarBurbuja(m, false); } });
+    if (!mensajes.length) cont.innerHTML = '<div class="vacio">Sin mensajes todavía.</div>';
+    cont.scrollTop = cont.scrollHeight;
+  }
+  function agregarBurbuja(m, animar) {
+    var cont = $('#cvMsgs'); if (!cont) return;
+    var vacio = cont.querySelector('.vacio'); if (vacio) vacio.remove();
+    var d = document.createElement('div'); d.className = 'bm ' + m.de;
+    d.innerHTML = '<span class="de">' + (m.de === 'cliente' ? '👤 Cliente' : m.de === 'admin' ? '👨‍💻 Tú' : '🤖 Asistente') + '</span>' +
+      esc(m.texto).replace(/\*([^*\n]+)\*/g, '<b>$1</b>') + (m.adjunto ? '<div class="adj">📎 Cargando adjunto…</div>' : '') +
+      '<span class="hora">' + esc(new Date(m.creado || Date.now()).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + '</span>';
+    cont.appendChild(d);
+    if (m.adjunto) {
+      sb.storage.from('chatbot-adjuntos').createSignedUrl(m.adjunto, 3600).then(function (r) {
+        var a = d.querySelector('.adj'); if (!a) return;
+        if (!r.data) { a.textContent = '📎 Adjunto no disponible'; return; }
+        a.innerHTML = /\.pdf$/i.test(m.adjunto) ? '<a href="' + r.data.signedUrl + '" target="_blank" rel="noopener" style="color:#9cc0ff">📄 Ver PDF</a>'
+          : '<a href="' + r.data.signedUrl + '" target="_blank" rel="noopener"><img alt="Adjunto" src="' + r.data.signedUrl + '"></a>';
+      });
+    }
+    cont.scrollTop = cont.scrollHeight;
+  }
+  async function enviarRespuesta() {
+    var t = $('#cvTxt'), texto = t.value.trim();
+    if (!texto || !chatAbierto) return;
+    t.value = ''; t.style.height = 'auto';
+    var r = await sb.from('chatbot_mensajes').insert({ conversacion_id: chatAbierto.id, de: 'admin', texto: texto }).select().single();
+    if (r.error) { aviso('No se pudo enviar: ' + r.error.message, true); t.value = texto; return; }
+    if (!mensajes.some(function (x) { return x.id === r.data.id; })) { mensajes.push(r.data); agregarBurbuja(r.data, true); }
+    if (chatAbierto.estado !== 'humano') { chatAbierto.estado = 'humano'; pintarCabChat(); }
+  }
+  async function marcarLeido(id) {
+    var c = convs.find(function (x) { return x.id === id; });
+    if (c && !c.no_leidos_admin) return;
+    await sb.from('chatbot_conversaciones').update({ no_leidos_admin: 0 }).eq('id', id);
+    if (c) c.no_leidos_admin = 0;
+    contarChats();
+  }
+  async function cambiarEstado(nuevo, b) {
+    var c = chatAbierto; if (!c) return;
+    if (nuevo === 'borrar') {
+      if (!b.dataset.ok) { b.dataset.ok = 1; b.textContent = '¿Borrar conversación?'; return; }
+      var rb = await sb.from('chatbot_conversaciones').delete().eq('id', c.id);
+      if (rb.error) { aviso('No se pudo borrar: ' + rb.error.message, true); return; }
+      convs = convs.filter(function (x) { return x.id !== c.id; }); cerrarChat(); return;
+    }
+    var r = await sb.from('chatbot_conversaciones').update({ estado: nuevo, no_leidos_admin: 0 }).eq('id', c.id);
+    if (r.error) { aviso('No se pudo cambiar: ' + r.error.message, true); return; }
+    c.estado = nuevo; pintarCabChat(); contarChats();
+    aviso(nuevo === 'resuelta' ? '✅ Conversación resuelta' : nuevo === 'bot' ? '🤖 El asistente vuelve a responder' : '👨‍💻 Ahora la atiendes tú');
+  }
+  function cerrarChat() {
+    chatAbierto = null; mensajes = [];
+    $('#chatv').classList.add('oculto'); $('#chatv').innerHTML = ''; document.body.style.overflow = '';
+    history.replaceState(null, '', '#chats');
+    cargarChats().then(function () { irA('chats'); });
   }
 
   /* ---------------- RESPUESTAS ---------------- */
@@ -534,11 +668,10 @@
   function vistaAjustes() {
     var g = draft.general;
     return '<h2>⚙️ Ajustes</h2><p class="ayuda">Configuración general del asistente.</p>' +
-      interruptor('gActivo', 'Asistente activo', 'Si lo apagas, los botones de las apps van directo a WhatsApp como antes.', g.activo !== false, 'activo') +
-      interruptor('gBotonWa', 'Botón verde de WhatsApp arriba en el chat', 'Apagado: el cliente solo pasa a WhatsApp cuando el asistente no pudo resolver (último recurso).', !!g.botonWhatsApp, 'botonWa') +
+      interruptor('gActivo', 'Asistente activo', 'Si lo apagas, los botones de las apps abren WhatsApp directamente (sin asistente).', g.activo !== false, 'activo') +
       '<div class="bloque">' +
       campo('Nombre de la empresa <code>{empresa}</code>', '<input type="text" data-g="empresa" value="' + esc(g.empresa) + '">') +
-      campo('WhatsApp donde llegan los casos (con indicativo, sin +)', '<input type="tel" data-g="whatsapp" value="' + esc(g.whatsapp) + '" inputmode="numeric">') +
+      campo('WhatsApp de la empresa (el de los botones de las apps; con indicativo, sin +)', '<input type="tel" data-g="whatsapp" value="' + esc(g.whatsapp) + '" inputmode="numeric">') +
       campo('¿Cuántas veces intenta entender antes de ofrecer un asesor?', '<input type="number" min="2" max="10" data-g="intentosAsesor" data-num="1" value="' + esc(g.intentosAsesor || 3) + '" inputmode="numeric">') +
       campo('Mensaje al pasar a un asesor', '<textarea data-g="mensajeAsesor">' + esc(g.mensajeAsesor) + '</textarea>') +
       campo('Mensaje de despedida', '<textarea data-g="mensajeDespedida">' + esc(g.mensajeDespedida) + '</textarea>') +
@@ -575,16 +708,14 @@
       filtroTexto = fb.value; var pos = fb.selectionStart; pintar();
       var n = $('#fBuscar'); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {}
     });
-    v.querySelectorAll('[data-fcasos]').forEach(function (c) { c.onclick = function () { filtroCasos = c.dataset.fcasos; pintar(); }; });
+    v.querySelectorAll('[data-fchats]').forEach(function (c) { c.onclick = function () { filtroChats = c.dataset.fchats; pintar(); }; });
+    v.querySelectorAll('[data-chat]').forEach(function (c) { c.onclick = function () { abrirChat(c.dataset.chat); }; });
     v.querySelectorAll('[data-filtro]').forEach(function (c) { c.onclick = function () { filtroApp = c.dataset.filtro; pintar(); }; });
     v.querySelectorAll('[data-a]').forEach(function (b) {
       b.addEventListener('click', function (e) {
         var a = b.dataset.a, i = Number(b.dataset.i);
         if (a === 'activarAvisos') activarAvisos();
         if (a === 'probarAviso') probarAviso();
-        if (a === 'verCaso') verCaso(i);
-        if (a === 'atender') atender(i);
-        if (a === 'borrarCaso') borrarCaso(i, b);
         if (a === 'nueva') editarRespuesta(null, { titulo: '', apps: ['*'], claves: [], respuesta: '' });
         if (a === 'editar') editarRespuesta(i);
         if (a === 'agregarPlan') { e.preventDefault(); draft.apps[b.dataset.k].planes.push({ id: '', n: '', p: 0, inc: '' }); marcar(); pintarAbierta(b.dataset.k); }
@@ -607,7 +738,6 @@
       s.onclick = function () {
         s.classList.toggle('on'); var on = s.classList.contains('on'), t = s.dataset.sw;
         if (t === 'activo') draft.general.activo = on;
-        else if (t === 'botonWa') draft.general.botonWhatsApp = on;
         else {
           var k = s.closest('details').dataset.k;
           if (t === 'menu') { draft.orden_apps = draft.orden_apps.filter(function (x) { return x !== k; }); if (on) draft.orden_apps.push(k); }
