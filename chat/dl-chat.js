@@ -868,7 +868,7 @@
   function aLaMedida() {
     st.modo = 'detalles';
     nota('Quiere una app o página personalizada');
-    return r('¡Claro! ✨ Creamos apps y páginas *a la medida*, con tu marca y lo que tu negocio necesita, y nosotros las mantenemos. (Ejemplo: *El Arte en Tus Manos*, academia de manualidades).\n\n' +
+    return r('¡Claro! ✨ Creamos apps y páginas *a la medida*, con tu marca y lo que tu negocio necesita, y nosotros las mantenemos. ' + (st.origen === 'web' ? '(Ejemplo: *El Arte en Tus Manos*, academia de manualidades).' : '') + '\n\n' +
       'Para cotizarte, escríbeme aquí:\n1. ¿Qué tipo de negocio tienes?\n2. ¿Qué necesitas controlar o mostrar?\n3. ¿App, página web o ambas?\n\nLo que me cuentes va incluido en tu mensaje de WhatsApp 👇',
       [CH.wa, CH.menu]);
   }
@@ -957,16 +957,11 @@
     if (/^(menu|inicio|empezar)$/.test(t)) return menuPrincipal('');
     if (/^(gracias|chao|adios|no gracias|eso es todo|bendiciones)/.test(t)) return despedida();
 
-    var otra = appPorNombre(t);
+    // Desde una app, todo lo que escriba el cliente es sobre ESA app: no se buscan ni se mencionan otras apps.
+    var otra = st.origen === 'web' ? appPorNombre(t) : null;
     if (otra && st.app && otra !== st.app) {
       var actual = APPS[st.app], nueva = APPS[otra];
-      if (st.origen === 'app') {
-        // Viene de una app: solo respondemos sobre esa app
-        return r('Este chat es el soporte de *' + actual.nombre + '* ' + actual.icono + ', así que solo te puedo ayudar con esta app.\n\n' +
-          'Para ayuda con *' + nueva.nombre + '*, ábrela y toca su botón de soporte. ¿En qué te ayudo con ' + actual.nombre + '?',
-          [{ t: '🛠️ Tengo un problema', a: 'soporte' }, { t: '📘 Aprender a usar ' + actual.nombre, a: 'guias' }, CH.planes]);
-      }
-      // Viene de la página web: preguntar antes de cambiar
+      // Solo en la página web: preguntar antes de cambiar
       return r('Estamos hablando de *' + actual.nombre + '*. ¿Quieres que te ayude ahora con *' + nueva.nombre + '*?',
         [{ t: 'Sí, ayuda con ' + nueva.nombre, a: 'cambiar:' + otra }, { t: 'No, seguir con ' + actual.nombre, a: 'menu' }]);
     }
@@ -984,7 +979,7 @@
     }
     if (st.fallos === 1) return st.app ? soporte('Quiero ayudarte bien 🙏 pero no logré entenderlo. ¿Es alguna de estas opciones?')
       : menuPrincipal('Quiero ayudarte bien 🙏 pero no logré entenderlo.');
-    return st.app ? todo('Intenta escribirlo con otras palabras (por ejemplo: *"no me deja entrar"* o *"cómo creo un cajero"*), o busca aquí tu caso 👇')
+    return st.app ? todo('Intenta escribirlo con otras palabras, o busca aquí tu caso 👇')
       : menuPrincipal('Intenta escribirlo con otras palabras, o elige una opción 👇');
   }
 
