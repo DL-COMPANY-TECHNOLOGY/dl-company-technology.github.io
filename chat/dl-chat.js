@@ -135,7 +135,7 @@
     },
     {
       id: 'no_carga', titulo: '⏳ La app no abre, se cierra o se queda cargando', apps: ['*'],
-      claves: ['no abre', 'no me abre', 'no carga', 'no me carga', 'se cierra', 'se queda cargando', 'se queda pegada', 'pantalla blanca',
+      claves: ['no abre', 'no me abre', 'no carga', 'no me carga', 'se cierra sola', 'app se cierra', 'app se me cierra', 'se cierra de repente', 'se sale sola', 'se queda cargando', 'se queda pegada', 'pantalla blanca',
         'pantalla en blanco', 'se congela', 'se traba', 'lenta', 'no funciona', 'no sirve', 'error', 'falla', 'se bloquea'],
       respuesta: 'Vamos a solucionarlo 🛠️. Hazlo en orden:\n\n1. Revisa que tengas *internet*.\n2. Cierra {app} por completo y vuelve a abrirla.\n' +
         '3. Si la usas en el navegador, *recarga la página*.\n4. Si la instalaste en el celular, ábrela una vez desde el navegador para que se actualice a la última versión.',
@@ -888,8 +888,8 @@
   // ----- primer mensaje (lo que traía el botón) -----
   function interpretarPrimero(texto) {
     var t = norm(texto);
-    var app = detectarApp(t.replace(/vengo de la pagina web/, ''));
-    if (app) st.app = app;
+    // La app de origen manda: si el cliente viene de una app, no se cambia.
+    if (!st.app) { var app = detectarApp(t.replace(/vengo de la pagina web/, '')); if (app) st.app = app; }
     var cab = saludo() + ' 👋, gracias por escribir a *' + EMPRESA + '*.';
     var resp = interpretar(t, true);
     resp.texto = cab + ' ' + resp.texto;
@@ -920,7 +920,7 @@
       return verPlanes(planId, anual);
     }
     if (/app personalizada|a la medida|pagina web para|mi propia app|una app para mi negocio/.test(t)) return aLaMedida();
-    if (/pacientes|citas|odontolog|fisioterap|estetica/.test(t)) return pacientes();
+    if (/control de pacientes|app de pacientes|app de citas/.test(t) || (st.origen === 'web' && !st.app && /pacientes|citas|odontolog|fisioterap|estetica/.test(t))) return pacientes();
     var premium = /soy (usuaria|usuario|cliente) (del )?(plan )?premium/.test(t);
     if (premium) { st.premium = true; nota('Cliente Premium (soporte prioritario)'); }
 
@@ -957,7 +957,19 @@
     if (/^(menu|inicio|empezar)$/.test(t)) return menuPrincipal('');
     if (/^(gracias|chao|adios|no gracias|eso es todo|bendiciones)/.test(t)) return despedida();
 
-    var otra = appPorNombre(t); if (otra && otra !== st.app) { st.app = otra; nota('Cambió a ' + APPS[otra].nombre); }
+    var otra = appPorNombre(t);
+    if (otra && st.app && otra !== st.app) {
+      var actual = APPS[st.app], nueva = APPS[otra];
+      if (st.origen === 'app') {
+        // Viene de una app: solo respondemos sobre esa app
+        return r('Este chat es el soporte de *' + actual.nombre + '* ' + actual.icono + ', así que solo te puedo ayudar con esta app.\n\n' +
+          'Para ayuda con *' + nueva.nombre + '*, ábrela y toca su botón de soporte. ¿En qué te ayudo con ' + actual.nombre + '?',
+          [{ t: '🛠️ Tengo un problema', a: 'soporte' }, { t: '📘 Aprender a usar ' + actual.nombre, a: 'guias' }, CH.planes]);
+      }
+      // Viene de la página web: preguntar antes de cambiar
+      return r('Estamos hablando de *' + actual.nombre + '*. ¿Quieres que te ayude ahora con *' + nueva.nombre + '*?',
+        [{ t: 'Sí, ayuda con ' + nueva.nombre, a: 'cambiar:' + otra }, { t: 'No, seguir con ' + actual.nombre, a: 'menu' }]);
+    }
     var resp = interpretar(t, false);
     if (resp) return resp;
 
@@ -1000,8 +1012,14 @@
       ORDEN_APPS.map(function (k) { return { t: APPS[k].icono + ' ' + APPS[k].nombre, a: 'info:' + k }; }).concat([{ t: '🩺 Control de pacientes (pronto)', a: 'pacientes' }]));
     if (a === 'pacientes') return pacientes();
     if (a.indexOf('info:') === 0) return infoApp(a.slice(5));
+    if (a.indexOf('cambiar:') === 0) {
+      if (st.origen === 'app') return menuPrincipal('');
+      st.app = a.slice(8); st.modo = null; st.fallos = 0; nota('Cambió a ' + APPS[st.app].nombre);
+      return menuPrincipal('Listo 👍.');
+    }
     if (a.indexOf('plan:') === 0) return verPlanes(a.slice(5));
     if (a.indexOf('prob:') === 0) return resolver(problemaPorId(a.slice(5)));
+    if (a.indexOf('app:') === 0 && st.origen === 'app' && st.app) return menuPrincipal('');
     if (a.indexOf('app:') === 0) {
       st.app = a.slice(4); var sig = st.siguiente; st.siguiente = null; st.modo = null;
       if (sig === 'planes') return verPlanes(null);
@@ -1174,7 +1192,8 @@
       var resp = interpretarPrimero(textoOriginal) ;
       responder(resp);
     } else {
-      responder(r(saludo() + ' 👋, soy el asistente de *' + EMPRESA + '*. ' + menuPrincipal('').texto, menuPrincipal('').chips));
+      var quien = st.app ? 'el asistente de soporte de *' + APPS[st.app].nombre + '* ' + APPS[st.app].icono : 'el asistente de *' + EMPRESA + '*';
+      responder(r(saludo() + ' 👋, soy ' + quien + '. ' + menuPrincipal('').texto, menuPrincipal('').chips));
     }
   }
   function cerrar() {
@@ -1223,6 +1242,8 @@
 
   window.DLChat = {
     abrir: function (texto) { abrir(texto || undefined); },
+    // Abrir como si el cliente viniera de una app (web, finanzas, stock, cuadra, comanda, arte)
+    abrirComo: function (app, texto) { APP_ACTUAL = String(app || 'web'); st = null; abrir(texto || undefined); },
     // Para la app de administración: probar cambios sin guardarlos
     usarConfig: function (c) { configFija = true; aplicarConfig(c); st = null; },
     defecto: function () { return copiar(DEFECTO); },

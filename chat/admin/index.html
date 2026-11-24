@@ -220,9 +220,21 @@
     guardado = copiar(draft); limpio();
     aviso('✅ Guardado. Ya se aplica en la web y en todas las apps.');
   };
+  // Probar como si el cliente viniera de una app o de la página web
   $('#bProbar').onclick = function () {
-    DLChat.usarConfig(copiar(draft));
-    DLChat.abrir();
+    var ops = [['web', '🌐 Página web']].concat(Object.keys(draft.apps).map(function (k) { return [k, draft.apps[k].icono + ' ' + draft.apps[k].nombre]; }));
+    abrirHoja('<div class="hoja-cab"><h3>▶ Probar el chat</h3><button class="btn peq" data-a="cerrar">✕</button></div>' +
+      '<p class="ayuda">¿Desde dónde escribe el cliente? El chat responderá <b>solo</b> con lo de esa app, igual que en la vida real.</p>' +
+      '<div class="lista">' + ops.map(function (o) { return '<button type="button" class="item" data-origen="' + o[0] + '" style="width:100%;text-align:left"><div class="txt"><b>' + esc(o[1]) + '</b></div><span class="flecha">›</span></button>'; }).join('') + '</div>',
+      function (hoja) {
+        hoja.querySelectorAll('[data-origen]').forEach(function (b) {
+          b.onclick = function () {
+            cerrarHoja();
+            DLChat.usarConfig(copiar(draft));
+            DLChat.abrirComo(b.dataset.origen);
+          };
+        });
+      });
   };
 
   /* ---------------- navegación ---------------- */
