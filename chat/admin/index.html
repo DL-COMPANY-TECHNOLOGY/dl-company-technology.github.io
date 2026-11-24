@@ -228,7 +228,7 @@
     guardado = copiar(c); draft = copiar(c); limpio();
     await cargarPendientes();
     await cargarChats();
-    await revisarAvisos();
+    await revisarAvisos(true);
     escucharEnVivo();
     abrirSegunHash();
     // respaldo por si el tiempo real se desconecta
@@ -240,6 +240,7 @@
   }
   function refrescar() {
     if (document.visibilityState !== 'visible' || !usuario) return;
+    revisarAvisos();
     if (canal && canal.state !== 'joined' && canal.state !== 'joining') { try { sb.removeChannel(canal); } catch (e) {} canal = null; escucharEnVivo(); }
     cargarChats().then(function () { if (tab === 'chats' && !chatAbierto && $('#hoja').classList.contains('oculto')) pintar(); });
     if (chatAbierto) cargarMensajes(true).then(function () {
@@ -301,14 +302,31 @@
     var out = new Uint8Array(raw.length); for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i); return out;
   }
   function avisosPosibles() { return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window; }
-  async function revisarAvisos() {
+  // Cada vez que se abre la app: confirmar que este celular sigue registrado para los avisos.
+  // Si Google venció el registro (o se borraron los datos del navegador), se renueva solo.
+  var ultimaRevisionAvisos = 0;
+  async function revisarAvisos(forzar) {
+    if (!avisosPosibles()) { avisosActivos = false; return; }
+    if (!forzar && Date.now() - ultimaRevisionAvisos < 5 * 60000) return;
+    ultimaRevisionAvisos = Date.now();
+    var antes = avisosActivos;
     avisosActivos = false;
-    if (!avisosPosibles()) return;
     try {
-      var reg = await navigator.serviceWorker.getRegistration('./');
-      var sub = reg && await reg.pushManager.getSubscription();
-      avisosActivos = !!sub && Notification.permission === 'granted';
+      if (Notification.permission !== 'granted') return;
+      var reg = await navigator.serviceWorker.getRegistration('./') || await navigator.serviceWorker.register('./sw.js', { scope: './' });
+      await navigator.serviceWorker.ready;
+      var sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        // ¿el servidor todavía lo tiene? si lo borró (Google dijo que ya no sirve), se cambia por uno nuevo
+        var r = await sb.from('chatbot_push_admin').select('endpoint').eq('endpoint', sub.endpoint).maybeSingle();
+        if (!r.error && !r.data) { try { await sub.unsubscribe(); } catch (e) {} sub = null; }
+      }
+      if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: llaveVapid(VAPID) });
+      var j = sub.toJSON();
+      var u = await sb.from('chatbot_push_admin').upsert({ endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, ua: navigator.userAgent.slice(0, 200) });
+      avisosActivos = !u.error;
     } catch (e) {}
+    if (antes !== avisosActivos && tab === 'chats' && !chatAbierto) pintar();
   }
   async function activarAvisos() {
     if (!avisosPosibles()) { aviso('Este navegador no permite avisos. Usa Chrome en Android.', true); return; }
@@ -330,6 +348,12 @@
     try {
       var r = await fetch(URL_PUSH, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ses.access_token }, body: JSON.stringify({ test: true }) });
       var j = await r.json();
+      if (!(j.ok && j.sent) && !silencioso && !probarAviso._reintento) {
+        // el registro de este celular no servía: renovarlo y probar otra vez
+        probarAviso._reintento = true;
+        await revisarAvisos(true);
+        try { return await probarAviso(false); } finally { probarAviso._reintento = false; }
+      }
       aviso(j.ok && j.sent ? '🔔 Aviso de prueba enviado a este celular' : 'No se pudo enviar el aviso de prueba', !(j.ok && j.sent));
     } catch (e) { if (!silencioso) aviso('No se pudo enviar el aviso de prueba', true); }
   }
