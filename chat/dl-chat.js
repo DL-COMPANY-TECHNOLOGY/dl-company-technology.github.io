@@ -723,6 +723,31 @@
     if (!s2 || !s2.convId) return;
     try { localStorage.setItem(CLAVE_CONV, JSON.stringify({ id: s2.convId, estado: s2.estado, t: Date.now() })); } catch (e) {}
   }
+  // La conversación completa (lo que se ve en pantalla y en qué paso va) se guarda en el
+  // celular: si recarga la página o cierra el chat, sigue donde iba hasta que termine.
+  var CLAVE_ST = 'dlchat_st_' + (APP_ACTUAL || 'web');
+  var tGuardar = 0;
+  function guardarSt() {
+    if (configFija || !st) return;
+    clearTimeout(tGuardar);
+    tGuardar = setTimeout(function () {
+      try {
+        st.t = Date.now();
+        localStorage.setItem(CLAVE_ST, JSON.stringify(st, function (k, v) { return k.charAt(0) === '_' ? undefined : v; }));
+      } catch (e) {}
+    }, 150);
+  }
+  function leerSt() {
+    if (configFija) return null;
+    try {
+      var o = JSON.parse(localStorage.getItem(CLAVE_ST) || 'null');
+      if (!o || !o.chat || !o.chat.length || o.terminada) return null;
+      // mientras el cliente no confirme que se solucionó, la conversación sigue (hasta 30 días)
+      if (Date.now() - (o.t || 0) > 30 * 864e5) return null;
+      return o;
+    } catch (e) { return null; }
+  }
+  function borrarSt() { try { localStorage.removeItem(CLAVE_ST); localStorage.removeItem(CLAVE_CONV); } catch (e) {} }
   function leerLocal() {
     try { var o = JSON.parse(localStorage.getItem(CLAVE_CONV) || 'null'); if (o && o.id && Date.now() - o.t < 14 * 864e5) return o; } catch (e) {}
     return null;
@@ -1127,7 +1152,7 @@
       return soporte();
     }
     if (a === 'si') {
-      st.modo = null;
+      st.modo = null; st.terminada = true;
       nota('Se solucionó con el asistente ✅');
       return r('¡Excelente! 🎉 Nos alegra que se haya solucionado. ¿Hay algo más en lo que te pueda ayudar?', [{ t: '🙋 Sí, otra pregunta', a: 'menu' }, { t: '👋 No, gracias', a: 'fin' }]);
     }
@@ -1142,7 +1167,18 @@
       return r('Lamento que no se haya solucionado 😔. Revisemos otras opciones: puede que tu caso sea otro de la lista.\n\nSi ya probaste todo, como *último recurso* te comunico con un asesor.',
         [CH.todo, CH.asesorFinal]);
     }
-    if (a === 'fin') return despedida();
+    if (a === 'fin') { st.terminada = true; return despedida(); }
+    // El asesor marcó la conversación como resuelta: el cliente confirma
+    if (a === 'resuelto_si') {
+      st.terminada = true; st.modo = null;
+      nota('El cliente confirmó que se solucionó ✅');
+      return r('¡Qué bueno! 🎉 Gracias por confiar en *' + EMPRESA + '*. Cuando necesites algo, aquí estoy.', []);
+    }
+    if (a === 'resuelto_no') {
+      nota('El cliente dice que NO se solucionó');
+      pedirAsesor(st);
+      return r('Entendido 🙏. Le aviso al asesor para que siga ayudándote *aquí mismo*. Cuéntame qué falta por resolver.', []);
+    }
     return menuPrincipal('');
   }
 
@@ -1224,6 +1260,7 @@
     ui.pastilla = raiz.querySelector('.pastilla');
     raiz.querySelector('.fondo').onclick = cerrar;
     raiz.querySelector('.x').onclick = cerrar;
+
     raiz.querySelector('.clip').onclick = function () { ui.archivo.click(); };
     ui.archivo.onchange = function () { var f = ui.archivo.files && ui.archivo.files[0]; ui.archivo.value = ''; if (f) enviarAdjunto(f); };
     ui.pastilla.onclick = function () { ui.pastilla.classList.add('oculto'); abrir(); };
@@ -1241,11 +1278,11 @@
   function bajar() { ui.msgs.scrollTop = ui.msgs.scrollHeight; }
   function burbuja(texto, quien, opciones) {
     opciones = opciones || {};
-    if (st && st.chat) { st.chat.push({ de: quien === 'yo' ? 'cliente' : quien === 'asesor' ? 'admin' : 'asistente', t: String(texto).slice(0, 700) }); if (st.chat.length > 60) st.chat.shift(); }
+    if (st && st.chat && !opciones.restaurar) { st.chat.push({ de: quien === 'yo' ? 'cliente' : quien === 'asesor' ? 'admin' : 'asistente', t: String(texto).slice(0, 700) }); if (st.chat.length > 80) st.chat.shift(); guardarSt(); }
     var d = document.createElement('div'); d.className = 'm ' + quien;
     d.innerHTML = (quien === 'asesor' ? '<span class="quien">👨‍💻 Asesor DL COMPANY</span>' : '') + formato(texto) +
       (opciones.img ? '<img alt="Adjunto" src="' + opciones.img + '">' : '');
-    if (!opciones.historial && quien !== 'asesor') {
+    if (!opciones.historial && !opciones.restaurar && quien !== 'asesor') {
       var est = null;
       if (quien === 'yo' && !configFija) { est = document.createElement('span'); est.className = 'est'; est.textContent = '🕓'; d.appendChild(est); }
       registrar(quien === 'yo' ? 'cliente' : 'asistente', texto, opciones.adjunto, est && function (e) {
@@ -1262,6 +1299,7 @@
   }
   function pintarChips(chips) {
     ui.chips.innerHTML = '';
+    if (st && chips && (chips.length || !ocupado)) { st.chips = chips; guardarSt(); }
     (chips || []).forEach(function (c) {
       var b = document.createElement('button'); b.type = 'button'; b.textContent = c.t;
       if (c.wa) b.className = 'w';
@@ -1287,6 +1325,7 @@
     }, Math.min(1300, 400 + resp.texto.length * 2.5));
   }
   function enviarUsuario(texto, calcular) {
+    if (st) st.terminada = false;
     burbuja(texto, 'yo');
     var resp = calcular();
     if (resp) responder(resp);
@@ -1356,9 +1395,13 @@
         else if (m.de === 'admin') { burbuja(m.texto, 'asesor', { historial: true }); pintarChips([]); }
       });
       if (res.estado && res.estado !== s2.estado) {
-        s2.estado = res.estado === 'resuelta' ? 'bot' : res.estado;
+        s2.estado = res.estado; // 'resuelta' se guarda tal cual para no volver a preguntar
         guardarLocal(s2);
-        if (res.estado === 'resuelta') avisoSistema('El asesor marcó la conversación como resuelta ✅');
+        if (res.estado === 'resuelta') {
+          burbuja('¿Pudimos solucionar tu inquietud? 🙌', 'bot');
+          pintarChips([{ t: '✅ Sí, quedó solucionado', a: 'resuelto_si' }, { t: '❌ No, todavía no', a: 'resuelto_no' }]);
+        }
+        guardarSt();
       }
     }).catch(function () {});
     if (!todo) { s2._leyendo = p; p.then(function () { s2._leyendo = null; }); }
@@ -1397,6 +1440,27 @@
     abierto = true;
     requestAnimationFrame(function () { ui.cont.classList.add('on'); });
     programarLectura();
+    // ¿Venía de un botón con un pedido concreto? (no solo "Vengo de la página web")
+    var extra = textoOriginal ? textoOriginal.replace(/^¡?hola dl company!?\s*👋?\s*/i, '').replace(/^vengo de (la p[aá]gina web|la app [^.]*)\.?\s*/i, '').trim() : '';
+    if (/^necesito ayuda con [^.]*\.?$/i.test(extra)) extra = '';
+    // 1) Ya está en pantalla y sin terminar: seguir ahí mismo
+    if (st && !st.terminada && st.chat && st.chat.length && ui.msgs.childNodes.length) {
+      if (st.estado === 'humano') leerNuevos(st, false);
+      if (extra) enviarUsuario(extra, function () { return procesarTexto(extra); });
+      return;
+    }
+    // 2) Recargó la página o la cerró: recuperar la conversación guardada en el celular
+    var guardada = leerSt();
+    if (guardada) {
+      st = guardada; st.vistos = st.vistos || {};
+      ui.msgs.innerHTML = '';
+      avisoSistema('Continuamos tu conversación 💬');
+      st.chat.forEach(function (m) { burbuja(m.t, m.de === 'cliente' ? 'yo' : m.de === 'admin' ? 'asesor' : 'bot', { restaurar: true }); });
+      pintarChips(st.chips || []);
+      if (st.estado === 'humano' && st.convId) leerNuevos(st, false);
+      if (extra) enviarUsuario(extra, function () { return procesarTexto(extra); });
+      return;
+    }
     // ¿Tiene una conversación abierta con un asesor? Se continúa ahí mismo.
     var loc = !configFija && leerLocal();
     if (loc && loc.estado === 'humano' && (!st || st.convId !== loc.id)) {
@@ -1405,8 +1469,7 @@
       ui.msgs.innerHTML = '';
       avisoSistema('Tu conversación con DL COMPANY');
       leerNuevos(st, true).then(function () {
-        var extra = textoOriginal && textoOriginal.replace(/^¡?hola dl company!?\s*👋?\s*/i, '').trim();
-        if (extra && !/^vengo de (la p[aá]gina web|la app [^.]*)\.?$/i.test(extra)) burbuja(extra, 'yo');
+        if (extra) burbuja(extra, 'yo');
         pintarChips([]);
       });
       return;
