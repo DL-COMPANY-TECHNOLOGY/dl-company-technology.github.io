@@ -254,7 +254,7 @@
   }
   window.addEventListener('hashchange', function () { if (usuario) abrirSegunHash(); });
   async function cargarChats() {
-    var r = await sb.from('chatbot_conversaciones').select('id,codigo,app,origen,estado,resumen,ultimo,ultimo_de,no_leidos_admin,creado,actualizado')
+    var r = await sb.from('chatbot_conversaciones').select('id,codigo,nombre,app,origen,estado,resumen,ultimo,ultimo_de,no_leidos_admin,creado,actualizado')
       .order('actualizado', { ascending: false }).limit(300);
     if (r.error) return;
     convs = (r.data || []).filter(function (c) { return c.ultimo; }); // sin mensajes = conversación vacía
@@ -411,13 +411,17 @@
 
   /* ---------------- CHATS (como WhatsApp) ---------------- */
   var SALUDO_DEF = 'Hola 👋 Soy *Lenin Benjumea*, tu asesor el día de hoy. ¿En qué te puedo servir?';
-  function saludo() { return String(draft.general.saludoAsesor || SALUDO_DEF).replace(/\{empresa\}/g, draft.general.empresa || ''); }
+  function saludo() {
+    var t = String(draft.general.saludoAsesor || SALUDO_DEF).replace(/\{empresa\}/g, draft.general.empresa || '');
+    var n = chatAbierto && chatAbierto.nombre;
+    return n ? t.replace(/^Hola\b/, 'Hola ' + n) : t; // "Hola José 👋 Soy Lenin…"
+  }
   function fechaCorta(iso) {
     var d = new Date(iso), hoy = new Date();
     return d.toDateString() === hoy.toDateString() ? d.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' })
       : d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
   }
-  function nombreConv(c) { return 'Cliente ' + c.codigo; }
+  function nombreConv(c) { return c.nombre ? c.nombre + ' · ' + c.codigo : 'Cliente ' + c.codigo; }
   function iconoApp(k) { return k && draft.apps[k] ? draft.apps[k].icono : '🌐'; }
   function appDe(k) { return k && draft.apps[k] ? draft.apps[k].nombre : 'Página web'; }
   function vistaChats() {

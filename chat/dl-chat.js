@@ -618,7 +618,52 @@
 
   // ARIA se presenta al abrir el chat
   function presentacion() {
-    return saludo() + ' 👋, soy *ARIA*, la asistente virtual de *' + EMPRESA + '*.';
+    var n = st && st.nombre;
+    return saludo() + (n ? ', *' + n + '*' : '') + ' 👋, soy *ARIA*, la asistente virtual de *' + EMPRESA + '*.';
+  }
+  // ----- el nombre del cliente (se pregunta una sola vez y se recuerda) -----
+  var CLAVE_NOMBRE = 'dlchat_nombre';
+  function leerNombre() { try { return (localStorage.getItem(CLAVE_NOMBRE) || '').split(' ')[0]; } catch (e) { return ''; } }
+  function leerNombreCompleto() { try { return localStorage.getItem(CLAVE_NOMBRE) || ''; } catch (e) { return ''; } }
+  function conNombre(txt) { return st && st.nombre ? txt.replace(/^(¡?[^!.,]+?)([!.,])/, '$1, *' + st.nombre + '*$2') : txt; }
+  function sacarNombre(texto) {
+    var t = String(texto).trim().replace(/[.!¡¿,;:]+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (/\?/.test(texto) || /\d/.test(t)) return '';
+    t = t.replace(/^(hola|buenas|buenos dias|buenos días|buenas tardes|buenas noches|ok|listo)\s+/i, '')
+         .replace(/^(me llamo|mi nombre es|yo soy|soy|me dicen|con)\s+/i, '').trim();
+    var p = t.split(' ').filter(Boolean);
+    if (!p.length || p.length > 3) return '';
+    if (/^(no|si|sí|quiero|necesito|tengo|ayuda|plan|planes|precio|precios|app|asesor|problema|hola|gracias|ver)$/i.test(p[0])) return '';
+    if (!p.every(function (w) { return /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'-]{2,20}$/.test(w); })) return '';
+    return p.slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join(' ');
+  }
+  function enviarNombreNube(s2, completo) {
+    if (configFija || !s2 || !completo) return;
+    cola = cola.then(function () { return asegurarConv(s2); })
+      .then(function (id) { return rpc('chat_nombre', { p_id: id, p_token: token(), p_nombre: completo }); })
+      .catch(function () {});
+  }
+  function guardarNombre(n) {
+    st.nombre = n.split(' ')[0];          // le habla por su primer nombre
+    try { localStorage.setItem(CLAVE_NOMBRE, n); } catch (e) {}
+    nota('Nombre: ' + n);
+    enviarNombreNube(st, n); // al asesor le llega el nombre completo
+  }
+  // Después del nombre: atender lo que traía el botón (o mostrar el menú)
+  function continuarPrimero(prefijo) {
+    st.modo = null;
+    var resp;
+    if (st.primero) {
+      var t = norm(st.primero);
+      if (!st.app) { var app = detectarApp(t.replace(/vengo de la pagina web/, '')); if (app) st.app = app; }
+      resp = interpretar(t, true);
+    } else {
+      var m = menuPrincipal('');
+      resp = r((st.app ? 'Estoy aquí para ayudarte con todo lo de *' + APPS[st.app].nombre + '* ' + APPS[st.app].icono + '.\n\n' : '') + m.texto, m.chips);
+    }
+    st.primero = '';
+    resp.texto = prefijo + resp.texto;
+    return resp;
   }
 
   function detectarApp(t) {
@@ -1005,7 +1050,7 @@
 
   function despedida() {
     st.modo = null;
-    return r(String(GENERAL.mensajeDespedida || GENERAL_DEF.mensajeDespedida).replace(/\{empresa\}/g, EMPRESA), [CH.menu]);
+    return r(conNombre(String(GENERAL.mensajeDespedida || GENERAL_DEF.mensajeDespedida).replace(/\{empresa\}/g, EMPRESA)), [CH.menu]);
   }
 
   // ----- primer mensaje (lo que traía el botón) -----
@@ -1069,6 +1114,14 @@
       return r('📨 Tu mensaje le llegó al asesor. Te responderá *aquí mismo*.', []);
     }
 
+    if (st.modo === 'nombre') {
+      var n = sacarNombre(texto);
+      if (n) { guardarNombre(n); return continuarPrimero('Mucho gusto, *' + st.nombre + '* 🤝. '); }
+      // no parece un nombre: atender directamente lo que escribió
+      st.modo = null; st.primero = '';
+      return procesarTexto(texto);
+    }
+
     if (st.modo === 'detalles') {
       nota('Detalles: ' + texto.slice(0, 300));
       return r('¡Anotado! ✍️ Si quieres agregar algo más, escríbelo. Cuando termines toca *📨 Enviar a un asesor* y te respondemos aquí mismo.', [{ t: '📨 Enviar a un asesor', a: 'asesor_si' }]);
@@ -1109,6 +1162,7 @@
   // ----- botones (chips) -----
   function accion(a) {
     if (a === 'menu') { st.modo = null; return menuPrincipal(''); }
+    if (a === 'sin_nombre') return continuarPrimero('Claro, no hay problema 😊. ');
     if (a === 'planes') return verPlanes(null);
     if (a === 'planes_todos') return verPlanes(null);
     if (a === 'soporte') return soporte();
@@ -1154,7 +1208,7 @@
     if (a === 'si') {
       st.modo = null; st.terminada = true;
       nota('Se solucionó con el asistente ✅');
-      return r('¡Excelente! 🎉 Nos alegra que se haya solucionado. ¿Hay algo más en lo que te pueda ayudar?', [{ t: '🙋 Sí, otra pregunta', a: 'menu' }, { t: '👋 No, gracias', a: 'fin' }]);
+      return r(conNombre('¡Excelente! 🎉 Nos alegra que se haya solucionado.') + ' ¿Hay algo más en lo que te pueda ayudar?', [{ t: '🙋 Sí, otra pregunta', a: 'menu' }, { t: '👋 No, gracias', a: 'fin' }]);
     }
     if (a === 'no') {
       var p = st.problema;
@@ -1172,12 +1226,12 @@
     if (a === 'resuelto_si') {
       st.terminada = true; st.modo = null;
       nota('El cliente confirmó que se solucionó ✅');
-      return r('¡Qué bueno! 🎉 Gracias por confiar en *' + EMPRESA + '*. Cuando necesites algo, aquí estoy.', []);
+      return r(conNombre('¡Qué bueno! 🎉') + ' Gracias por confiar en *' + EMPRESA + '*. Cuando necesites algo, aquí estoy.', []);
     }
     if (a === 'resuelto_no') {
       nota('El cliente dice que NO se solucionó');
       pedirAsesor(st);
-      return r('Entendido 🙏. Le aviso al asesor para que siga ayudándote *aquí mismo*. Cuéntame qué falta por resolver.', []);
+      return r(conNombre('Entendido.') + ' 🙏 Le aviso al asesor para que siga ayudándote *aquí mismo*. Cuéntame qué falta por resolver.', []);
     }
     return menuPrincipal('');
   }
@@ -1398,7 +1452,7 @@
         s2.estado = res.estado; // 'resuelta' se guarda tal cual para no volver a preguntar
         guardarLocal(s2);
         if (res.estado === 'resuelta') {
-          burbuja('¿Pudimos solucionar tu inquietud? 🙌', 'bot');
+          burbuja((st && st.nombre ? '*' + st.nombre + '*, ¿' : '¿') + 'pudimos solucionar tu inquietud? 🙌', 'bot');
           pintarChips([{ t: '✅ Sí, quedó solucionado', a: 'resuelto_si' }, { t: '❌ No, todavía no', a: 'resuelto_no' }]);
         }
         guardarSt();
@@ -1481,6 +1535,14 @@
       ui.msgs.innerHTML = '';
     }
     if (!nuevo) return;
+    st.nombre = configFija ? '' : leerNombre();
+    if (!st.nombre && !configFija) {
+      if (textoOriginal) burbuja(textoOriginal.replace(/^¡?hola dl company!?\s*👋?\s*/i, ''), 'yo');
+      st.modo = 'nombre'; st.primero = textoOriginal || '';
+      responder(r(presentacion() + '\n\nAntes de empezar, ¿cómo te llamas? 😊 Así te atiendo por tu nombre.', [{ t: '🙈 Prefiero no decirlo', a: 'sin_nombre' }]));
+      return;
+    }
+    if (st.nombre) enviarNombreNube(st, leerNombreCompleto() || st.nombre);
     if (textoOriginal) {
       burbuja(textoOriginal.replace(/^¡?hola dl company!?\s*👋?\s*/i, ''), 'yo');
       var resp = interpretarPrimero(textoOriginal) ;
