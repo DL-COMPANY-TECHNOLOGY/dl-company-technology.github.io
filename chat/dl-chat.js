@@ -691,6 +691,8 @@
       problema: null, alternativa: false, fallos: 0,
       premium: false,
       resumen: [],
+      chat: [],              // conversación completa (se guarda en el caso del admin)
+      codigo: null,          // código del caso que se pasa a WhatsApp
     };
   }
 
@@ -698,8 +700,33 @@
 
   function mensajeWhatsApp() {
     var base = st.original || ('Hola DL COMPANY 👋 ' + (st.origen === 'web' ? 'Vengo de la página web.' : 'Vengo de la app ' + (st.app ? APPS[st.app].nombre : '') + '.'));
-    if (!st.resumen.length) return base;
-    return base + '\n\n📝 Resumen del asistente:\n' + st.resumen.map(function (r) { return '• ' + r; }).join('\n');
+    return st.codigo ? base + '\n\n(Caso ' + st.codigo + ')' : base;
+  }
+
+  // El resumen y la conversación se guardan directo en la administración (sección Casos)
+  // y le llega un aviso al celular del admin. No depende de lo que el cliente envíe.
+  function nuevoCodigo() {
+    var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', c = '';
+    for (var i = 0; i < 4; i++) c += L.charAt(Math.floor(Math.random() * L.length));
+    return c;
+  }
+  function guardarCaso() {
+    if (configFija) return; // pruebas desde la administración: no se crean casos
+    if (st.casoEnviado) return;
+    st.casoEnviado = true;
+    var caso = {
+      codigo: st.codigo, app: st.app || null, origen: st.origen,
+      resumen: st.resumen.slice(0, 30).map(function (x) { return String(x).slice(0, 300); }),
+      conversacion: st.chat.slice(-40),
+      mensaje: String(st.original || '').slice(0, 1500),
+    };
+    try {
+      fetch(NUBE.url + 'chatbot_casos', {
+        method: 'POST', keepalive: true,
+        headers: { apikey: NUBE.llave, Authorization: 'Bearer ' + NUBE.llave, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify(caso),
+      }).catch(function () {});
+    } catch (e) {}
   }
 
   // Chips (respuestas rápidas)
@@ -1134,6 +1161,7 @@
   function formato(s) { return esc(s).replace(/\*([^*\n]+)\*/g, '<b>$1</b>'); }
   function bajar() { ui.msgs.scrollTop = ui.msgs.scrollHeight; }
   function burbuja(texto, quien) {
+    if (st && st.chat) { st.chat.push({ de: quien === 'yo' ? 'cliente' : 'asistente', t: String(texto).slice(0, 700) }); if (st.chat.length > 60) st.chat.shift(); }
     var d = document.createElement('div'); d.className = 'm ' + quien; d.innerHTML = formato(texto);
     ui.msgs.appendChild(d); bajar();
     // Respuesta larga: mostrarla desde el inicio
@@ -1172,6 +1200,8 @@
   }
 
   function irAWhatsApp() {
+    if (!st.codigo) st.codigo = nuevoCodigo();
+    guardarCaso();
     var url = 'https://wa.me/' + WA_NUMERO + '?text=' + encodeURIComponent(mensajeWhatsApp());
     // Sin 'noopener' para saber si se abrió (con noopener window.open siempre devuelve null)
     var w = abrirOriginal(url, '_blank');
@@ -1265,7 +1295,7 @@
       nuevaConversacion(texto); var out = interpretarPrimero(texto); APP_ACTUAL = prev; return out;
     },
     _texto: function (t) { return procesarTexto(t); },
-    _estado: function () { return st ? { app: st.app, origen: st.origen, original: st.original } : null; },
+    _estado: function () { return st ? { app: st.app, origen: st.origen, original: st.original, codigo: st.codigo, chat: st.chat } : null; },
     _accion: function (a) { return accion(a); },
     _whatsapp: function () { return mensajeWhatsApp(); },
   };
