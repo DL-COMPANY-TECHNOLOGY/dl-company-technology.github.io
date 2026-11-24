@@ -518,7 +518,7 @@
     intentosAsesor: 3,     // veces que el asistente no entiende antes de ofrecer un asesor
     empresa: 'DL COMPANY -TECHNOLOGY-',
     whatsapp: '573218641539',
-    mensajeAsesor: 'Listo 🙌 Ya le avisé a un asesor de *{empresa}* 👨‍💻. Te va a responder *aquí mismo, en este chat*.\n\nPuedes cerrar el chat tranquilo: tu conversación queda guardada y cuando te respondan verás un aviso al volver a abrir la app.',
+    mensajeAsesor: 'Listo 🙌 Te paso con un asesor de *{empresa}* 👨‍💻. En un momento te va a hablar.',
     mensajeDespedida: '¡Con mucho gusto! 😊 Fue un placer ayudarte. Si necesitas algo más, aquí estoy.\n\n— *{empresa}*',
   };
 

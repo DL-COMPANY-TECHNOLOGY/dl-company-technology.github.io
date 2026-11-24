@@ -379,6 +379,8 @@
   function nombreApp(k) { return k === '*' ? 'Todas las apps' : (draft.apps[k] ? draft.apps[k].nombre : k); }
 
   /* ---------------- CHATS (como WhatsApp) ---------------- */
+  var SALUDO_DEF = 'Hola 👋 Soy *Lenin Benjumea*, tu asesor el día de hoy. ¿En qué te puedo servir?';
+  function saludo() { return String(draft.general.saludoAsesor || SALUDO_DEF).replace(/\{empresa\}/g, draft.general.empresa || ''); }
   function fechaCorta(iso) {
     var d = new Date(iso), hoy = new Date();
     return d.toDateString() === hoy.toDateString() ? d.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' })
@@ -425,6 +427,7 @@
       '<div class="barra" id="cvBarra"></div>' +
       ((c.resumen || []).length ? '<div class="resumen"><b>📝 Resumen del asistente</b><br>' + c.resumen.map(function (x) { return '• ' + esc(x); }).join('<br>') + '</div>' : '') +
       '<div class="msgs" id="cvMsgs"><div class="vacio">Cargando…</div></div>' +
+      '<div class="barra" style="border:0;border-top:1px solid var(--borde);padding-bottom:0"><button type="button" class="btn peq" id="cvSaludo">👋 Saludo</button></div>' +
       '<form id="cvForm"><textarea id="cvTxt" placeholder="Escribe tu respuesta al cliente…" rows="1"></textarea><button aria-label="Enviar">➤</button></form>';
     v.classList.remove('oculto'); document.body.style.overflow = 'hidden';
     if (location.hash !== '#chat-' + id) history.replaceState(null, '', '#chat-' + id);
@@ -432,9 +435,18 @@
     var txt = $('#cvTxt');
     txt.addEventListener('input', function () { txt.style.height = 'auto'; txt.style.height = Math.min(120, txt.scrollHeight) + 'px'; });
     $('#cvForm').onsubmit = function (e) { e.preventDefault(); enviarRespuesta(); };
+    $('#cvSaludo').onclick = function () {
+      var t = $('#cvTxt'), sal = saludo();
+      if (t.value.indexOf(sal) === -1) t.value = sal + (t.value.trim() ? '\n\n' + t.value : '\n\n');
+      t.dispatchEvent(new Event('input')); t.focus(); t.setSelectionRange(t.value.length, t.value.length);
+    };
     pintarCabChat();
     await cargarMensajes(false);
     marcarLeido(id);
+    // primera vez que entras: el saludo ya queda escrito (lo envías así o le agregas la solución)
+    if (chatAbierto && chatAbierto.id === id && c.estado !== 'resuelta' && !mensajes.some(function (m) { return m.de === 'admin'; }) && !$('#cvTxt').value) {
+      $('#cvTxt').value = saludo(); $('#cvTxt').dispatchEvent(new Event('input'));
+    }
   }
   function pintarCabChat() {
     var c = chatAbierto; if (!c || !$('#cvEstado')) return;
@@ -674,6 +686,7 @@
       campo('WhatsApp de la empresa (el de los botones de las apps; con indicativo, sin +)', '<input type="tel" data-g="whatsapp" value="' + esc(g.whatsapp) + '" inputmode="numeric">') +
       campo('¿Cuántas veces intenta entender antes de ofrecer un asesor?', '<input type="number" min="2" max="10" data-g="intentosAsesor" data-num="1" value="' + esc(g.intentosAsesor || 3) + '" inputmode="numeric">') +
       campo('Mensaje al pasar a un asesor', '<textarea data-g="mensajeAsesor">' + esc(g.mensajeAsesor) + '</textarea>') +
+      campo('Saludo del asesor (aparece escrito solo cuando entras a un chat; lo envías tal cual o le agregas la solución)', '<textarea data-g="saludoAsesor">' + esc(g.saludoAsesor || SALUDO_DEF) + '</textarea>') +
       campo('Mensaje de despedida', '<textarea data-g="mensajeDespedida">' + esc(g.mensajeDespedida) + '</textarea>') +
       '</div>' +
       '<div class="bloque"><b>Probar el chat</b><p class="ayuda" style="margin:6px 0 10px">Toca <b>▶ Probar</b> arriba para chatear con tus cambios antes de guardarlos. ' +
