@@ -111,6 +111,14 @@
     .quote{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px}
     .quote h3{font-size:23px;margin:8px 0 12px}
 
+    .aria-sec{background:radial-gradient(ellipse at 20% 0,#d4af3722,transparent 60%),var(--bg)}
+    .aria-grid{display:grid;grid-template-columns:240px 1fr;gap:40px;align-items:center}
+    .aria-logo{width:100%;max-width:240px;border-radius:50%;box-shadow:0 0 0 3px #d4af37b0,0 20px 60px #d4af3733;margin:auto;display:block}
+    .aria-sec p{color:var(--muted)}
+    .aria-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 24px}
+    .aria-list div{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:14px;color:var(--muted)}
+    .aria-list b{display:block;color:#fff;margin-bottom:3px}
+    @media(max-width:900px){.aria-grid{grid-template-columns:1fr;text-align:center}.aria-logo{max-width:170px}.aria-list{grid-template-columns:1fr;text-align:left}}
     .contact{text-align:center;background:radial-gradient(ellipse at 50% 0,#1b6ff033,transparent 60%),var(--bg)}
     .contact p{max-width:640px;margin:0 auto 26px;color:var(--muted)}
     .contact .actions{justify-content:center}
@@ -177,7 +185,7 @@
   <div class="wrap nav">
     <a class="brand" href="#inicio"><img src="assets/dl-company.png" alt="Logo DL COMPANY"><span>DL COMPANY<small>-TECHNOLOGY-</small></span></a>
     <nav aria-label="Navegación principal">
-      <a href="#dl-finanzas">DL Finanzas</a><a href="#dl-stock-pro">DL Stock Pro</a><a href="#dl-cuadra-pro">DL Cuadra Pro</a><a href="#dl-comanda-pro">DL Comanda Pro</a><a href="#apps">Aplicaciones</a><a href="#proyectos">Proyectos</a><a href="#como-comprar">Cómo comprar</a><a href="#planes">Planes</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a>
+      <a href="#dl-finanzas">DL Finanzas</a><a href="#dl-stock-pro">DL Stock Pro</a><a href="#dl-cuadra-pro">DL Cuadra Pro</a><a href="#dl-comanda-pro">DL Comanda Pro</a><a href="#apps">Aplicaciones</a><a href="#proyectos">Proyectos</a><a href="#como-comprar">Cómo comprar</a><a href="#planes">Planes</a><a href="#nosotros">Nosotros</a><a href="#aria">ARIA</a><a href="#contacto">Contacto</a>
     </nav>
     <a class="btn btn-primary" href="#apps">Ver apps</a>
   </div>
@@ -197,7 +205,7 @@
         <div class="stats">
           <div><b>4</b><span>apps disponibles</span></div>
           <div><b>Gratis</b><span>para probar</span></div>
-          <div><b>Soporte</b><span>por WhatsApp</span></div>
+          <div><b>Soporte</b><span>con ARIA, 24/7</span></div>
         </div>
       </div>
       <div class="hero-logo"><img src="assets/dl-company.png" alt="DL COMPANY TECHNOLOGY"><p>SOLUCIONES QUE SIMPLIFICAN TU DÍA</p></div>
@@ -239,7 +247,7 @@
             <div class="f-item"><b>🌗 Tema claro y oscuro</b>Úsala cómoda de día o de noche.</div>
             <div class="f-item"><b>🎙️ Guía con voz</b>Te enseña a usar la app desde el primer día.</div>
             <div class="f-item"><b>📲 Se instala en el celular</b>Android y iPhone, y funciona sin conexión.</div>
-            <div class="f-item"><b>💬 Soporte por WhatsApp</b>Directo desde la app.</div>
+            <div class="f-item"><b>💬 Soporte con ARIA</b>Tu asistente, directo desde la app.</div>
           </div>
         </div>
         <div>
@@ -590,14 +598,14 @@
         <div class="plan-grid">
           <article class="plan"><div class="plan-label">GRATIS</div><div class="price" data-cop="0">$0</div><div class="per">para empezar</div><ul><li>15 movimientos al mes</li><li>Resumen, gráficas y topes</li><li>Datos en tu dispositivo</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-finanzas/" target="_blank" rel="noopener">Probar gratis</a></article>
           <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price" data-cop="10000">$10.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="20000">$20.000</s></div><ul><li>Hasta 50 movimientos al mes</li><li>Nube y sincronización</li><li>Exportar a Excel y respaldos</li><li>Anual: <span data-cop="120000">$120.000</span> (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Quiero PRO</a></article>
-          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price" data-cop="20000">$20.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="40000">$40.000</s></div><ul><li>Movimientos ilimitados, toda la app</li><li>Tendencia de 6 meses</li><li>Copiar fijos al mes nuevo</li><li>Soporte prioritario por WhatsApp</li><li>Anual: <span data-cop="240000">$240.000</span> (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
+          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price" data-cop="20000">$20.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="40000">$40.000</s></div><ul><li>Movimientos ilimitados, toda la app</li><li>Tendencia de 6 meses</li><li>Copiar fijos al mes nuevo</li><li>Soporte prioritario con ARIA</li><li>Anual: <span data-cop="240000">$240.000</span> (14 meses)</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20FINANZAS." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
         </div>
       </div>
 
       <div class="plan-set" id="set-stock">
         <div class="plan-grid">
           <article class="plan"><div class="plan-label">GRATIS</div><div class="price" data-cop="0">$0</div><div class="per">para empezar</div><ul><li>Hasta 100 productos</li><li>Escáner, alertas de vencimiento y conteo</li><li>Datos guardados en tu celular</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-stock-pro/" target="_blank" rel="noopener">Probar gratis</a></article>
-          <article class="plan"><div class="plan-label">PRO · LOCAL <span class="badge">-50%</span></div><div class="price" data-cop="20000">$20.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="40000">$40.000</s></div><ul><li>Productos ilimitados</li><li>Excel, importar y etiquetas de precio</li><li>Pedido al proveedor por WhatsApp</li><li>Soporte por WhatsApp</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
+          <article class="plan"><div class="plan-label">PRO · LOCAL <span class="badge">-50%</span></div><div class="price" data-cop="20000">$20.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="40000">$40.000</s></div><ul><li>Productos ilimitados</li><li>Excel, importar y etiquetas de precio</li><li>Pedido al proveedor por WhatsApp</li><li>Soporte con ARIA</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
           <article class="plan featured"><div class="plan-label">PREMIUM · NUBE <span class="badge">-50%</span></div><div class="price" data-cop="40000">$40.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="80000">$80.000</s></div><ul><li>Todo lo de PRO</li><li>Datos en la nube y sincronización</li><li>Úsala en varios celulares y el computador</li><li>Soporte prioritario</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
           <article class="plan"><div class="plan-label">EMPRESARIAL <span class="badge">-50%</span></div><div class="price" data-cop="80000">$80.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="160000">$160.000</s></div><ul><li>Todo lo de PREMIUM</li><li>Hasta 5 cajeros con usuario y contraseña</li><li>Cada cajero maneja su lineal</li><li>Diferencias de conteo al dueño</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20EMPRESARIAL%20de%20DL%20STOCK%20PRO." target="_blank" rel="noopener">Quiero EMPRESA</a></article>
         </div>
@@ -607,7 +615,7 @@
         <div class="plan-grid">
           <article class="plan"><div class="plan-label">GRATIS</div><div class="price" data-cop="0">$0</div><div class="per">para probar</div><ul><li>Hasta 15 productos</li><li>3 días de historial</li><li>Fiado hasta 3 clientes</li></ul><a class="btn btn-ghost" href="https://dl-company-technology.github.io/dl-cuadra-pro/" target="_blank" rel="noopener">Probar gratis</a></article>
           <article class="plan"><div class="plan-label">PRO <span class="badge">-50%</span></div><div class="price" data-cop="20000">$20.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="40000">$40.000</s></div><ul><li>Hasta 150 productos y 3 cajeros con PIN</li><li>Escáner de código de barras</li><li>Ganancia del día y ventas sin internet</li><li>90 días de historial</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PRO%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero PRO</a></article>
-          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price" data-cop="40000">$40.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="80000">$80.000</s></div><ul><li>Productos y cajeros ilimitados</li><li>Historial completo</li><li>Fiado con clientes ilimitados</li><li>Soporte prioritario por WhatsApp</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
+          <article class="plan featured"><div class="plan-label">PREMIUM <span class="badge">-50%</span></div><div class="price" data-cop="40000">$40.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="80000">$80.000</s></div><ul><li>Productos y cajeros ilimitados</li><li>Historial completo</li><li>Fiado con clientes ilimitados</li><li>Soporte prioritario con ARIA</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20PREMIUM%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero PREMIUM</a></article>
           <article class="plan"><div class="plan-label">EMPRESARIAL <span class="badge">-50%</span></div><div class="price" data-cop="70000">$70.000</div><div class="per"><span class="cur">COP</span> / mes · <s data-cop="140000">$140.000</s></div><ul><li>Todo lo de Premium</li><li>Varias sedes (ilimitadas)</li><li>Inventario, ventas y cajeros por sede</li><li>Reportes de todas las sedes juntas</li></ul><a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20el%20plan%20EMPRESARIAL%20de%20DL%20CUADRA%20PRO." target="_blank" rel="noopener">Quiero EMPRESA</a></article>
         </div>
       </div>
@@ -632,10 +640,26 @@
     </div>
   </section>
 
+  <section class="aria-sec" id="aria">
+    <div class="wrap aria-grid">
+      <img class="aria-logo" src="chat/aria.png" alt="ARIA, la asistente virtual de DL COMPANY" loading="lazy">
+      <div><div class="eyebrow">Conoce a ARIA</div><h2>Tu asistente virtual, siempre disponible.</h2>
+        <p><b style="color:#fff">ARIA</b> es la asistente virtual de DL COMPANY -TECHNOLOGY-. Vive en esta página y dentro de cada una de nuestras apps: solo toca su logo y te atiende al instante, a cualquier hora del día.</p>
+        <div class="aria-list">
+          <div><b>🛠️ Resuelve tus dudas</b>Te guía paso a paso cuando algo no te funciona en la app.</div>
+          <div><b>📘 Te enseña a usar la app</b>Te explica cada función de la app que estás usando.</div>
+          <div><b>👑 Planes y pagos</b>Te muestra los planes y precios, y recibe tu comprobante de pago.</div>
+          <div><b>👨‍💻 Te pasa con un asesor</b>Si lo necesitas, nuestro equipo te responde ahí mismo, en el mismo chat.</div>
+        </div>
+        <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web." target="_blank" rel="noopener">Hablar con ARIA</a>
+      </div>
+    </div>
+  </section>
+
   <section class="contact" id="contacto">
     <div class="wrap"><div class="eyebrow">Hablemos</div><h2>¿Tienes un negocio o una idea?</h2><p>Escríbenos para comprar un plan, pedir soporte o contarnos qué app necesitas. También desarrollamos soluciones a la medida.</p>
       <div class="actions">
-        <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20m%C3%A1s%20informaci%C3%B3n." target="_blank" rel="noopener"><svg class="wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.2 1.2z"/></svg>WhatsApp 321 864 1539</a>
+        <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web.%20Quiero%20m%C3%A1s%20informaci%C3%B3n." target="_blank" rel="noopener">Hablar con ARIA</a>
         <a class="btn btn-ghost" href="mailto:d.l.company.2026@gmail.com">d.l.company.2026@gmail.com</a>
       </div>
     </div>

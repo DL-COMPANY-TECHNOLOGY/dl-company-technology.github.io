@@ -39,7 +39,7 @@
       planes: [
         { id: 'gratis', n: 'Gratis', p: 0, inc: '15 movimientos al mes · datos en tu celular' },
         { id: 'pro', n: 'Pro', p: 10000, antes: 20000, inc: 'Hasta 50 movimientos al mes · nube y sincronización · Excel y respaldos' },
-        { id: 'premium', n: 'Premium 👑', p: 20000, antes: 40000, inc: 'Movimientos ilimitados · toda la app · soporte prioritario por WhatsApp' },
+        { id: 'premium', n: 'Premium 👑', p: 20000, antes: 40000, inc: 'Movimientos ilimitados · toda la app · soporte prioritario con ARIA' },
       ],
       pago: PAGO_DEFECTO,
       activar: 'Apenas confirmamos el pago, *activamos el plan directamente en tu cuenta* (con el correo con el que te registraste), sin perder tus datos.',
@@ -98,7 +98,7 @@
       planes: [
         { id: 'gratis', n: 'Gratis', p: 0, inc: 'Cursos de muestra para empezar' },
         { id: 'pro', n: 'Pro', p: 10000, antes: 20000, inc: 'Cursos clásicos completos' },
-        { id: 'premium', n: 'Premium 👑', p: 20000, antes: 40000, inc: 'Todos los cursos (incluidos los NUEVOS) · fichas de materiales · soporte prioritario por WhatsApp' },
+        { id: 'premium', n: 'Premium 👑', p: 20000, antes: 40000, inc: 'Todos los cursos (incluidos los NUEVOS) · fichas de materiales · soporte prioritario con ARIA' },
       ],
       pago: 'Te enviamos el *enlace de pago* (Wompi en Colombia o PayPal internacional).',
       activar: 'Al confirmar el pago te enviamos tu *código único* y lo canjeas en la ventana de *⭐ Planes*.',
@@ -1508,10 +1508,20 @@
       Array.prototype.forEach.call(a.querySelectorAll('*'), function (el) { if (!el.classList.contains('dl-aria-logo')) quitarVerde(el); });
     } catch (e) {}
   }
+  // Textos de soporte en toda la página: "Soporte (prioritario) por WhatsApp" → "con ARIA"
+  var RE_SOPORTE = /(soporte(?: prioritario)?) (?:por|v[ií]a) WhatsApp/gi;
+  function textosSoporte() {
+    var tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) { return /whatsapp/i.test(n.nodeValue) && !(n.parentNode && /^(SCRIPT|STYLE|TEXTAREA)$/.test(n.parentNode.nodeName)) ? 1 : 3; },
+    }), n, lista = [];
+    while ((n = tw.nextNode())) lista.push(n);
+    lista.forEach(function (t) { var v = t.nodeValue.replace(RE_SOPORTE, '$1 con ARIA'); if (v !== t.nodeValue) t.nodeValue = v; });
+  }
   var tVestir = 0;
   function vestirTodo() {
     tVestir = 0;
     if (GENERAL.activo === false || !document.body) return;
+    try { textosSoporte(); } catch (e) {}
     Array.prototype.forEach.call(document.querySelectorAll('a[href*="wa.me"], a[href*="whatsapp.com"]'), function (a) { try { vestir(a); } catch (e) {} });
   }
   function programarVestir() { if (!tVestir) tVestir = setTimeout(vestirTodo, 120); }
