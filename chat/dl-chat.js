@@ -1030,6 +1030,8 @@
     if (host) return;
     host = document.createElement('div');
     host.id = 'dl-chat';
+    host.setAttribute('translate', 'no'); host.className = 'notranslate'; // que el traductor de Chrome no cambie "planes" por "aviones"
+    host.lang = 'es';
     host.style.cssText = 'position:fixed;inset:0;z-index:2147483000;pointer-events:none';
     raiz = host.attachShadow ? host.attachShadow({ mode: 'open' }) : host;
     raiz.innerHTML = '<style>' + CSS + '</style>' +
