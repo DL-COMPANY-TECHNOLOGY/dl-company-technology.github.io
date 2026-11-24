@@ -957,14 +957,8 @@
     if (/^(menu|inicio|empezar)$/.test(t)) return menuPrincipal('');
     if (/^(gracias|chao|adios|no gracias|eso es todo|bendiciones)/.test(t)) return despedida();
 
-    // Desde una app, todo lo que escriba el cliente es sobre ESA app: no se buscan ni se mencionan otras apps.
-    var otra = st.origen === 'web' ? appPorNombre(t) : null;
-    if (otra && st.app && otra !== st.app) {
-      var actual = APPS[st.app], nueva = APPS[otra];
-      // Solo en la página web: preguntar antes de cambiar
-      return r('Estamos hablando de *' + actual.nombre + '*. ¿Quieres que te ayude ahora con *' + nueva.nombre + '*?',
-        [{ t: 'Sí, ayuda con ' + nueva.nombre, a: 'cambiar:' + otra }, { t: 'No, seguir con ' + actual.nombre, a: 'menu' }]);
-    }
+    // Apenas se sabe de qué app habla el cliente (porque viene de esa app o porque la eligió),
+    // todo se responde sobre ESA app: no se buscan, no se mencionan y no se ofrecen otras apps.
     var resp = interpretar(t, false);
     if (resp) return resp;
 
