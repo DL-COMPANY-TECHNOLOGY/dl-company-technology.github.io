@@ -334,7 +334,7 @@
     // ================= DL CUADRA PRO =================
     {
       id: 'cuadra_vender', tipo: 'guia', titulo: '🛒 Vender y cobrar', apps: ['cuadra'],
-      claves: ['vender', 'venta', 'cobrar', 'carrito', 'como vendo', 'registrar venta', 'efectivo', 'pago con qr'],
+      claves: ['vender', 'venta', 'cobrar', 'cobro', 'como cobro', 'carrito', 'como vendo', 'registrar venta', 'efectivo', 'pago con qr'],
       respuesta: 'Vender es muy fácil 🛒:\n\n1. En *Vender*, toca los productos: cada toque suma 1 unidad al carrito (también puedes buscar o escanear).\n2. Abajo aparece el total: toca *Cobrar*.\n3. Elige *efectivo*, *QR* o *📒 Fiado*.\n\nEl inventario se descuenta solo.',
     },
     {
@@ -401,7 +401,7 @@
     },
     {
       id: 'comanda_cuenta', tipo: 'guia', titulo: '🧾 Pedir la cuenta, cobrar y dividir', apps: ['comanda'],
-      claves: ['cuenta', 'pedir la cuenta', 'cobrar', 'dividir', 'dividir la cuenta', 'propina', 'vueltas', 'descuento', 'pagar la mesa'],
+      claves: ['cuenta', 'pedir la cuenta', 'cobrar', 'cobro', 'como cobro', 'dividir', 'dividir la cuenta', 'propina', 'vueltas', 'descuento', 'pagar la mesa'],
       respuesta: '🧾 *Mesero:* toca la mesa → *pedir la cuenta*. La app le recuerda preguntar si desea la *propina voluntaria del 10%*, y la respuesta le llega a la caja.\n\n*Caja:* toca la cuenta, elige *efectivo, tarjeta o transferencia*. La app calcula las vueltas, la propina y el descuento, y puedes *dividir la cuenta* entre varias personas.',
     },
     {
@@ -496,7 +496,7 @@
     },
     {
       id: 'arte_calculadora', tipo: 'guia', titulo: '🧮 Calcular el precio de venta', apps: ['arte'],
-      claves: ['calculadora', 'precio de venta', 'cuanto cobrar', 'cuanto vendo', 'costo', 'ganancia', 'vender mis amigurumis'],
+      claves: ['calculadora', 'precio de venta', 'cuanto cobrar', 'cuanto cobro', 'cuanto vendo', 'costo', 'ganancia', 'vender mis amigurumis'],
       respuesta: '🧮 Abre la *Calculadora de Costos y Precios*: escribe lo que gastaste en materiales y tiempo, y toca *Calcular Costo y Precio Sugerido*. Te da el precio de venta con *30% de ganancia*.',
     },
     {
@@ -593,8 +593,9 @@
   function igual(a, b) {
     if (a === b) return true;
     if (a.length < 4 || b.length < 4 || /\d/.test(a + b)) return false;
-    var k = Math.min(a.length, b.length) <= 5 ? 4 : 5;
-    return a.slice(0, k) === b.slice(0, k) && Math.abs(a.length - b.length) <= 4;
+    var corta = a.length <= b.length ? a : b, larga = corta === a ? b : a;
+    if (corta.length <= 5) return larga.indexOf(corta) === 0 && larga.length - corta.length <= 2; // vence → vencen, pago → pagos
+    return a.slice(0, 5) === b.slice(0, 5) && Math.abs(a.length - b.length) <= 4;                // agrego → agregar
   }
   function tiene(t, frase) {
     var tt = tokens(t), ft = tokens(frase);
@@ -619,6 +620,26 @@
     Object.keys(APPS).forEach(function (k) { var p = puntos(t, APPS[k].claves); if (p > mp) { mp = p; mejor = k; } });
     return mejor;
   }
+  // Solo el nombre propio de la app (ej. "comanda", "dl cuadra"), no palabras de tema como "mesero" o "caja"
+  function appPorNombre(t) {
+    var mejor = null, mp = 0;
+    Object.keys(APPS).forEach(function (k) {
+      var palabras = tokens(APPS[k].nombre).filter(function (w) { return ['dl', 'pro', 'el', 'en', 'tus', 'app'].indexOf(w) === -1; });
+      if (palabras.length && tiene(t, palabras.join(' ')) && palabras.length > mp) { mp = palabras.length; mejor = k; }
+    });
+    return mejor;
+  }
+
+  // "3 meses", "tres meses", "un año", "6 meses"…
+  var NUMEROS = { un: 1, uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, once: 11, doce: 12 };
+  function detectarMeses(t) {
+    if (/(^|\s)(un|1)\s+ano(\s|$)|anual|14 meses/.test(t)) return 12;
+    var m = t.match(/(^|\s)(\d{1,2}|un|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)\s+mes(es)?(\s|$)/);
+    if (!m) return 0;
+    var n = /\d/.test(m[2]) ? Number(m[2]) : NUMEROS[m[2]];
+    return n >= 1 && n <= 24 ? n : 0;
+  }
+
   function detectarPlan(t) {
     if (/(^|\s)(empresarial|empresa)(\s|$)/.test(t)) return 'empresarial';
     if (/(^|\s)premium(\s|$)/.test(t)) return 'premium';
@@ -698,16 +719,27 @@
   }
 
   // ----- respuestas por tema -----
-  function verPlanes(planId, anual) {
+  function verPlanes(planId, anual, meses) {
     if (!st.app) return pedirApp('planes', '¿De cuál app quieres ver los planes?');
     var a = APPS[st.app];
+    if (meses) st.meses = meses;
+    meses = st.meses || 0;
+    if (meses === 12 && !a.sinAnual) { anual = true; }
     var plan = planId && a.planes.filter(function (p) { return p.id === planId; })[0];
     st.modo = null;
+    if (!plan && meses) {
+      // Dijo cuánto tiempo pero no cuál plan
+      return r('¡Perfecto! 🙌 ' + (anual ? 'Pago *anual*' : '*' + meses + (meses === 1 ? ' mes' : ' meses') + '*') + ' de *' + a.nombre + '*. ¿De cuál plan?\n\n' + textoPlanes(a, true),
+        a.planes.filter(function (p) { return p.p; }).map(function (p) { return { t: 'Plan ' + p.n, a: 'plan:' + p.id }; }).concat([CH.otra]));
+    }
     if (plan && plan.p) {
-      nota('Quiere el plan ' + plan.n.replace(/[^\wÁÉÍÓÚáéíóúñ ]/g, '').trim() + ' de ' + a.nombre + (anual ? ' (anual)' : ''));
+      var cuanto = anual && !a.sinAnual ? ' (anual)' : meses > 1 ? ' por ' + meses + ' meses' : '';
+      nota('Quiere el plan ' + plan.n.replace(/[^\wÁÉÍÓÚáéíóúñ ]/g, '').trim() + ' de ' + a.nombre + cuanto);
       var precio = anual && !a.sinAnual
         ? '*' + dinero(plan.p * 12) + '* por 14 meses (pagas 12, te regalamos 2)'
-        : '*' + dinero(plan.p) + '*/mes' + (plan.antes ? ' (antes ' + dinero(plan.antes) + ', 50% de lanzamiento)' : '');
+        : meses > 1
+          ? '*' + dinero(plan.p * meses) + '* por ' + meses + ' meses (' + dinero(plan.p) + '/mes, 50% de lanzamiento)'
+          : '*' + dinero(plan.p) + '*/mes' + (plan.antes ? ' (antes ' + dinero(plan.antes) + ', 50% de lanzamiento)' : '');
       return r('¡Excelente elección! 🎉\n\n*Plan ' + plan.n + ' de ' + a.nombre + '*\n' + precio + '\n✅ ' + plan.inc +
         '\n\n*Así lo activas:*\n1. Toca *Enviar pedido por WhatsApp* 👇\n2. ' + a.pago + '\n3. ' + a.activar,
         [CH.pedido, { t: '📋 Ver todos los planes', a: 'planes_todos' }, CH.otra]);
@@ -867,6 +899,8 @@
   function interpretar(t, primero) {
     var planId = detectarPlan(t);
     var anual = /anual|14 meses/.test(t);
+    var meses = detectarMeses(t);
+    if (meses && st.app && !/cancel|renov|vence|vencio|reembols|devol|pague|pago realizado|comprobante|transferi|consigne/.test(t)) return verPlanes(planId, anual || meses === 12, meses);
 
     if (/(ya )?(realice|hice|pague|envie|transferi|consigne) (mi |el )?pago|ya pague|comprobante/.test(t)) return pagado();
     if (/problemas? para acceder a un plan|problema con (el|mi) plan|codigo no (sirve|funciona)|no me (llego|ha llegado) el codigo/.test(t)) return problemaPlan();
@@ -923,7 +957,7 @@
     if (/^(menu|inicio|empezar)$/.test(t)) return menuPrincipal('');
     if (/^(gracias|chao|adios|no gracias|eso es todo|bendiciones)/.test(t)) return despedida();
 
-    var otra = detectarApp(t); if (otra && otra !== st.app && puntos(t, APPS[otra].claves) >= 2) st.app = otra;
+    var otra = appPorNombre(t); if (otra && otra !== st.app) { st.app = otra; nota('Cambió a ' + APPS[otra].nombre); }
     var resp = interpretar(t, false);
     if (resp) return resp;
 
