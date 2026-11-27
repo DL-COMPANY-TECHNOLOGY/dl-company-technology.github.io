@@ -31,7 +31,7 @@
     .btn:hover{transform:translateY(-2px)}
     .btn-primary{background:linear-gradient(110deg,#1b6ff0,#3cc8f5);color:#fff;box-shadow:0 8px 24px #1b6ff044}
     .btn-wa{background:linear-gradient(135deg,#d4af37,#f5d77a);color:#1a1405;box-shadow:0 8px 24px #d4af3733}
-    .btn-wa:before{content:"";width:1.35em;height:1.35em;border-radius:50%;background:#0b1220 url(chat/aria.png) center/cover;flex:none;display:inline-block}
+    .btn-wa:before{content:"";width:1.35em;height:1.35em;border-radius:50%;background:#0b1220 url(chat/aria.png?v=2) center/cover;flex:none;display:inline-block}
     .btn-ghost{border-color:#3a4a63;color:var(--silver)}
     .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
     .wa-ico{width:17px;height:17px;fill:currentColor}
@@ -118,6 +118,9 @@
     .aria-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 24px}
     .aria-list div{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:14px;color:var(--muted)}
     .aria-list b{display:block;color:#fff;margin-bottom:3px}
+    .aria-video{margin-top:40px;text-align:center}
+    .aria-video video{width:100%;max-width:860px;aspect-ratio:16/9;border-radius:22px;border:1px solid var(--line);box-shadow:0 0 0 2px #d4af3740,0 30px 70px #0009;background:#000;display:block;margin:0 auto}
+    .aria-video p{margin:14px 0 0;color:var(--muted);font-size:14px}
     @media(max-width:900px){.aria-grid{grid-template-columns:1fr;text-align:center}.aria-logo{max-width:170px}.aria-list{grid-template-columns:1fr;text-align:left}}
     .contact{text-align:center;background:radial-gradient(ellipse at 50% 0,#1b6ff033,transparent 60%),var(--bg)}
     .contact p{max-width:640px;margin:0 auto 26px;color:var(--muted)}
@@ -647,7 +650,7 @@
 
   <section class="aria-sec" id="aria">
     <div class="wrap aria-grid">
-      <img class="aria-logo" src="chat/aria.png" alt="ARIA, la asistente virtual de DL COMPANY" loading="lazy">
+      <img class="aria-logo" src="chat/aria.png?v=2" alt="ARIA, la asistente virtual de DL COMPANY" loading="lazy">
       <div><div class="eyebrow">Conoce a ARIA</div><h2>Tu asistente virtual, siempre disponible.</h2>
         <p><b style="color:#fff">ARIA</b> es la asistente virtual de DL COMPANY -TECHNOLOGY-. Vive en esta página y dentro de cada una de nuestras apps: solo toca su logo y te atiende al instante, a cualquier hora del día.</p>
         <div class="aria-list">
@@ -659,6 +662,7 @@
         <a class="btn btn-wa" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web." target="_blank" rel="noopener">Hablar con ARIA</a>
       </div>
     </div>
+    <div class="wrap aria-video"><video controls playsinline preload="none" poster="assets/video/aria-presentacion.jpg"><source src="assets/video/aria-presentacion.mp4" type="video/mp4">Tu navegador no puede reproducir este video.</video><p>🎬 Mira a ARIA presentar las apps de DL COMPANY</p></div>
   </section>
 
   <section class="contact" id="contacto">
@@ -679,7 +683,7 @@
   <span>© 2026 DL COMPANY -TECHNOLOGY- · Colombia</span>
 </div></footer>
 
-<a class="wa-float" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web." target="_blank" rel="noopener" aria-label="Habla con ARIA, la asistente de DL COMPANY" title="Habla con ARIA"><img src="chat/aria.png" alt="ARIA"></a>
+<a class="wa-float" href="https://wa.me/573218641539?text=Hola%20DL%20COMPANY%20%F0%9F%91%8B%20Vengo%20de%20la%20p%C3%A1gina%20web." target="_blank" rel="noopener" aria-label="Habla con ARIA, la asistente de DL COMPANY" title="Habla con ARIA"><img src="chat/aria.png?v=2" alt="ARIA"></a>
 
 <div class="lightbox" id="lightbox" aria-hidden="true"><div class="lb-track" id="lb-track"></div><button class="lb-btn lb-close" aria-label="Cerrar">✕</button><button class="lb-btn lb-prev" aria-label="Anterior">‹</button><button class="lb-btn lb-next" aria-label="Siguiente">›</button><div class="lb-count"><span id="lb-num"></span><div class="lb-dots" id="lb-dots"></div></div></div>
 <script>

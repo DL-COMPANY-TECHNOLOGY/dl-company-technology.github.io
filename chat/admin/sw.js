@@ -3,7 +3,7 @@ self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim()); });
 
 // Primero internet (para tener siempre lo último); si no hay señal, la última copia guardada de la app.
-var CACHE = 'aria-v1';
+var CACHE = 'aria-v2';
 self.addEventListener('fetch', function (e) {
   var r = e.request;
   if (r.method !== 'GET' || new URL(r.url).origin !== location.origin) return;

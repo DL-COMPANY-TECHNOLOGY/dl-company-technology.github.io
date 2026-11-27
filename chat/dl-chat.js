@@ -21,7 +21,7 @@
 
   var NUMERO_BOTONES = '573218641539'; // número que usan los botones de las apps
   var WEB = 'https://dl-company-technology.github.io/';
-  var ARIA_LOGO = WEB + 'chat/aria.png';
+  var ARIA_LOGO = WEB + 'chat/aria.png?v=2';
   var script = document.currentScript;
   var APP_ACTUAL = String(window.DL_CHAT_APP || (script && script.getAttribute('data-app')) || '').toLowerCase();
 
